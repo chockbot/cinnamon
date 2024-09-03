@@ -21,10 +21,12 @@ public class OteCreateHandler : IOteCreateHandler
     private readonly GenerateRecurrenceDate recurrenceDateHelper;
     private readonly ISaveEmailTemplateHandler saveEmailTemplateHandler;
     private readonly IProviderCustomQuestionData providerCustomQuestionData;
+    private readonly ISeatPlanData seatPlanData;
 
     public OteCreateHandler(IActivityData activityData, IGetProfileHandler getProfileHandler,
         IGenerateActivityHandler generateActivityHandler, ICustomerData customerData,
-        ISaveEmailTemplateHandler saveEmailTemplateHandler, IProviderCustomQuestionData providerCustomQuestionData)
+        ISaveEmailTemplateHandler saveEmailTemplateHandler, IProviderCustomQuestionData providerCustomQuestionData,
+        ISeatPlanData seatPlanData)
     {
         this.activityData = activityData;
         this.getProfileHandler = getProfileHandler;
@@ -33,6 +35,7 @@ public class OteCreateHandler : IOteCreateHandler
         this.recurrenceDateHelper = new();
         this.saveEmailTemplateHandler = saveEmailTemplateHandler;
         this.providerCustomQuestionData = providerCustomQuestionData;
+        this.seatPlanData = seatPlanData;
 
         this.htmlSanitizer = new 
             HtmlSanitizer(
@@ -59,6 +62,21 @@ public class OteCreateHandler : IOteCreateHandler
             if(isEmptyPricelist)
             {
                 return AppResult<OteCreateResult>.CreateFailed(new ApplicationException("Invalid request."), "Invalid request.");
+            }
+
+            // check if reserve seat type and check if selected template is valid
+            int seatPlanTemplateId = 0;
+            string seatPlanPayload = string.Empty;
+            if(args.Activity.ReserveSeat)
+            {
+                var seatPlanRes = await seatPlanData.GetSeatPlanTemplateByIdAsync(args.Activity.SeatPlanTemplateId);
+                if(!seatPlanRes.Succeeded || seatPlanRes.Result is null || !seatPlanRes.Result.IsSuccess)
+                {
+                    return AppResult<OteCreateResult>.CreateFailed(new ApplicationException("Invalid request."), "Invalid request.");
+                }
+                var seatPlan = seatPlanRes.Result.Result;
+                seatPlanPayload = seatPlan.Payload;
+                seatPlanTemplateId = seatPlan.Id;
             }
 
             var currentUser = await this.getProfileHandler.ExecuteAsync(new AccountService.Interactors.GetProfileArgs {});
@@ -226,7 +244,10 @@ public class OteCreateHandler : IOteCreateHandler
                     IsCapacity               = args.Activity.IsCapacity,
                     CapacityCount            = args.Activity.CapacityCount,
                     EmailFeedbackDays        = args.Activity.EmailFeedbackDays,
-                    EmailReminderDays        = args.Activity.EmailReminderDays
+                    EmailReminderDays        = args.Activity.EmailReminderDays,
+                    ReserveSeat              = args.Activity.ReserveSeat,
+                    SeatPlanTemplateId       = seatPlanTemplateId,
+                    SeatPlanPayload          = seatPlanPayload,
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.CreateOteActivityArgs.OtePricing {
