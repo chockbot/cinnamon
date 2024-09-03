@@ -23,6 +23,7 @@ public class RecommendedActivityResult
         public int ExperienceTypeId { get; set; }
         public OteSchedule? Schedule { get; set; }
         public IEnumerable<ActivityImage> Images { get; set; }
+        public Cinnamon.Framework.Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
         public IEnumerable<ActivitySchedule> ActivitySchedules { get; set; }
         public class ActivityImage
         {

@@ -56,7 +56,8 @@ public class RecommendedActivitiesHandler : IRecommendedActivitiesHandler
                 return AppResult<RecommendedActivityResult>.CreateFailed(new ApplicationException("An error occured in RecommendedActivitiesHandler"), "An error occured in RecommendedActivitiesHandler");
             }
 
-            var recommendedRes = await activityData.RecommendedActivities(randomActivity.Id, args.Count);
+            var recommendedRes = await activityData.RecommendedActivities(randomActivity.Id, args.Count, 
+            new Framework.ApiCommand.ApiData.Activity.Request.GetRecommendedActivitiesArgs{ IncludeOteSchedule = true });
             if(!recommendedRes.Succeeded || recommendedRes.Result == null || !recommendedRes.Result.IsSuccess)
             {
                 return AppResult<RecommendedActivityResult>.CreateFailed(new ApplicationException(recommendedRes.Result?.ErrorInfo?.Message), recommendedRes.Message);
@@ -80,6 +81,7 @@ public class RecommendedActivitiesHandler : IRecommendedActivitiesHandler
                         RegionName       = a.RegionName,
                         Barangay         = a.Barangay,
                         ExperienceTypeId = a.ExperienceTypeId,
+                        ExperienceCreationType = a.ExperienceCreationType,
                         Images           = a.Images.Select(i =>
                         {
                             return new RecommendedActivityResult.Activity.ActivityImage

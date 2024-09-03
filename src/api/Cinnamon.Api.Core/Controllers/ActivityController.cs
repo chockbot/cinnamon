@@ -2449,6 +2449,7 @@ public class ActivityController : ControllerBase
                         RegionName       = a.RegionName,
                         Barangay         = a.Barangay,
                         ExperienceTypeId = a.ExperienceTypeId,
+                        ExperienceCreationType = a.ExperienceCreationType,
                         Images           = a.Images.Select(i =>
                         {
                             return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage

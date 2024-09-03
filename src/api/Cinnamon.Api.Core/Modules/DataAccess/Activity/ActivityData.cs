@@ -234,12 +234,13 @@ public class ActivityData: IActivityData
 		}
 	}
 
-	public async Task<AppResult<RecommendedActivitiesResult>> RecommendedActivities(int primaryId, int count)
+	public async Task<AppResult<RecommendedActivitiesResult>> RecommendedActivities(int primaryId, int count, GetRecommendedActivitiesArgs args)
 	{
 		try
 		{
 			var result = await flurlClient
 							.Request($"Activity/RecommendedActivities/{primaryId}/{count}")
+							.SetQueryParams(args)
 							.GetJsonAsync<RecommendedActivitiesResult>();
 
 			return AppResult<RecommendedActivitiesResult>.CreateSucceeded(result, "Successfully getting recommended activities api");
