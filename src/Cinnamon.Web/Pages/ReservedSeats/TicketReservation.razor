@@ -1,0 +1,850 @@
+﻿@layout EmptyLayout
+@page "/reservation/{Handler}"
+@using AutoMapper
+@using System.Threading
+@using System.Globalization;
+@using System.Security.Claims;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Models.Ote
+@using Cinnamon.Web.Components;
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Components.Pages;
+@using Cinnamon.Web.Components.Common;
+@using Cinnamon.Web.Modules.Services
+@inject IMapper mapper
+@inject IJSRuntime JSRuntime
+@inject QueueServices QueueServices
+@inject NavigationManager NavigationManager
+@inject IActivityApiHandler activityHandler
+@inject IAccountApiHandler accountApiHandler
+@inject INotificationService NotificationService
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+
+@if (activity is not null)
+{
+    @if (_isProcessing)
+    {
+        <div class="top-row">
+            <!--App Name-->
+            <div class="app-name">
+                <a href="/explore" class="app-name">@Resources.App.appName</a>
+            </div>
+            <!--Timer-->
+            <div class="timer-section">
+                <p class="ticket-text">Tickets Reserved in Cart for</p>
+                <p class="timer-value">@RemainingTime</p>
+            </div>
+            <div class="secured-section">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="18" viewBox="0 0 16 18" fill="none">
+                    <path d="M15.0055 8.53979C14.7668 8.30113 14.4772 8.18189 14.1361 8.18189H13.7273V5.72721C13.7273 4.15905 13.1649 2.81258 12.0399 1.68758C10.9149 0.562525 9.56857 0 8.00019 0C6.43185 0 5.08525 0.562525 3.96038 1.68753C2.83533 2.81258 2.27298 4.15901 2.27298 5.72721V8.18189H1.86395C1.52316 8.18189 1.23332 8.30113 0.994661 8.53979C0.756003 8.77827 0.636719 9.0681 0.636719 9.40921V16.7728C0.636719 17.1136 0.756048 17.4035 0.994661 17.6422C1.23332 17.8806 1.52316 18 1.86395 18H14.1364C14.4775 18 14.7671 17.8808 15.0059 17.6422C15.2443 17.4035 15.3638 17.1136 15.3638 16.7728V9.40908C15.364 9.06824 15.2443 8.77845 15.0055 8.53979ZM11.2728 8.18189H4.72753V5.72721C4.72753 4.82384 5.04719 4.05248 5.68637 3.41339C6.32564 2.77421 7.09687 2.45468 8.00032 2.45468C8.90386 2.45468 9.67491 2.77416 10.3142 3.41339C10.9532 4.05244 11.2728 4.82384 11.2728 5.72721V8.18189Z" fill="#343D4C" />
+                </svg>
+                <p class="secure-text">Secure Checkout</p>
+            </div>
+        </div>
+        <div class="container reservation-page-section">
+            <div class="row">
+                <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-12 ticket-column">
+                    @*Event & Ticket Details*@
+                    <div class="event-details-section">
+                        <p class="event-name">@activity.EventName</p>
+                        <p class="selected-date">Date: @SelectedDate.ToString("MMMM dd, yyyy")</p>
+                        <p class="time-start">Time Start: @SelectedDate.ToString("hh:mm tt") </p>
+                        @if (activity.ExperienceTypeId == 1)
+                        {
+                            string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
+                            <p class="event-location">@address</p>
+                        }
+                        else
+                        {
+                            <p class="event-location">Online</p>
+                        }
+                    </div>
+                    @*Event Ticekts*@
+                    <div class="ticket-event-section">
+                        <p class="ticket-section">Select seat for your tickets</p>
+                        <div class="ticket-box"></div>
+                    </div>
+                    @*Event Seat Plan*@
+                    @if (!string.IsNullOrEmpty(SetPlanImage))
+                    {
+                        <div id="set-plan" class="mt-4 seat-plan-section">
+                            <p class="event-seat-plan">Seat Plan</p>
+                            <img class="img-seat-plan" src="@SetPlanImage" @onclick="() => imageViewer.ShowModal()" alt="seatplan">
+                        </div>
+                    }
+                </div>
+                @*Calculator*@
+                <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12 calculator-column">
+                    <div class="booking-total-container">
+                        <div class="payment-summary-section">
+                            <p class="header">Payment Summary</p>
+                            <Divider />
+                            <div class="price-per-head">
+                                <div class="d-flex position-relative">
+                                    <div class="position-relative" style="width: 100%;">
+                                        <TextEdit class='@(Coupon.IsCouponApplied && !Coupon.IsValid ? "is-invalid" : "")'
+                                                  style='@(Coupon.IsCouponApplied ? "background-color: #F3F6FC; padding-right: 25px; border-bottom-left-radius:4px;border-bottom-left-radius:4px;" : "background-color: #F3F6FC;border-bottom-left-radius:4px;border-bottom-left-radius:4px;")'
+                                                  required Placeholder="Add coupon" Size="Size.Medium" @bind-Text="Coupon.CouponCode" />
+                                        @if (Coupon.IsCouponApplied && Coupon.IsValid)
+                                        {
+                                            <img @onclick="RemoveAppliedCoupon" class="remove-coupon-icon" src="images/payment/close.png" alt="remove">
+                                        }
+                                    </div>
+                                    <Button Type="ButtonType.Button" Clicked="ValidateCouponCode"
+                                            class="btn-primary font-16" Border="Border.Is0" Loading="Coupon.IsValidating" Disabled="Coupon.IsValidating"
+                                            style="border-radius: 0; padding-top: 3px; padding-bottom: 3px; margin-left: 0px;border-end-end-radius:4px;border-start-end-radius:4px; ">
+                                        <LoadingTemplate>
+                                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                                        </LoadingTemplate>
+                                        <ChildContent>
+                                            Apply
+                                        </ChildContent>
+                                    </Button>
+                                    @if (Coupon.IsCouponApplied && !Coupon.IsValid)
+                                    {
+                                        <div class="coupon-error-message font-14">
+                                            <b style="color: #AD0C0C;">@Coupon.ErrorTitle</b>
+                                            <br>
+                                            <span class="color-grey-100">
+                                                @Coupon.ErrorDescription
+                                            </span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            @*Tickets*@
+                            <div class="selected-tickets-section">
+                                @if (selectedTickets.Count > 0)
+                                {
+                                    @foreach (var item in selectedTickets)
+                                    {
+                                        <p class="ticket-name">
+                                            @item.Value.Name @($"(x{item.Value.Count})")
+                                        </p>
+                                        <p class="ticket-total-price">
+                                            &#8369; @((item.Value.Price * item.Value.Count).ToString("#,##0.00"))
+                                        </p>
+
+                                    }
+                                }
+                            </div>
+                            @*Discounts*@
+                            <div class="selected-tickets-section">
+                                <p class="ticket-name">Disount</p>
+                                <span style='@(GetAppliedCoupon > 0 ? "color: #AD0C0C" : "")'>
+                                    @(GetAppliedCoupon > 0 ? "-" : "") &#8369; @(GetAppliedCoupon.ToString("#,##0.00"))
+                                </span>
+                            </div>
+                            @*Service Fee*@
+                            <div class="selected-tickets-section">
+                                <p class="ticket-name">Service fee</p>
+                                <p class="ticket-total-price">
+                                    @(string.IsNullOrEmpty(SelectedPaymentCode) ? "Depends on payment method" : "&#8369; " + GetConvinienceFee.ToString("#,##0.00"))
+                                </p>
+                            </div>
+                            @*Handling Fee*@
+                            @if (!IsInclusivePricing)
+                            {
+                                <div class="selected-tickets-section">
+                                    <div class="d-flex gap-1">
+                                        <p class="ticket-name">Handling fee (2%)</p>
+                                        <CustomTooltip MarginLeft="0">
+                                            <TextContent>
+                                                <span class="rounded-circle service-fee-info">i</span>
+                                            </TextContent>
+                                            <TooltipContent>
+                                                <span class="color-grey-100">
+                                                    This helps Cinnamon run its services and protects your payment in case the experience provider does
+                                                    something illegal or against our policy. They won't get paid until after the sessions or work have been done.
+                                                </span>
+                                            </TooltipContent>
+                                        </CustomTooltip>
+                                    </div>
+                                    <p class="ticket-total-price">
+                                        &#8369; @(GetServiceFee.ToString("#,##0.00"))
+                                    </p>
+                                </div>
+                            }
+                            @*Apply Credits*@
+                            <div class="selected-tickets-section">
+                                <p class="apply-credits">Apply credits</p>
+                                <p class="ticket-total-price">&#8369; @(GetTotalCredit.ToString("#,##0.00"))</p>
+                            </div>
+                            <Divider />
+                            @*Total Payment*@
+                            <div class="selected-tickets-section">
+                                <p class="total-header">Total Payment</p>
+                                <p class="total-header">&#8369; @(GetTotalPrice.ToString("#,##0.00"))</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <Footer></Footer>
+        <div class='mobile-calculator-wrapper'>
+            <div class="mobile-calculator-wrapper-container border-radius-10 mobile-footer-shadow
+                position-fixed left-0 right-0 bg-white-100">
+                <div>
+                    <div class="p-3 d-flex justify-content-between align-items-center">
+                        <Button Type="ButtonType.Button" Clicked="ProceedToPayment" Disabled="DisableProceed || submitting" Loading="submitting"
+                                class="btn-primary font-14 border-radius-10 px-4"
+                        Border="Border.Is0">
+                            <LoadingTemplate>
+                                <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
+                            </LoadingTemplate>
+                            <ChildContent>
+                                Confirm seats
+                            </ChildContent>
+                        </Button>
+                        <div class="d-flex align-items-center">
+                            <div class="prevent-select text-end" style="width: 160px;">
+                                <span class="font-20 font-weight-700 color-black-100 total-price" tabindex="-1">₱ @(GetTotalPrice.ToString("#,##0.00"))</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="container queuing-page-section">
+            <div class="modal-queue">
+                    <div class="header-queue">
+                        <img class="img-queue-logo" src="/images/ote/cinnamon-logo.svg" alt="img-queue-logo" />
+                        <img class="img-queue" src="images/ote/queue.svg" alt="img-queue" />
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width:@(CalculateProgress())%" aria-valuenow="@(CalculateProgress())%" aria-valuemin="0" aria-valuemax="100">@(CalculateProgress())%</div>
+                     </div>
+                    <div class="note-text">
+                        <p class="user-overloaded">Unfortunately, our system is currently overloaded with requests, preventing us from adding you to the queue at this time.</p>
+                        <br />
+                        <p class="user-overloaded">Queue Id: @queueInfo.QueueId</p>
+                        <br />
+                        <p class="user-overloaded">You can close this page without losing your place in line.</p>
+                    </div>
+                    <div class="queuing-info">
+                        <div class="info-box">
+                            <p class="user-overloaded">Expected time of arrival for tickets sales:</p>
+                            <p class="queing-value">@queueInfo.ExpectedTimeArrival.ToString("hh:mm tt")</p>
+                        </div>
+                        <div class="info-box">
+                            <p class="user-overloaded">Estimated wait time is:</p>
+                            <p class="queing-value">@queueInfo.EstimatedWaitingTime minutes</p>
+                        </div>
+                        <div class="info-box">
+                            <p class="user-overloaded">Number of users in line ahead of you:</p>
+                            <p class="queing-value">@queueInfo.UsersAhead</p>
+                        </div>
+                        <div class="info-box">
+                            <p class="user-overloaded">Status last updated:</p>
+                            <p class="queing-value">@queueInfo.LastUpdated.ToString("hh:mm:ss tt")</p>
+                        </div> 
+                    </div>
+                </div>
+        </div>
+    }
+    <Modal @ref="modalRef">
+        <ModalContent Centered>
+            <ModalBody>
+                <div class="queue-up d-flex">
+                    <img class="img-logo" src="images/ote/ticket-queue.svg" />
+                    <div class="queue-up-text">
+                        <p class="logo">Cinnamon.ph</p>
+                        <p>You're up! It's your turn to buy tickets. </p>
+                    </div
+                </div>
+                <Progress>
+                    <ProgressBar Color="Color.Success" Value="100" />
+                </Progress>
+                <p class="congratulations-text">Congratulations! You're almost there. Please proceed to the next step to finalize your order and secure your tickets.</p>
+                <button class="btn-continue" @onclick="HideModal">Continue</button>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+    <Modal @ref="modaltime">
+        <ModalContent Centered>
+            <ModalBody>
+                <div class="queue-up d-flex">
+                    <img class="img-logo" src="images/ote/timeout.svg" />
+                    <div class="queue-up-text">
+                        <p class="expired-text">Your reservation has expired!</p>
+                    </div>
+                </div>
+                <p class="congratulations-text">Unfortunately, you've lost your chance to purchase tickets. Please start a new reservation.</p>
+                <button class="btn-try" @onclick="NavigateToOteReserved">Try Again</button>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+    <ImageViewer @ref="imageViewer" Image="@SetPlanImage" />
+    <ModalLogin @ref="loginModal" ReturnUrl="@signInReturnUrl" />
+}
+@code {
+    [Parameter]
+    public string Handler { get; set; } = string.Empty;
+
+    [Parameter, SupplyParameterFromQuery]
+    public string Date { get; set; }
+
+    [Parameter, SupplyParameterFromQuery]
+    public string Token { get; set; }
+
+    private ModalLogin? loginModal;
+
+    private Modal modalRef {get; set;}
+
+    private Modal modaltime {get; set;}
+
+    private CustomerProfile? currentLogin { get; set; }
+
+    private DateTime SelectedDate { get; set; }
+
+    private CouponDetails Coupon { get; set; } = new();
+
+    private bool IsInclusivePricing { get; set; }
+
+    private IDictionary<int, TicketInfo> selectedTickets = new Dictionary<int, TicketInfo>();
+
+    private string signInReturnUrl = string.Empty;
+
+    private string SelectedPaymentCode { get; set; }
+
+    private int ticketCount = 1;
+
+    private OteActivity? activity;
+
+    private ImageViewer imageViewer;
+
+    private string token = string.Empty;
+
+    private System.Timers.Timer? timer;
+
+    private bool isLoading = false;
+
+    private bool submitting = false;
+
+    private bool _isProcessing;
+
+    private bool _isInActive;
+
+    private bool _isInReserved;
+
+    private bool _isTimeOut = false;
+
+    private Timer _countdownTimer;
+
+    public TimeSpan RemainingTime { get; set; }
+
+    private QueueInfo queueInfo = new QueueInfo();
+
+    private double progressPercentage;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            token = user.FindFirstValue("Token");
+            if (string.IsNullOrEmpty(token))
+            {
+                NavigationManager.NavigateTo("/explore");
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            await LoadOteDetails();
+            await LoadProfile();
+            SelectedDate = DateTime.Parse(Date);
+            var url = $"/reservation/{Handler}/?date={Date}&token={Token}";
+            // Queue the user
+            if (currentLogin is not null)
+            {         
+                string activeQueueName = $"{Handler}-active-queue";
+                string reservedQueueName = $"{Handler}-reserved-queue";
+
+                //Check user if is in the reserved-queue
+                if (await QueueServices.IsUserInQueueAsync(reservedQueueName, currentLogin.Handler))
+                {
+                    _isProcessing = false;
+                    _isInReserved = true;
+                    await MonitorQueue(currentLogin.Handler, RemainingTime);
+                    StateHasChanged();
+                }
+                //Check user if is in the active-queue
+                var activeQueueUserInfo = await QueueServices.GetUserInActiveQueueAsync(activeQueueName, currentLogin.Handler);
+                if (activeQueueUserInfo.HasValue)
+                {
+                    _isInActive = true;
+                    var (insertionTime, remainingTime) = activeQueueUserInfo.Value;
+                    if (remainingTime >= TimeSpan.Zero)
+                    {
+                        // Return the remaining processing time to the user
+                        _isProcessing = true;
+                        RemainingTime = remainingTime;
+                        await MonitorQueue(currentLogin.Handler, RemainingTime);
+                        StateHasChanged();
+                    }
+                    else
+                    {
+                        // Processing time has finished, display timeout page
+                        OnTimeout();
+                    }
+                }
+                if (!_isInActive && !_isInReserved)
+                {
+                    //Enqueue user
+                    TimeSpan processTime = TimeSpan.FromMinutes(2);
+                    await QueueServices.EnqueueUserAsync(Handler, currentLogin.Handler);
+                    await MonitorQueue(currentLogin.Handler, processTime);
+                }
+
+            }
+            else
+            {
+                signInReturnUrl = url;
+                await loginModal.Show();
+            }
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+    private async Task MonitorQueue(string userId, TimeSpan time)
+    {
+        try
+        {
+            while (true)
+            {
+                // Fetch the user's reserved queue info
+                var reservedQueueInfo = await QueueServices.GetReservedQueueUserInfoAsync(
+                    $"{Handler}-reserved-queue",
+                    $"{Handler}-active-queue",
+                    userId
+                );
+                //if (reservedQueueInfo.estimatedWaitingTime <= TimeSpan.Zero && reservedQueueInfo.numberAhead != -1)
+                //{
+                //    await modalRef.Show();
+                //}
+                // Check if the user is in the active queue
+                if (reservedQueueInfo.numberAhead == -1) // Assume -1 indicates the user is in the active queue
+                {
+                    _isProcessing = true;
+                    StartCountdownTimer(time);
+                    StateHasChanged();
+                    break; // Exit the loop once the user is in the active queue
+                }
+                else
+                {
+                    _isProcessing                  = false;
+                    queueInfo.QueueId              = reservedQueueInfo.QueueId;
+                    queueInfo.UsersAhead           = reservedQueueInfo.numberAhead + 2;
+                    queueInfo.LastUpdated          = reservedQueueInfo.lastStatusUpdate;
+                    queueInfo.EstimatedWaitingTime = reservedQueueInfo.estimatedWaitingTime;
+                    queueInfo.ExpectedTimeArrival  = reservedQueueInfo.expectedTimeOfArrival;
+                    StateHasChanged();
+                }
+
+                // Wait for 10 seconds before checking again
+                await Task.Delay(5000);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log the exception for debugging (if needed) and show an error notification
+            Console.WriteLine($"Error in MonitorQueue: {ex.Message}");
+            await NotificationService.Error("An error occurred while monitoring the queue. Please try again later.", "Error");
+        }
+    }
+
+    private int CalculateProgress()
+    {
+        if (queueInfo.UsersAhead <= 0 || queueInfo.EstimatedWaitingTime.TotalSeconds == 0)
+        {
+            return 100;
+        }
+
+        // Calculate percentage based on users ahead and the estimated waiting time.
+        double totalUsers = queueInfo.UsersAhead + 2; // Adding 2 to include users in the active queue
+        double progress = (totalUsers - queueInfo.UsersAhead) / totalUsers * 100;
+        return (int)progress;
+    }
+    private double CalculateProgress(TimeSpan totalWaitingTime, TimeSpan remainingTime)
+    {
+        if (totalWaitingTime.TotalSeconds == 0)
+            return 100; // Full progress if there's no waiting time
+
+        var progress = (totalWaitingTime - remainingTime).TotalSeconds / totalWaitingTime.TotalSeconds * 100;
+        return Math.Clamp(progress, 0, 100);
+    }
+    private async void StartCountdownTimer(TimeSpan span)
+    {
+        // Set the countdown timer to 10 minutes
+        RemainingTime = span;
+        _countdownTimer = new Timer(TimerCallback, null, 0, 1000); // Update every second
+    }
+
+    private void TimerCallback(object state)
+    {
+        if (RemainingTime.TotalSeconds > 0)
+        {
+            RemainingTime = RemainingTime.Subtract(TimeSpan.FromSeconds(1));
+            InvokeAsync(StateHasChanged); // Notify Blazor to update the UI
+        }
+        else
+        {
+            // Time's up
+            _countdownTimer.Dispose();
+            OnTimeout();
+        }
+    }
+
+    public async void OnTimeout()
+    {
+        // Handle user timeout logic
+        _isProcessing = false;
+        await modaltime.Show();
+    }
+    private async Task LoadProfile()
+    {
+        if (!string.IsNullOrEmpty(Token))
+        {
+            var profileResult = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
+            if (profileResult.Succeeded || profileResult.Result is not null && profileResult.Result.IsSuccess)
+            {
+                currentLogin = mapper.Map<Models.Entities.CustomerProfile>(profileResult.Result.Result);
+            }
+        }
+    }
+    private Task ShowModal()
+    {
+        return modalRef.Show();
+    }
+
+    private Task HideModal()
+    {
+        return modalRef.Hide();
+    }
+    private void NavigateToOteReserved()
+    {
+        NavigationManager.NavigateTo($"/explore/ote/{Handler}/1");
+    }
+    private async Task LoadOteDetails()
+    {
+        try
+        {
+            var result = await activityHandler.FindOteByHandler(new Framework.ApiCommand.ApiCore.Activity.Request.OteActivityArgs
+                {
+                    IncludeAddress = true,
+                    IncludeDescription = true,
+                    IncludePricing = true,
+                    IncludeSchedule = true,
+                    IncludeImages = true
+                }, Handler);
+            if (!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+            {
+                throw new ApplicationException(result.Message);
+            }
+            var act = result.Result.Result;
+            if (!act.IsPublished)
+            {
+                NavigationManager.NavigateTo("not-found");
+                return;
+            }
+            activity = mapper.Map<OteActivity>(act);
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+    private string SetPlanImage
+    {
+        get
+        {
+            string imageSrc = string.Empty;
+            if (activity is not null)
+            {
+                var image = activity.Images.FirstOrDefault(i => i.Order == 100);
+                if (image is not null)
+                {
+                    imageSrc = image.ImageSrc;
+                }
+            }
+
+            return imageSrc;
+        }
+    }
+    private async Task LoadProvideDetails()
+    {
+        try
+        {
+            var inclusiveCheckRes = await activityHandler.OwnerPricingInclusive(activity.ProviderId);
+            if (inclusiveCheckRes.Succeeded && inclusiveCheckRes.Result is not null && inclusiveCheckRes.Result.IsSuccess)
+            {
+                IsInclusivePricing = inclusiveCheckRes.Result.Result.IsInclusivePricing;
+            }
+        }
+        catch (System.Exception)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+    private decimal GetAppliedCoupon
+    {
+        get
+        {
+            decimal result = 0;
+
+            if (Coupon.IsCouponApplied && Coupon.IsValid)
+            {
+                // fixed amount
+                if (Coupon.DiscountType == 1)
+                {
+                    result = Coupon.Amount;
+                }
+                // percentage
+                else if (Coupon.DiscountType == 0)
+                {
+                    decimal percentage = Coupon.Amount / 100;
+                    decimal subTotal = 0;
+                    if (IsInclusivePricing)
+                    {
+                        subTotal = GetSubTotal;
+                    }
+                    else
+                    {
+                        subTotal = GetSubTotal;
+                    }
+                    result = subTotal * percentage;
+                }
+            }
+
+            return result;
+        }
+    }
+    private decimal GetSubTotal
+    {
+        get
+        {
+            return selectedTickets.Sum(t => t.Value.Price * t.Value.Count);
+        }
+    }
+    private void ClearCouponDetails()
+    {
+        Coupon.IsCouponApplied = false;
+        Coupon.IsValid = false;
+        Coupon.Amount = 0;
+        Coupon.DiscountType = -1;
+        Coupon.MaximumSpend = 0;
+        Coupon.CouponCode = string.Empty;
+    }
+
+    private Task RemoveAppliedCoupon()
+    {
+        ClearCouponDetails();
+        return Task.CompletedTask;
+    }
+    private async Task ValidateCouponCode()
+    {
+        Coupon.ErrorDescription = string.Empty;
+        Coupon.ErrorTitle = string.Empty;
+
+        if (ticketCount == 0)
+        {
+            Coupon.IsCouponApplied = true;
+            Coupon.IsValid = false;
+            Coupon.ErrorTitle = "Wrong Application of Code";
+            Coupon.ErrorDescription = "Please make sure you have selected an ticket first";
+
+            RemoveCouponError();
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(Coupon.CouponCode) && ticketCount > 0)
+        {
+            Coupon.IsValidating = true;
+
+            decimal subTotal = GetSubTotal;
+            decimal serviceFee = GetServiceFee;
+            decimal total = subTotal + serviceFee;
+
+            var validateRes = await activityHandler.ValidateCouponCode(new Framework.ApiCommand.ApiCore.Activity.Request.ValidateCouponCodeArgs
+                {
+                    ActivityId = activity.Id,
+                    Amount = total,
+                    CouponCode = Coupon.CouponCode
+                }, Token);
+
+            if (!validateRes.Succeeded || validateRes.Result == null)
+            {
+                Coupon.IsCouponApplied = true;
+                Coupon.IsValid = false;
+                Coupon.ErrorTitle = "External Error Occured";
+                Coupon.ErrorDescription = "An error occured when trying to validate coupon code";
+
+                RemoveCouponError();
+            }
+            else if (validateRes.Succeeded && validateRes.Result != null && !validateRes.Result.IsSuccess)
+            {
+                Coupon.IsCouponApplied = true;
+                Coupon.IsValid = false;
+                Coupon.ErrorTitle = validateRes.Result.ErrorInfo.Message;
+                Coupon.ErrorDescription = validateRes.Result.ErrorInfo.Description;
+
+                RemoveCouponError();
+            }
+            else
+            {
+                var result = validateRes.Result.Result;
+
+                Coupon.IsCouponApplied = true;
+                Coupon.IsValid = true;
+                Coupon.Amount = result.Amount;
+                Coupon.DiscountType = result.DiscountType;
+                Coupon.MaximumSpend = result.MaximumSpend;
+            }
+
+            Coupon.IsValidating = false;
+        }
+    }
+    private decimal GetServiceFee
+    {
+        get
+        {
+            if (selectedTickets.Sum(t => t.Value.Price) == 0) return 0;
+
+            if (selectedTickets.Count > 0 && !IsInclusivePricing) return 15;
+
+            return 0;
+        }
+    }
+    private decimal GetTotalCredit
+    {
+        get
+        {
+            decimal result = 0;
+
+            return result;
+        }
+    }
+    private decimal GetTotalPrice
+    {
+        get
+        {
+            decimal result = 0;
+
+            if (ticketCount > 0)
+            {
+                decimal discount = 0;
+                result = ((GetSubTotal + GetConvinienceFee + GetServiceFee) - GetAppliedCoupon) - GetTotalCredit;
+                result = result < 0 ? 0 : result;
+            }
+
+            return result;
+        }
+    }
+    private decimal GetConvinienceFee
+    {
+        get
+        {
+            decimal result = 0;
+
+            if (string.IsNullOrEmpty(SelectedPaymentCode)) return 0;
+
+            if (selectedTickets.Count > 0 && !IsInclusivePricing)
+            {
+                result = GetSubTotal * ((decimal)ServiceFeePercent / 100); //.05m;
+            }
+
+            return result;
+        }
+    }
+    private int ServiceFeePercent
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(SelectedPaymentCode)) return 0;
+            if (SelectedPaymentCode == "CARD") return 5;
+            else return 3;
+        }
+    }
+    private async Task RemoveCouponError()
+    {
+        await Task.Delay(3000);
+        ClearCouponDetails();
+        StateHasChanged();
+    }
+    private async Task ProceedToPayment()
+    {
+        if (selectedTickets.Count == 0)
+        {
+            await NotificationService.Error("Please select ticket to purchase.", "Ticket");
+            return;
+        }
+        @*Redirect to Payment Page*@
+    }
+    private bool DisableProceed
+    {
+        get
+        {
+            if (activity is null) return true;
+
+            if (selectedTickets.Count > 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+    }
+    public TimeSpan SetRemainingTime(TimeSpan time)
+    {
+        RemainingTime = time;
+        return RemainingTime;
+    }
+    private class CouponDetails
+    {
+        public string CouponCode { get; set; }
+        public bool IsValid { get; set; }
+        public bool IsCouponApplied { get; set; }
+        public int DiscountType { get; set; }
+        public decimal Amount { get; set; }
+        public decimal MaximumSpend { get; set; }
+        public bool IsValidating { get; set; }
+
+        public string ErrorTitle { get; set; }
+        public string ErrorDescription { get; set; }
+    }
+    private class TicketInfo
+    {
+        public int Id { get; set; }
+        public int Count { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public bool RequiredApproval { get; set; }
+    }
+    private class QueueInfo
+    {
+        public string QueueId { get; set; }
+        public TimeSpan EstimatedWaitingTime { get; set; }
+        public int UsersAhead { get; set; }
+        public DateTime LastUpdated { get; set; }
+        public DateTime ExpectedTimeArrival { get; set; }
+    }
+    public class Queues
+    {
+        public string Name { get; set; }
+    }
+}
