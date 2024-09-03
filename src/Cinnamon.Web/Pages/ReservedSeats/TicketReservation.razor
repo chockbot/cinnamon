@@ -215,9 +215,9 @@
                         <img class="img-queue-logo" src="/images/ote/cinnamon-logo.svg" alt="img-queue-logo" />
                         <img class="img-queue" src="images/ote/queue.svg" alt="img-queue" />
                     </div>
-                    <Progress Style="margin-top:32px">
-                        <ProgressBar Color="Color.Success" Value="CalculateProgress()" Max="100" />
-                    </Progress>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width:@(CalculateProgress())%" aria-valuenow="@(CalculateProgress())%" aria-valuemin="0" aria-valuemax="100">@(CalculateProgress())%</div>
+                     </div>
                     <div class="note-text">
                         <p class="user-overloaded">Unfortunately, our system is currently overloaded with requests, preventing us from adding you to the queue at this time.</p>
                         <br />
@@ -433,7 +433,10 @@
                     $"{Handler}-active-queue",
                     userId
                 );
-
+                //if (reservedQueueInfo.estimatedWaitingTime <= TimeSpan.Zero && reservedQueueInfo.numberAhead != -1)
+                //{
+                //    await modalRef.Show();
+                //}
                 // Check if the user is in the active queue
                 if (reservedQueueInfo.numberAhead == -1) // Assume -1 indicates the user is in the active queue
                 {
@@ -485,7 +488,7 @@
         var progress = (totalWaitingTime - remainingTime).TotalSeconds / totalWaitingTime.TotalSeconds * 100;
         return Math.Clamp(progress, 0, 100);
     }
-    private void StartCountdownTimer(TimeSpan span)
+    private async void StartCountdownTimer(TimeSpan span)
     {
         // Set the countdown timer to 10 minutes
         RemainingTime = span;
