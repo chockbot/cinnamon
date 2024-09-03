@@ -1737,7 +1737,8 @@ public class ActivityRepository : IActivityRepository
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
         int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates,int eventDurationCount, string eventDurationTimeUnit, 
         int eventTicketLimit, bool IsOpen, bool isCapacity, int capacityCount, IList<OteDateOverrideDTO>? dateOverrides, 
-        IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId, int emailReminderDays, int emailFeedbackDays)
+        IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId, int emailReminderDays, int emailFeedbackDays,
+        bool reserveSeat, int seatPlanTemplateId, string seatPlanPayload)
     {
         try
         {
@@ -1792,7 +1793,9 @@ public class ActivityRepository : IActivityRepository
                 IsCapacity            = isCapacity,
                 CapacityCount         = capacityCount,
                 EmailFeedbackDays     = emailFeedbackDays,
-                EmailReminderDays     = emailReminderDays
+                EmailReminderDays     = emailReminderDays,
+                ReserveSeat           = reserveSeat,
+                SeatPlanTemplateId    = seatPlanTemplateId,
             };
 
             var pricingsGroup = pricingDTOs.Select(p => {
@@ -1823,6 +1826,7 @@ public class ActivityRepository : IActivityRepository
                     Date = d.Date.SetKindUtc(),
                     DateEnd = d.DateEnd.SetKindUtc(),
                     DateStart = d.DateStart.SetKindUtc(),
+                    SeatPlanPayload = seatPlanPayload,
                     OteSchedulePricing = pricingsGroup.Select(p => {
                         return new OteSchedulePricing {
                             Description             = p.Description,
@@ -1853,7 +1857,7 @@ public class ActivityRepository : IActivityRepository
                             Date = item.Date.SetKindUtc(),
                             DateStart = item.DateStart.SetKindUtc(),
                             DateEnd = item.DateEnd.SetKindUtc(),
-                            OteDate = oteDate
+                            OteDate = oteDate,
                         });
                     }
                 }

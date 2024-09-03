@@ -84,6 +84,10 @@ public class OteCreateArgs : IInteractor
         public string? CustomPendingBody {get; set;}
         public string? CustomAcceptedBody {get; set;}
         public string? CustomDeclinedBody {get; set;}
+
+        // for reserve seat
+        public bool ReserveSeat {get; set;}
+        public int SeatPlanTemplateId {get; set;}
     }
 
     public class OtePricing 

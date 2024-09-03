@@ -450,7 +450,8 @@ public class ActivityController : ControllerBase
                 args.Activity.RecurrenceDateEnd, args.Activity.RecurrenceDateStart, args.Activity.RepeatEvery,
                 args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit, 
                 args.Activity.EventTicketLimit , args.Activity.IsOpen, args.Activity.IsCapacity, args.Activity.CapacityCount ,
-                dateOverrides, onlineEvent, args.Activity.CategoryId, args.Activity.EmailReminderDays, args.Activity.EmailFeedbackDays);
+                dateOverrides, onlineEvent, args.Activity.CategoryId, args.Activity.EmailReminderDays, args.Activity.EmailFeedbackDays,
+                args.Activity.ReserveSeat, args.Activity.SeatPlanTemplateId, args.Activity.SeatPlanPayload ?? string.Empty);
             
             if(!result.Succeeded || result.Result is null)
             {
