@@ -111,6 +111,14 @@ public class CreateOteActivityArgs
 
         [Required]
         public int EmailReminderDays {get; set;}
+
+        [Required]
+        public bool ReserveSeat {get; set;}
+
+        [Required]
+        public int SeatPlanTemplateId {get; set;}
+
+        public string? SeatPlanPayload {get; set;}
     }
 
     public class OtePricing 
