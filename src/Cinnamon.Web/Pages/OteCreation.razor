@@ -812,7 +812,9 @@
                         ReminderSubject          = publishData.EmailReminder.Subject,
                         CustomAcceptedBody       = pricing.CustomAcceptedBody,
                         CustomDeclinedBody       = pricing.CustomDeclinedBody,
-                        CustomPendingBody        = pricing.CustomPendingBody
+                        CustomPendingBody        = pricing.CustomPendingBody,
+                        ReserveSeat             = selectedTemplateId > 0,
+                        SeatPlanTemplateId      = selectedTemplateId
                     },
                     Pricings = pricing.ItemPrices.Select(p =>
                     {

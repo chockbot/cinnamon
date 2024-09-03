@@ -2671,7 +2671,9 @@ public class ActivityController : ControllerBase
                     ReminderSubject       = activity.ReminderSubject,
                     CustomAcceptedBody    = activity.CustomAcceptedBody,
                     CustomDeclinedBody    = activity.CustomDeclinedBody,
-                    CustomPendingBody     = activity.CustomPendingBody
+                    CustomPendingBody     = activity.CustomPendingBody,
+                    ReserveSeat          = activity.ReserveSeat,
+                    SeatPlanTemplateId   = activity.SeatPlanTemplateId,
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {
