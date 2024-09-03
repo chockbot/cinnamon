@@ -169,8 +169,8 @@ public class CustomerPayedNotificationHelper
                         style='
                             color: #0f173b;
                             text-align: center;
-                            font-size: 24px;
-                            font-weight: 900;
+                            font-size: 20px;
+                            font-weight: 700;
                         '
                         >
                         Thank you for your purchase!
