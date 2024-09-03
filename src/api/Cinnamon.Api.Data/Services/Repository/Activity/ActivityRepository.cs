@@ -1641,11 +1641,11 @@ public class ActivityRepository : IActivityRepository
         return AppResult<bool>.CreateSucceeded(isSuccess, "Successfully removed activity");
     }
 
-    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetRecommendedActivities(int primaryActivityId, int count)
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetRecommendedActivities(int primaryActivityId, int count, bool? includeOteSchedule = false)
     {
         try
         {
-            var result = await dataStore.Activity.GetRecommendedActivities(primaryActivityId, count);
+            var result = await dataStore.Activity.GetRecommendedActivities(primaryActivityId, count, includeOteSchedule);
             if(!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
@@ -1668,6 +1668,7 @@ public class ActivityRepository : IActivityRepository
                     Subdivision          = s.Address.Subdivision,
                     Region               = s.Address.Region,
                     RegionName           = s.Address.RegionName,
+                    ExperienceCreationType = (Enums.ExperienceCreationType)s.ExperienceCreationTypeId,
                     Images = s.Images.Select(i => new Framework.ApiCommand.ApiData.DTO.ActivityImage.ActivityImageDTO
                     {
                         ActivityId    = i.ActivityId,
@@ -1704,6 +1705,10 @@ public class ActivityRepository : IActivityRepository
                         HasExpiration    = i.HasExpiration,
                         StartDate        = i.StartDate,
                     }).ToList(),
+                    OteSchedule = s.OteSchedule is not null ?  new OteActivityDTO {
+                    ScheduleFrom = s.OteSchedule.From,
+                    ScheduleTo = s.OteSchedule.To
+                    } : null,
                 };
             }), "Successfully get recommended activities");
         }

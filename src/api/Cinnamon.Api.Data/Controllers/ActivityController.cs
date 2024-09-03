@@ -346,11 +346,11 @@ public class ActivityController : ControllerBase
     [Route("RecommendedActivities/{primaryId}/{count}")]
     [HttpGet]
     [ProducesResponseType(typeof(RecommendedActivitiesResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> RecommendedActivities(int primaryId, int count)
+    public async Task<IActionResult> RecommendedActivities(int primaryId, int count, [FromQuery] GetRecommendedActivitiesArgs args)
     {
         try
         {
-            var result = await activityRepository.GetRecommendedActivities(primaryId, count);
+            var result = await activityRepository.GetRecommendedActivities(primaryId, count, args.IncludeOteSchedule);
             if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new RecommendedActivitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });

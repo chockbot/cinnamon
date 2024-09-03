@@ -14,7 +14,7 @@ public interface IActivity : IGenericEntity<Activity>
     Task<AppResult<IEnumerable<Activity>>> GetPopularActivities(Expression<Func<Activity, bool>> expression,
         int? take = 100, int? skip = 0, IEnumerable<Expression<Func<Activity, object>>>? includes = null);
 
-    Task<AppResult<IEnumerable<Activity>>> GetRecommendedActivities(int primaryActivityId, int count);
+    Task<AppResult<IEnumerable<Activity>>> GetRecommendedActivities(int primaryActivityId, int count, bool? includeOteSchedule = false);
     Task<AppResult<IEnumerable<ActivityFeedDTO>>> PopularActivities(int? take, int? skip, int? categoryId);
     Task<AppResult<Activity>> CreateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, 
         OteSchedule oteSchedule, IList<OteSchedulePricingGroup> schedulePricingGroups, 

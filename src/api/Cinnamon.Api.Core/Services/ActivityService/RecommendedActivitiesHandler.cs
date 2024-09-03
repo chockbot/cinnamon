@@ -56,7 +56,8 @@ public class RecommendedActivitiesHandler : IRecommendedActivitiesHandler
                 return AppResult<RecommendedActivityResult>.CreateFailed(new ApplicationException("An error occured in RecommendedActivitiesHandler"), "An error occured in RecommendedActivitiesHandler");
             }
 
-            var recommendedRes = await activityData.RecommendedActivities(randomActivity.Id, args.Count);
+            var recommendedRes = await activityData.RecommendedActivities(randomActivity.Id, args.Count, 
+            new Framework.ApiCommand.ApiData.Activity.Request.GetRecommendedActivitiesArgs{ IncludeOteSchedule = true });
             if(!recommendedRes.Succeeded || recommendedRes.Result == null || !recommendedRes.Result.IsSuccess)
             {
                 return AppResult<RecommendedActivityResult>.CreateFailed(new ApplicationException(recommendedRes.Result?.ErrorInfo?.Message), recommendedRes.Message);
@@ -80,6 +81,7 @@ public class RecommendedActivitiesHandler : IRecommendedActivitiesHandler
                         RegionName       = a.RegionName,
                         Barangay         = a.Barangay,
                         ExperienceTypeId = a.ExperienceTypeId,
+                        ExperienceCreationType = a.ExperienceCreationType,
                         Images           = a.Images.Select(i =>
                         {
                             return new RecommendedActivityResult.Activity.ActivityImage
@@ -112,6 +114,10 @@ public class RecommendedActivitiesHandler : IRecommendedActivitiesHandler
                                 StartDate = s.StartDate,
                             };
                         }) : Enumerable.Empty<RecommendedActivityResult.Activity.ActivitySchedule>(),
+                        Schedule = a.OteSchedule is not null ? new RecommendedActivityResult.Activity.OteSchedule {
+                        From = a.OteSchedule.ScheduleFrom,
+                        To = a.OteSchedule.ScheduleTo
+                        } : null,
                     };
                 })
             }, "Successfully get recommended activities");
