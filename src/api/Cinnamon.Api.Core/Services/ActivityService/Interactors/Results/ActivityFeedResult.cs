@@ -18,6 +18,7 @@ public class ActivityFeedResult
         public string StartTime { get; set; }
         public Location Address {get; set;}
         public Summary SummaryDetails {get; set;}
+        public bool IsReservedSeating { get; set; }
     }
 
     public class Location 

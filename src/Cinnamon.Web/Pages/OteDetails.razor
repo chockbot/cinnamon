@@ -900,8 +900,7 @@
                 }, Handler);
             if (!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
             {
-                NavigationManager.NavigateTo("page-not-found");
-                return;
+
             }
             var act = result.Result.Result;
 
@@ -910,7 +909,11 @@
                 NavigationManager.NavigateTo("page-not-found");
                 return;
             }
-
+            if(act.OteSchedule.ReserveSeat)
+            {
+                NavigationManager.NavigateTo("page-not-found");
+                return;
+            }
             activity = mapper.Map<OteActivity>(act);
             activity.Pricings = activity.Pricings.OrderBy(t => t.Id).ToList();
             activity.OteDates = activity.OteDates.OrderBy(d => d.Date);
@@ -955,7 +958,6 @@
             await NotificationService.Error("An error occured. Please try again later.", "Error");
         }
     }
-
     private string SeoUrl
     {
         get

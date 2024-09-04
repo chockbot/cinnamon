@@ -44,6 +44,7 @@ public class OteActivity
     public IEnumerable<OtePricing> Pricings {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}
     public IEnumerable<OteDate> OteDates {get; set;}
+    public OteSchedule Schedule { get; set; }
 
     // temp
     public int OteDateId {get; set;}

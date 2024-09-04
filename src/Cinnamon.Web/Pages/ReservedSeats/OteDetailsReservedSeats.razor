@@ -1,4 +1,4 @@
-﻿@page "/explore/ote/{Handler}/1"
+﻿@page "/explore/ote/reserved/{Handler}"
 @using System.Security.Claims;
 @using Cinnamon.Web.Components.Pages;
 @using AutoMapper;
@@ -464,6 +464,11 @@
             var act = result.Result.Result;
 
             if (!act.IsPublished || act.ForceDisable)
+            {
+                NavigationManager.NavigateTo("page-not-found");
+                return;
+            }
+            if (!act.OteSchedule.ReserveSeat)
             {
                 NavigationManager.NavigateTo("page-not-found");
                 return;

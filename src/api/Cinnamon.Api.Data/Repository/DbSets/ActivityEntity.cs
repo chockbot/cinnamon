@@ -851,7 +851,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 			string query = "select ac.\"Id\", ac.\"Title\", ac.\"Handler\", ac.\"ExperienceTypeId\", ac.\"ExperienceCreationTypeId\", " +
 								"ad.\"CityName\", ad.\"RegionName\", ad.\"PinnedLocation\", su.\"ImageBannerSrc\", " +
 								"su.\"Ongoing\", su.\"Completed\", su.\"TotalReviews\", su.\"ReviewAccumulated\",  " +
-								"su.\"TotalParticipants\", ac.\"Price\", ac.\"IsNew\",os.\"From\", os.\"To\",TO_CHAR(os.\"To\",'HH12:MI AM') AS \"StartTime\" " +
+								"su.\"TotalParticipants\", ac.\"Price\", ac.\"IsNew\",os.\"From\", os.\"To\",TO_CHAR(os.\"To\",'HH12:MI AM') AS \"StartTime\", os.\"ReserveSeat\" " +
 							"from public.\"Activities\" ac " +
 							"left join public.\"ActivityAddress\" ad " +
 								"on ac.\"Id\" = ad.\"ActivityId\" " +
@@ -888,30 +888,31 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 
 						listResult = dt.AsEnumerable().Select(item => new ActivityFeedDTO
 						{
-							ActivityId = Convert.ToInt32(item["Id"]),
+							ActivityId               = Convert.ToInt32(item["Id"]),
 							ExperienceCreationTypeId = Convert.ToInt32(item["ExperienceCreationTypeId"]),
-							ExperienceTypeId = Convert.ToInt32(item["ExperienceTypeId"]),
-							Handler = item["Handler"].ToString() ?? string.Empty,
-							Price = item["Price"].ToString() ?? string.Empty,
-							Title = item["Title"].ToString() ?? string.Empty,
-							IsNew = Convert.ToBoolean(item["IsNew"]),
-							To = item["To"] != DBNull.Value ? Convert.ToDateTime(item["To"]) : DateTime.MinValue,
-							From = item["From"] != DBNull.Value ? Convert.ToDateTime(item["From"]) : DateTime.MinValue,
-							StartTime = item["StartTime"].ToString() ?? string.Empty,
+							ExperienceTypeId         = Convert.ToInt32(item["ExperienceTypeId"]),
+							Handler                  = item["Handler"].ToString() ?? string.Empty,
+							Price                    = item["Price"].ToString() ?? string.Empty,
+							Title                    = item["Title"].ToString() ?? string.Empty,
+							IsNew                    = Convert.ToBoolean(item["IsNew"]),
+							To                       = item["To"] != DBNull.Value ? Convert.ToDateTime(item["To"]) : DateTime.MinValue,
+							From                     = item["From"] != DBNull.Value ? Convert.ToDateTime(item["From"]) : DateTime.MinValue,
+							StartTime                = item["StartTime"].ToString() ?? string.Empty,
+							IsReservedSeating	     = Convert.ToBoolean(item["ReserveSeat"]),
 							Address = new ActivityFeedDTO.Location
 							{
-								City = item["CityName"].ToString() ?? string.Empty,
+								City           = item["CityName"].ToString() ?? string.Empty,
 								PinnedLocation = item["PinnedLocation"].ToString() ?? string.Empty,
-								Region = item["RegionName"].ToString() ?? string.Empty,
+								Region         = item["RegionName"].ToString() ?? string.Empty,
 							},
 							SummaryDetails = new ActivityFeedDTO.Summary
 							{
-								Completed = Convert.ToInt32(item["Completed"]),
-								ImageSrc = item["ImageBannerSrc"].ToString() ?? string.Empty,
-								Ongoing = Convert.ToInt32(item["Ongoing"]),
+								Completed         = Convert.ToInt32(item["Completed"]),
+								ImageSrc          = item["ImageBannerSrc"].ToString() ?? string.Empty,
+								Ongoing           = Convert.ToInt32(item["Ongoing"]),
 								ReviewAccumulated = Convert.ToDecimal(item["ReviewAccumulated"]),
 								TotalParticipants = Convert.ToInt32(item["TotalParticipants"]),
-								TotalReviews = Convert.ToInt32(item["TotalReviews"])
+								TotalReviews      = Convert.ToInt32(item["TotalReviews"])
 							}
 						}).ToList();
 					}
@@ -978,7 +979,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 							   "where sm.\"ActivityId\" = og.\"ActivityId\" and og.\"Ongoing\" != sm.\"Ongoing\"; " +
 
 							   "with withCompletedStudents as ( " +
-								    "select grpstd.\"ActivityId\", Sum(\"Completed\") \"Completed\" " +
+									"select grpstd.\"ActivityId\", Sum(\"Completed\") \"Completed\" " +
 									"from " +
 										"( " +
 											"select ac.\"Id\" \"ActivityId\", Count(st.\"Id\") \"Completed\" " +
@@ -1003,7 +1004,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 							   "where sm.\"ActivityId\" = cm.\"ActivityId\" and sm.\"Completed\" != cm.\"Completed\"; " +
 
 							   "with withTotalStudents as ( " +
-								    "select grpstd.\"ActivityId\", Sum(grpstd.\"TotalParticipants\") \"TotalParticipants\" " +
+									"select grpstd.\"ActivityId\", Sum(grpstd.\"TotalParticipants\") \"TotalParticipants\" " +
 									"from ( " +
 										"select ac.\"Id\" \"ActivityId\", Count(st.\"Id\") \"TotalParticipants\" " +
 										"from public.\"Activities\" ac " +

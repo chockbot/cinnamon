@@ -63,6 +63,7 @@ public class OteFindByHandlerResult
         public DateTime Date {get; set;}
         public DateTime DateStart {get; set;}
         public DateTime DateEnd {get; set;}
+        public string? SeatPlanPayload { get; set; }
     }
 
     public class OteSchedule
@@ -84,6 +85,8 @@ public class OteFindByHandlerResult
         public int CapacityCount { get; set; }
         public int EmailFeedbackDays {get; set;}
         public int EmailReminderDays {get; set;}
+        public bool ReserveSeat { get; set; }
+        public int SeatPlanTemplateId { get; set; }
         public IList<OtePricingGroupDTO> OteSchedulePricingGroups {get; set;}
     }
 
