@@ -16,4 +16,5 @@ public class OtePricing
     public int OteSchedulePricingsId { get; set; }
     public bool RequiredApproval { get; set; }
     public bool IsUnlimited { get; set; }
+    public string TicketColor { get; set; }
 }

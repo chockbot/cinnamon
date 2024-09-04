@@ -10,6 +10,7 @@
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Web.Components.Common;
+@using Cinnamon.Web.Components.Common.SeatPlan;
 @using Cinnamon.Web.Modules.Services
 @inject IMapper mapper
 @inject IJSRuntime JSRuntime
@@ -19,6 +20,7 @@
 @inject IAccountApiHandler accountApiHandler
 @inject INotificationService NotificationService
 @inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject Cinnamon.Framework.Providers.IJsonSerializationProvider jsonSerializationProvider
 
 @if (activity is not null)
 {
@@ -62,7 +64,21 @@
                     @*Event Ticekts*@
                     <div class="ticket-event-section">
                         <p class="ticket-section">Select seat for your tickets</p>
-                        <div class="ticket-box"></div>
+                        <div class="ticket-box">
+                            <Cinnamon.Web.Components.Common.SeatPlan.Container Payload="@selectedPayload" OnSeatSelected="HandleSeatSelection"/>
+                        </div>
+                        <div class="ticket-options">
+                            <div class="ticket-names">    
+                                @foreach (var item in AvailablePriceList)
+                                {
+                                    <div class="ticket-info">
+                                        <div class="ticket-color" style="width: 20px;height: 20px;background-color:@item.TicketColor;border-radius: 50%;"></div>
+                                        <div class="ticket-name">@item.Name</div>
+                                    </div>
+                                }
+                             </div>
+                             <button class="btn-confirm">Confirm Seats</button>
+                        </div>
                     </div>
                     @*Event Seat Plan*@
                     @if (!string.IsNullOrEmpty(SetPlanImage))
@@ -307,6 +323,10 @@
 
     private IDictionary<int, TicketInfo> selectedTickets = new Dictionary<int, TicketInfo>();
 
+    private List<OtePricing> AvailablePriceList= new List<OtePricing>();
+
+    private List<Category.SelectedSeat> selectedSeats = new List<Category.SelectedSeat>();
+
     private string signInReturnUrl = string.Empty;
 
     private string SelectedPaymentCode { get; set; }
@@ -341,6 +361,8 @@
 
     private double progressPercentage;
 
+    private string? selectedPayload  { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -366,6 +388,17 @@
             await LoadOteDetails();
             await LoadProfile();
             SelectedDate = DateTime.Parse(Date);
+            //Set Seat Plan
+            if (activity != null && activity.OteDates != null)
+            {
+                var selectedOteDate = activity.OteDates.FirstOrDefault(a => a.Date == SelectedDate.Date);
+                if (selectedOteDate != null)
+                {
+                    selectedPayload = selectedOteDate.SeatPlanPayload;
+                }
+                ViewAvailableDates();
+            }
+
             var url = $"/reservation/{Handler}/?date={Date}&token={Token}";
             // Queue the user
             if (currentLogin is not null)
@@ -538,7 +571,7 @@
     }
     private void NavigateToOteReserved()
     {
-        NavigationManager.NavigateTo($"/explore/ote/{Handler}/1");
+        NavigationManager.NavigateTo($"/explore/ote/reserved/{Handler}");
     }
     private async Task LoadOteDetails()
     {
@@ -599,6 +632,39 @@
         catch (System.Exception)
         {
             await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+    private Task ViewAvailableDates()
+    {
+        var tickets = jsonSerializationProvider.Deserialize<Cinnamon.Framework.Models.SeatPlan.Format>(selectedPayload);
+        if (tickets is not null)
+        {
+            AvailablePriceList = new List<OtePricing>(); // Initialize the list
+            foreach (var ticket in tickets.Categories)
+            {
+                var cat = ticket.Value;
+                AvailablePriceList.Add(new OtePricing
+                {
+                    Name             = cat.Name,
+                    Price            = 0,
+                    MaxSlots         = cat.Rows.Sum(r => r.Value.Seats.Count),
+                    RequiredApproval = false,
+                    TicketColor      = cat.Color
+                });
+            }
+        }
+        return Task.CompletedTask;
+    }
+    private void HandleSeatSelection(Category.SelectedSeat selectedSeat)
+    {
+        // Add or remove selected seats from the list
+        if (selectedSeats.Contains(selectedSeat))
+        {
+            selectedSeats.Remove(selectedSeat);
+        }
+        else
+        {
+            selectedSeats.Add(selectedSeat);
         }
     }
     private decimal GetAppliedCoupon

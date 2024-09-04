@@ -436,6 +436,11 @@
             await LoadProfile();
             await LoadFavorite();
             await LoadTopBooked();
+            if (!activity.Schedule.ReserveSeat)
+            {
+                NavigationManager.NavigateTo("page-not-found");
+                return;
+            }
         }
         catch (Exception ex)
         {
@@ -468,11 +473,6 @@
                 NavigationManager.NavigateTo("page-not-found");
                 return;
             }
-            if (!act.OteSchedule.ReserveSeat)
-            {
-                NavigationManager.NavigateTo("page-not-found");
-                return;
-            }
             activity                  = mapper.Map<OteActivity>(act);
             activity.Pricings         = activity.Pricings.OrderBy(t => t.Id).ToList();
             activity.OteDates         = activity.OteDates.OrderBy(d => d.Date);
@@ -480,8 +480,8 @@
             activity.EventTicketLimit = act.OteSchedule.EventTicketLimit;
             IsLimit                   = act.OteSchedule.EventTicketLimit != 0 ? true : false;
             activity.IsOpen           = act.OteSchedule.IsOpen;
-            int soldLimitedTickets = activity.Pricings.Where(a => !a.IsUnlimited).Sum(a => a.TicketSold);
-            activity.IsEventSoldOut = activity.Pricings.Sum(a => a.MaxSlots) <= soldLimitedTickets ? true : false;
+            int soldLimitedTickets    = activity.Pricings.Where(a => !a.IsUnlimited).Sum(a => a.TicketSold);
+            activity.IsEventSoldOut   = activity.Pricings.Sum(a => a.MaxSlots) <= soldLimitedTickets ? true : false;
             selectedDate              = SelectedDates.Where(a => a >= DateTime.Now).FirstOrDefault();
             IsExpiredEvent            = selectedDate == DateTime.MinValue;
             if (IsExpiredEvent)

@@ -11,6 +11,7 @@ namespace Cinnamon.Web.Modules.Services
         private readonly IConfiguration _configuration;
         private readonly QueueServiceClient _queueServiceClient;
         private static readonly TimeSpan ProcessingTime = TimeSpan.FromMinutes(2);
+        private Dictionary<string, Timer> _activeQueueTimers = new Dictionary<string, Timer>();
 
         public QueueServices(IConfiguration configuration)
         {
@@ -24,9 +25,6 @@ namespace Cinnamon.Web.Modules.Services
             string activeQueueName = $"{handler}-active-queue";
             string reservedQueueName = $"{handler}-reserved-queue";
 
-            // Ensure queues exist
-            await EnsureQueueExistsAsync(activeQueueName);
-            await EnsureQueueExistsAsync(reservedQueueName);
             var activeQueueLength = await GetQueueLengthAsync(activeQueueName);
             if (activeQueueLength >= 2)
             {
@@ -43,6 +41,7 @@ namespace Cinnamon.Web.Modules.Services
         }
         public async Task<bool> IsUserInQueueAsync(string queueName, string userId)
         {
+            await EnsureQueueExistsAsync(queueName);
             var queueClient = _queueServiceClient.GetQueueClient(queueName);
             var messages = await queueClient.PeekMessagesAsync(maxMessages: 32); // Adjust maxMessages as needed
 
@@ -98,10 +97,19 @@ namespace Cinnamon.Web.Modules.Services
             {
                 await RemoveUserFromActiveQueueAsync(userId, activeQueueName);
             }, null, TimeSpan.FromMinutes(2), Timeout.InfiniteTimeSpan);
+            // Store the timer reference to prevent it from being garbage collected
+            _activeQueueTimers[userId] = timer;
         }
 
         private async Task RemoveUserFromActiveQueueAsync(string userId, string activeQueueName)
         {
+            // Remove and dispose of the timer after the user is processed
+            if (_activeQueueTimers.ContainsKey(userId))
+            {
+                _activeQueueTimers[userId].Dispose();
+                _activeQueueTimers.Remove(userId);
+            }
+
             // Dequeue from the active queue
             await DequeueUserAsync(activeQueueName);
 
@@ -121,6 +129,7 @@ namespace Cinnamon.Web.Modules.Services
         }
         public async Task<(DateTime insertionTime, TimeSpan remainingTime)?> GetUserInActiveQueueAsync(string queueName, string userId)
         {
+            await EnsureQueueExistsAsync(queueName);
             var queueClient = _queueServiceClient.GetQueueClient(queueName);
             var messages = await queueClient.PeekMessagesAsync(maxMessages: 32); // Adjust maxMessages as needed
 

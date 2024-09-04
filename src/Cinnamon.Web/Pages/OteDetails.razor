@@ -808,6 +808,11 @@
             {
                 await LoadWaitlist();
             }
+            if (activity.Schedule.ReserveSeat)
+            {
+                NavigationManager.NavigateTo("page-not-found");
+                return;
+            }
         }
         catch (Exception ex)
         {
@@ -900,16 +905,12 @@
                 }, Handler);
             if (!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
             {
-
+                NavigationManager.NavigateTo("page-not-found");
+                return;
             }
             var act = result.Result.Result;
 
             if (!act.IsPublished || act.ForceDisable)
-            {
-                NavigationManager.NavigateTo("page-not-found");
-                return;
-            }
-            if(act.OteSchedule.ReserveSeat)
             {
                 NavigationManager.NavigateTo("page-not-found");
                 return;
