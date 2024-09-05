@@ -897,7 +897,8 @@
                     Name             = p.Name,
                     TicketSold       = p.TicketSold,
                     RequiredApproval = p.RequiredApproval,
-                    IsUnlimited      = p.IsUnlimited
+                    IsUnlimited      = p.IsUnlimited,
+                    ReserveSeatUuid  = p.ReserveSeatUuid
                 };
             }).ToList(),
             CustomAcceptedBody = customAcceptedMessageOrig,
@@ -1017,6 +1018,7 @@
             public bool RequiredApproval { get; set; }
             public bool IsUnlimited { get; set; }
             public bool IsFree { get; set; }
+            public string? ReserveSeatUuid {get; set;}
         }
     }
 
@@ -1067,6 +1069,8 @@
         }
 
         public bool RequiredApproval { get; set; }
+
+        public string? ReserveSeatUuid {get; set;}
     }
 
     public class PriceIfNotFreeAttribute : ValidationAttribute
@@ -1683,6 +1687,8 @@
                 IsUnlimited = false,
                 TempId = maxId,
                 Order = order,
+                ReserveSeatUuid = cat.Uuid,
+                IsNew = true
             });
         }
 

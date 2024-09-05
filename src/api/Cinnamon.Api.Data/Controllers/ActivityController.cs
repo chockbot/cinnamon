@@ -411,7 +411,8 @@ public class ActivityController : ControllerBase
                     Price = p.Price,
                     Name = p.Name,
                     IsUnlimited = p.IsUnlimited,
-                    RequiredApproval = p.RequiredApproval
+                    RequiredApproval = p.RequiredApproval,
+                    ReserveSeatUuid = p.ReserveSeatUuid ?? string.Empty
                 };
             }).ToList();
 
