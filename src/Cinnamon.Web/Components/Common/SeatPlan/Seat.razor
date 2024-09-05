@@ -2,7 +2,7 @@
 @using SeatPlanModels = Cinnamon.Framework.Models.SeatPlan;
 
 <div class="seat-plan-seat m-1">
-    <Button Style="@GetSeatStyle" class="p-1" Clicked="OnClick">
+    <Button Style="@GetSeatStyle" class="@GetSeatClass" Clicked="OnClick">
         <span class="color-white-100 font-10">
             @RowNumber - @RowSeat.SeatNumber
         </span>
@@ -23,19 +23,63 @@
     [Parameter]
     public EventCallback<SeatPlanModels.Seat> OnSeatSelected { get; set; }
 
+    private bool selected = false;
+
     private string GetSeatStyle 
     {
         get
         {
+            if(selected)
+            {
+                return $"background-color: {DarkenHexColor(CategoryColor, .3)}; line-height: .6;";
+            }
             return $"background-color: {CategoryColor}; line-height: .6;";
         }
     }
 
     private async Task OnClick()
     {
+        selected = !selected;
         if(OnSeatSelected.HasDelegate)
         {
             await OnSeatSelected.InvokeAsync(RowSeat);
         }
     }
+
+    private string GetSeatClass
+    {
+        get
+        {
+            string defaultClass = "p-1 btn-seat";
+            if(selected)
+            {
+                return $"{defaultClass} seat-selected";
+            }
+            return defaultClass;
+        }
+    }
+
+    public string DarkenHexColor(string hexColor, double percentage)
+    {
+        // Remove the hash at the start if it's there
+        hexColor = hexColor.Replace("#", "");
+
+        // Parse the hex color
+        int r = int.Parse(hexColor.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+        int g = int.Parse(hexColor.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+        int b = int.Parse(hexColor.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+
+        // Calculate the darker color
+        r = (int)(r * (1 - percentage));
+        g = (int)(g * (1 - percentage));
+        b = (int)(b * (1 - percentage));
+
+        // Ensure the values are within the 0-255 range
+        r = Math.Max(0, Math.Min(255, r));
+        g = Math.Max(0, Math.Min(255, g));
+        b = Math.Max(0, Math.Min(255, b));
+
+        // Convert back to hex
+        return $"#{r:X2}{g:X2}{b:X2}";
+    } 
 }
