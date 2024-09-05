@@ -1163,7 +1163,8 @@
         scheduleModel.OnDayDate              = options.Length >= 2 && int.TryParse(options[1], out int dayNum) ? dayNum  : 1;
         scheduleModel.EventDurationCount     = ote.OteSchedule.EventDurationCount;
         scheduleModel.EventDurationTimeUnit  = ote.OteSchedule.EventDurationTimeUnit;
-
+        scheduleModel.TotalBookedCount       = scheduleBookedRes.Result.Result.BookedCount;
+        scheduleModel.ActivityId             = ote.Id;
         if(ote.ExperienceTypeId == 2)
         {
             eventType = EventType.Online;
