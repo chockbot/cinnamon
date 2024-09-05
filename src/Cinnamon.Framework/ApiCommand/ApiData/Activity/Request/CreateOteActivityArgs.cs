@@ -140,6 +140,8 @@ public class CreateOteActivityArgs
         public bool RequiredApproval {get; set;}
         [Required]
         public bool IsUnlimited { get; set; }
+
+        public string? ReserveSeatUuid {get; set;}
     }
 
     public class OteOnlineEvent

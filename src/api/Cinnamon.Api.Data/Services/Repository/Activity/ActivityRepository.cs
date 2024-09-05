@@ -1812,7 +1812,8 @@ public class ActivityRepository : IActivityRepository
                     Name = p.Name,
                     RequiredApproval = p.RequiredApproval,
                     IsUnlimited = p.IsUnlimited,
-                    OteSchedule = schedule
+                    OteSchedule = schedule,
+                    ReserveSeatUuid = p.ReserveSeatUuid
                 };
             }).ToList();
 
@@ -1842,7 +1843,8 @@ public class ActivityRepository : IActivityRepository
                             RequiredApproval        = p.RequiredApproval,
                             IsUnlimited             = p.IsUnlimited,
                             OteSchedule             = schedule,
-                            OteSchedulePricingGroup = p
+                            OteSchedulePricingGroup = p,
+                            ReserveSeatUuid         = p.ReserveSeatUuid
                         };
                     }).ToList(),
                     OteSchedule = schedule
