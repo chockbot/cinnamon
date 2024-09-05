@@ -23,13 +23,16 @@
     [Parameter]
     public EventCallback<SeatPlanModels.Seat> OnSeatSelected { get; set; }
 
+    [Parameter]
+    public bool ViewOnly { get; set; }
+
     private bool selected = false;
 
     private string GetSeatStyle 
     {
         get
         {
-            if(selected)
+            if(selected && !ViewOnly)
             {
                 return $"background-color: {DarkenHexColor(CategoryColor, .3)}; line-height: .6;";
             }

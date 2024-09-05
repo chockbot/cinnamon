@@ -9,7 +9,8 @@
         <div class="categories-container">
             @foreach (var category in seatPlanFormat.Categories)
             {
-                <Cinnamon.Web.Components.Common.SeatPlan.Category SeatCategory="category.Value" OnSeatSelected="OnSeatSelected" />
+                <Cinnamon.Web.Components.Common.SeatPlan.Category ViewOnly="ViewOnly" 
+                    SeatCategory="category.Value" OnSeatSelected="OnSeatSelected" />
             }
         </div>
     }
@@ -28,6 +29,9 @@
 
     [Parameter]
     public EventCallback<Category.SelectedSeat> OnSeatSelected { get; set; }
+
+    [Parameter]
+    public bool ViewOnly { get; set; }
 
     private SeatPlanModels.Format? seatPlanFormat;
 
