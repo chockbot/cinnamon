@@ -6,6 +6,18 @@ public class OtePurchaseVerification
     {
         string ticketsTemplate = string.Empty;
 
+        string providerLogo = string.Empty;
+
+        if(args.EventName.ToLower().Contains("jpark"))
+        {
+            providerLogo = $@"
+                <img
+                    src='https://stcinnamondev.blob.core.windows.net/upload-container/jpark-logo.png'
+                    alt='logo'
+                />
+            ";
+        }
+
         foreach(var item in args.Tickets)
         {
             ticketsTemplate += $@"
@@ -262,21 +274,30 @@ public class OtePurchaseVerification
                     </p>
                 </div>
                 <hr style='margin: 0; border: none; height: 1px; background-color: #d9d9d9' />
-                <div class='maker-details' style='padding: 2rem 2rem'>
-                    <p style='font-size: 16px; margin: 0'>
-                    <span style='color: #717171'>Experience By: </span>
-                    <span style='color: #000; text-transform: capitalize;'>
-                        <u style='text-transform: capitalize'>{args.ProviderName}</u></span
-                    >
-                    </p>
-                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                    <span style='color: #717171'>Email: </span>
-                    <span style='color: #000'> <u>{args.ProviderEmail}</u></span>
-                    </p>
-                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                    <span style='color: #717171'>Contact No: </span>
-                    <span style='color: #000'> <u>{args.ProviderNumber}</u></span>
-                    </p>
+                <div class='maker-details' 
+                    style='
+                        padding: 2rem 2rem;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;'
+                >
+                    <div>
+                        <p style='font-size: 16px; margin: 0'>
+                        <span style='color: #717171'>Experience By: </span>
+                        <span style='color: #000; text-transform: capitalize;'>
+                            <u style='text-transform: capitalize'>{args.ProviderName}</u></span
+                        >
+                        </p>
+                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                        <span style='color: #717171'>Email: </span>
+                        <span style='color: #000'> <u>{args.ProviderEmail}</u></span>
+                        </p>
+                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                        <span style='color: #717171'>Contact No: </span>
+                        <span style='color: #000'> <u>{args.ProviderNumber}</u></span>
+                        </p>
+                    </div>
+                    {providerLogo}
                 </div>
             </div>
         ";

@@ -22,35 +22,89 @@
                     @foreach (var item in ticketDetails.Tickets)
                     {
                         <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop" class="mb-3">
-                            <div class="ticket-box">
-                                <div class="p-3">
-                                    <div>
-                                        <h3 class="font-weight-700 font-30 color-black-100 mb-2 text-capitalize m-font-14">@ticketDetails.EventName</h3>
-                                        <div class="d-flex mb-1 mb-md-3 align-items-center">
-                                            <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-pin-icon.png" alt="location">
-                                            <p class="font-14 color-grey-100 mb-0 m-font-12">@ticketDetails.EventLocation</p>
-                                        </div>
-                                        <div class="d-flex mb-1 mb-md-3 align-items-center">
-                                            <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-calendar-icon.png" alt="calendar">
-                                            <p class="font-14 color-grey-100 mb-0 m-font-12">@ticketDetails.EventDate.ToString("MMMM dd, yyyy")</p>
-                                        </div>
-                                        <div class="d-flex mb-1 mb-md-3 align-items-center">
-                                            <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-clock-icon.png" alt="clock">
-                                            <p class="font-14 color-grey-100 mb-0 m-font-12">@ticketDetails.EventDate.ToString("hh:mm tt")</p>
-                                        </div>
-                                        <div class="d-flex mb-1 mb-md-3 align-items-center">
-                                            <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-ticket-icon.png" alt="ticket">
-                                            <p class="font-14 color-grey-100 mb-0 m-font-12">@item.Name</p>
-                                        </div>
-                                        <div class="text-center">
-                                            <img class="img-qrcode" src="@item.QRCodeData" alt="qrcode">
-                                            <p>@FormattedId(item.Id)</p>
-                                        </div>
-                                        <div>
-                                            <p class="font-18 color-black-100 font-weight-700 text-center m-font-10 mb-0">Thank you for choosing <span class="font-weight-400 color-orange-100 font-familt-backline">Cinnamon!</span></p>
+                            <div class="ticket-box overflow-hidden">
+                                @if(ticketDetails.EventName.ToLower().Contains("jpark"))
+                                {
+                                    <div class="bg-orange-100 color-white-100 py-3">
+                                        <p class="text-center mb-0 font-24" style='font-family: "Sansita One';">Cinnamon.ph</p>
+                                    </div>
+                                    <div class="ticket-details">
+                                        <Row class="align-items-center">
+                                            <Column ColumnSize="ColumnSize.Is12" class="px-3">
+                                                <div class="ps-3">
+                                                    <p class="font-weight-900 color-black-100 font-20 mb-0">@ticketDetails.EventName</p>
+                                                    <p class="font-16 color-grey-100 mb-1">@ticketDetails.EventLocation</p>
+                                                    <div class="text-center">
+                                                        <img style="min-width: 200px; height: auto;" src="images/ote/company-logos/jpark-logo.png" alt="logo">
+                                                    </div>
+                                                    <Row class="mt-3">
+                                                        <Column ColumnSize="ColumnSize.Is7">
+                                                            <div class="d-flex mb-1 mb-md-3 align-items-center">
+                                                                <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-calendar-icon.png" alt="calendar">
+                                                                <p class="font-16 color-grey-100 mb-0 m-font-12">@ticketDetails.EventDate.ToString("MMMM dd, yyyy")</p>
+                                                            </div>
+                                                            <div class="d-flex mb-1 mb-md-3 align-items-center">
+                                                                <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-ticket-icon.png" alt="ticket">
+                                                                <p class="font-16 color-grey-100 mb-0 m-font-12">@item.Name</p>
+                                                            </div>
+                                                        </Column>
+                                                        <Column ColumnSize="ColumnSize.Is5">
+                                                            <div class="d-flex mb-1 mb-md-3 align-items-center">
+                                                                <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-clock-icon.png" alt="clock">
+                                                                <p class="font-14 color-grey-100 mb-0 m-font-12">@ticketDetails.EventDate.ToString("hh:mm tt")</p>
+                                                            </div>
+                                                        </Column>
+                                                    </Row>
+                                                </div>
+                                            </Column>
+                                        </Row>
+                                        <div class="qr-details">
+                                            <div class="text-center">
+                                                <img class="img-qrcode" src="@item.QRCodeData" alt="qrcode">
+                                                <p class="mb-0">
+                                                    QR Code Number: @FormattedId(item.Id)
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                    @* <div class="d-flex align-items-center justify-content-between py-3 px-5">
+                                        <p class="mb-0">
+                                            QR Code Number: @FormattedId(item.Id)
+                                        </p>
+                                        <img style="width: 100px; height: auto;" src="images/ote/company-logos/jpark-logo.png" alt="logo">
+                                    </div> *@
+                                }
+                                else 
+                                {
+                                    <div class="p-3">
+                                        <div>
+                                            <h3 class="font-weight-700 font-30 color-black-100 mb-2 text-capitalize m-font-14">@ticketDetails.EventName</h3>
+                                            <div class="d-flex mb-1 mb-md-3 align-items-center">
+                                                <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-pin-icon.png" alt="location">
+                                                <p class="font-14 color-grey-100 mb-0 m-font-12">@ticketDetails.EventLocation</p>
+                                            </div>
+                                            <div class="d-flex mb-1 mb-md-3 align-items-center">
+                                                <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-calendar-icon.png" alt="calendar">
+                                                <p class="font-14 color-grey-100 mb-0 m-font-12">@ticketDetails.EventDate.ToString("MMMM dd, yyyy")</p>
+                                            </div>
+                                            <div class="d-flex mb-1 mb-md-3 align-items-center">
+                                                <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-clock-icon.png" alt="clock">
+                                                <p class="font-14 color-grey-100 mb-0 m-font-12">@ticketDetails.EventDate.ToString("hh:mm tt")</p>
+                                            </div>
+                                            <div class="d-flex mb-1 mb-md-3 align-items-center">
+                                                <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-ticket-icon.png" alt="ticket">
+                                                <p class="font-14 color-grey-100 mb-0 m-font-12">@item.Name</p>
+                                            </div>
+                                            <div class="text-center">
+                                                <img class="img-qrcode" src="@item.QRCodeData" alt="qrcode">
+                                                <p>@FormattedId(item.Id)</p>
+                                            </div>
+                                            <div>
+                                                <p class="font-18 color-black-100 font-weight-700 text-center m-font-10 mb-0">Thank you for choosing <span class="font-weight-400 color-orange-100 font-familt-backline">Cinnamon!</span></p>
+                                            </div>
+                                        </div>
+                                    </div>                                    
+                                }
                             </div>
                         </Column>
                     }
