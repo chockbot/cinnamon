@@ -111,6 +111,12 @@
 </div>
 
 <div class="messages-container d-flex">
+    <!-- Loading Indicator -->
+    <div class="loading-overlay" id="loadingOverlay" style="@(isLoadingIndicator ? "display: flex;" : "display: none;")">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
     <div class="sidebar-messages left-sidebar messages-section d-xl-block d-lg-block d-md-block d-sm-block @messagesSectionDisplayStyle">
         <div class="message-title-section">
             <div class="row">
@@ -713,6 +719,8 @@
     private DateTime? lastMessageDateCreated;
     private DateTime? lastSeenDate;
     private bool isLoading = false;
+
+    private bool isLoadingIndicator = true;
     [Inject] HubConnection hubConnection { get; set; }
     private string messagesSectionDisplayStyle = string.Empty;
     private string chatSectionDisplayStyle = string.Empty;
@@ -725,7 +733,7 @@
     private ChatMember maker = new ChatMember();
 
     protected override async Task OnInitializedAsync()
-    {
+    {   
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         var userToken = user.FindFirstValue("Token");
 
@@ -935,6 +943,9 @@
         await LoadRequestMessage();
 
         NavigationManager.LocationChanged += LocationChanged;
+
+        await Task.Delay(5000);
+        isLoadingIndicator = false;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
