@@ -174,21 +174,21 @@
                                         </div>
                                         <div class="swiper-slide category">
                                             <div>
-                                                <a class="button carousel-list text-center" id="2" @onclick="() => LoadFiles(2)">
+                                                <a class="button carousel-list text-center" id="2" @onclick="() => LoadFiles(4)">
                                                     <p class="image-category">Game</p>
                                                 </a>
                                             </div>
                                         </div>
                                         <div class="swiper-slide category">
                                             <div>
-                                                <a class="button carousel-list text-center" id="3" @onclick="() => LoadFiles(3)">
+                                                <a class="button carousel-list text-center" id="3" @onclick="() => LoadFiles(2)">
                                                     <p class="image-category">Music</p>
                                                 </a>
                                             </div>
                                         </div>
                                         <div class="swiper-slide category">
                                             <div>
-                                                <a class="button carousel-list text-center" id="4" @onclick="() => LoadFiles(4)">
+                                                <a class="button carousel-list text-center" id="4" @onclick="() => LoadFiles(3)">
                                                     <p class="image-category">Technology</p>
                                                 </a>
                                             </div>
@@ -1163,7 +1163,8 @@
         scheduleModel.OnDayDate              = options.Length >= 2 && int.TryParse(options[1], out int dayNum) ? dayNum  : 1;
         scheduleModel.EventDurationCount     = ote.OteSchedule.EventDurationCount;
         scheduleModel.EventDurationTimeUnit  = ote.OteSchedule.EventDurationTimeUnit;
-
+        scheduleModel.TotalBookedCount       = scheduleBookedRes.Result.Result.BookedCount;
+        scheduleModel.ActivityId             = ote.Id;
         if(ote.ExperienceTypeId == 2)
         {
             eventType = EventType.Online;

@@ -300,6 +300,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ChatService.Handlers.INotifyUnreadChatsHandler, Services.ChatService.NotifyUnreadChatsHandler>();
         services.AddTransient<Services.ChatService.Handlers.IRequestMessageHandler, Services.ChatService.RequestMessageHandler>();
         services.AddTransient<Services.ChatService.Handlers.IGetRequestMessageHandler, Services.ChatService.GetRequestMessageHandler>();
+        services.AddTransient<Services.ChatService.Handlers.IUpdateChatRoomNameHandler, Services.ChatService.UpdateChatRoomNameHandler>();
 
         // disbursement
         services.AddTransient<Services.Disbursement.Handlers.IGenerateDisbursement, Services.Disbursement.GenerateDisbursement>();

@@ -91,11 +91,11 @@
                 <div class="d-flex">
                     <div class="me-4 prevent-select" @onclick="OnFavoriteClick">
                         <label class="m-d-none cursor-pointer me-1 font-20 color-grey-100 font-weight-400 text-decoration-underline">Add to Favorites</label>
-                        <img style="width: 25px;" class="cursor-pointer h-auto" src='@(isActivityFavorite ?  "images/ote/favorite.png" : "images/ote/heart-default.png")' alt="favorite">
+                        <img style="width: 25px;" class="cursor-pointer h-auto" src='@(isActivityFavorite ?  "images/ote/favorite.svg" : "images/ote/heart-default.png")' alt="favorite">
                     </div>
                     <div class="cursor-pointer prevent-select" @onclick="CopyToClipboard">
                         <label class="m-d-none cursor-pointer me-1 font-20 color-grey-100 font-weight-400 text-decoration-underline">Share this Activity</label>
-                        <img style="width: 20px;" class="cursor-pointer h-auto" src="images/ote/copy-link.png" alt="share">
+                        <img style="width: 20px;" class="cursor-pointer h-auto" src="images/ote/copy-link.svg" alt="share">
                     </div>
                 </div>
 
@@ -475,7 +475,7 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 23c6.075 0 11-4.925 11-11S18.075 1 12 1 1 5.925 1 12s4.925 11 11 11M7 10a2 2 0 1 0 0 4h10a2 2 0 1 0 0-4z"></path></svg>
                                         <p class="close-text">Ticket Sales Closed</p>
                                     </div>
-                                    <p class="close-sub-text">The event has already started, and tickets are no longer available for purchase. You may contact the host for updates.</p>
+                                    <p class="close-sub-text">The event has already finished, and tickets are no longer available. Please contact the host for any further updates.</p>
                                 </div>
                             </div>
                         </div>
@@ -919,8 +919,8 @@
             activity.CapacityCount    = act.OteSchedule.CapacityCount;
             int soldLimitedTickets    = activity.Pricings.Where(a => !a.IsUnlimited).Sum(a => a.TicketSold);
             activity.IsEventSoldOut   = activity.Pricings.Sum(a => a.MaxSlots) <= soldLimitedTickets ? true : false;
-            selectedDate = SelectedDates.Where(a => a >= DateTime.Now).FirstOrDefault();
-            IsExpiredEvent = selectedDate == DateTime.MinValue;
+            selectedDate              = SelectedDates.Where(a => a >= DateTime.Now).FirstOrDefault();
+            IsExpiredEvent            = selectedDate == DateTime.MinValue;
             if (IsExpiredEvent)
             {
                 selectedDate = SelectedDates.FirstOrDefault();
@@ -1307,6 +1307,13 @@
 
     private Task AddSelectedTicket(OtePricing pricing, int limitTicket)
     {
+        if (currentLogin is null)
+        {
+            string oteDetailsUrl = $"/explore/ote/{Handler}";
+            loginModal.Show();
+            signInReturnUrl = oteDetailsUrl;
+            return Task.CompletedTask;
+        }
         if (pricing.IsUnlimited || activity.IsEventSoldOut)
         {
             if (activity.IsEventSoldOut && !pricing.IsUnlimited)
@@ -1477,7 +1484,7 @@
             IList<DateTime> dates = new List<DateTime>();
             if(activity is not null)
             {
-                dates = activity.OteDates.Select(d => d.DateStart).ToList();
+                dates = activity.OteDates.Select(d => d.DateEnd).ToList();
             }
             return dates;
         }

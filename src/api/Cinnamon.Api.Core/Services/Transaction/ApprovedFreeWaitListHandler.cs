@@ -13,6 +13,7 @@ using Cinnamon.Framework.Common;
 using Flurl;
 using Microsoft.AspNetCore.SignalR;
 using QRCoder;
+using static Cinnamon.Framework.Enums.Enums;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
 
@@ -31,6 +32,7 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
     private readonly IHubContext<ChatHub> chathub;
     private readonly ICustomerData customerData;
     private readonly ISendInviteEventHandler sendInviteEventHandler;
+    private readonly ICreateChatHistoryHandler createChatHistoryHandler;
 
     public ApprovedFreeWaitListHandler(IActivityData activityData, IGetProfileHandler getProfileHandler,
         IJsonSerializationProvider jsonSerializationProvider, IOteTicketData oteTicketData,
@@ -38,7 +40,7 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
         ITokenGeneratedData tokenGeneratedData, ApplicationConfig applicationConfig,
         IPurchaseOrderData purchaseOrderData, ICreateChatRoomHandler createChatRoomHandler,
         IHubContext<ChatHub> chathub, ICustomerData customerData,
-        ISendInviteEventHandler sendInviteEventHandler)
+        ISendInviteEventHandler sendInviteEventHandler, ICreateChatHistoryHandler createChatHistoryHandler)
     {
         this.activityData = activityData;
         this.getProfileHandler = getProfileHandler;
@@ -53,6 +55,7 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
         this.chathub = chathub;
         this.customerData = customerData;
         this.sendInviteEventHandler = sendInviteEventHandler;
+        this.createChatHistoryHandler = createChatHistoryHandler;
     }
 
     public AppResult<ApprovedFreeWaitListResult> Execute(ApprovedFreeWaitListArgs args)
@@ -254,10 +257,36 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
                 GroupName = groupName,
                 ToUserId = activity.Owner?.Id ?? 0
             });
-            if(createChatRes.Succeeded && createChatRes.Result is not null)
+            if(!createChatRes.Succeeded || createChatRes.Result is null)
             {
-                await chathub.Clients.All.SendAsync("AddToGroupAfterPayment", $"{createChatRes.Result.GroupName}|{createChatRes.Result.ChatRoomId}|{customer.Id}|{customer.FirstName}|{customer.LastName}|{customer.ProfileImg}|{activity.Owner?.FirstName} {activity.Owner?.LastName}'s Chat Group");
+                return AppResult<ApprovedFreeWaitListResult>.CreateFailed(
+                    new ApplicationException("An error occured when creating chat group."), "An error occured when creating chat group."); 
             }
+
+            await chathub.Clients.All.SendAsync("AddToGroupAfterPayment", $"{createChatRes.Result.GroupName}|{createChatRes.Result.ChatRoomId}|{customer.Id}|{customer.FirstName}|{customer.LastName}|{customer.ProfileImg}|{activity.Owner?.FirstName} {activity.Owner?.LastName}'s Chat Group");
+
+            var createChatHistoryRes = await createChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatHistoryArgs
+            {
+                ChatRoomId = createChatRes.Result.ChatRoomId,
+                FromConnectionId = string.Empty,
+                FromUserId = purchaseOrder.CustomerId,
+                ToConnectionId = string.Empty,
+                ToUserId = 0,
+                IsViewed = false,
+                Message = $"{customer.FirstName} {customer.LastName} has joined the group.",
+                ChatHistoryType = Framework.Enums.Enums.ChatHistoryType.Notification
+            });
+
+            if(!createChatHistoryRes.Succeeded || createChatHistoryRes.Result is null)
+            {
+                return AppResult<ApprovedFreeWaitListResult>.CreateFailed(
+                    new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
+            }
+
+            int chatRoomId = createChatRes.Result.ChatRoomId;
+
+            string joinedPayload = $"{chatRoomId}|{DateTime.Now}|{purchaseOrder.CustomerId}|{customer.FirstName}|{customer.LastName}|{customer.ProfileImg}|{false}|{customer.FirstName} {customer.LastName} has joined the group.|{groupName}|{(int)ChatType.GroupChat}|{(int)ChatHistoryType.Notification}|{true}|{string.Empty}";
+            await chathub.Clients.Group(createChatRes.Result.GroupName).SendAsync("ReceiveGroupMessage", joinedPayload);
 
             return AppResult<ApprovedFreeWaitListResult>.CreateSucceeded(new ApprovedFreeWaitListResult {
                 TicketLink = url

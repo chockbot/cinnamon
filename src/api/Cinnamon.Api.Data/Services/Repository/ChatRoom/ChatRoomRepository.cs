@@ -194,5 +194,36 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
             }, "Successully created chat room");
         }
 
+        public async Task<AppResult<ChatRoomDTO>> UpdateChatRoomName(int chatRoomId, string newChatRoomName)
+        {
+            try
+            {
+                var chatRoom = await dataStore.ChatRooms.GetByIdAsync(chatRoomId);
+
+                if (chatRoom == null || chatRoom.Result == null)
+                {
+                    return AppResult<ChatRoomDTO>.CreateFailed(new ApplicationException("Chat room not found"), "Chat room not found");
+                }
+
+                chatRoom.Result.Name = newChatRoomName;
+                var result = await dataStore.ChatRooms.Update(chatRoom.Result);
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return AppResult<ChatRoomDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+                }
+
+                return AppResult<ChatRoomDTO>.CreateSucceeded(new ChatRoomDTO
+                {
+                    ChatRoomId = chatRoom.Result.Id,
+                    GroupName = chatRoom.Result.GroupName
+                }, "Successfully updated chat room name");
+            }
+            catch (Exception ex)
+            {
+                return AppResult<ChatRoomDTO>.CreateFailed(ex, "An error occurred when updating chat room name");
+            }
+        }
+
     }
 }

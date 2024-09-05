@@ -36,13 +36,14 @@ namespace Cinnamon.Api.Core.Controllers
         private readonly IGetChatConnectionByCustomerHandler getChatConnectionByCustomerHandler;
         private readonly IRequestMessageHandler requestMessageHandler;
         private readonly IGetRequestMessageHandler getRequestMessageHandler;
+        private readonly IUpdateChatRoomNameHandler updateChatRoomNameHandler;
 
         public ChatController(ICreateChatHistoryHandler createChatHistoryHandler, ILogger<ChatController> logger, 
             IUpdateChatHistoryHandler updateChatHistoryHandler, IGetChatHistoryByChatRoomIdHandler getChatHistoryByChatRoomIdHandler, 
             ICreateChatRoomHandler createChatRoomHandler, IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler, 
             IUpdateConnectionIdHandler updateConnectionIdHandler, IGetChatMembersByChatRoomIdHandler getChatMembersByChatRoomIdHandler, 
             IGetChatConnectionByCustomerHandler getChatConnectionByCustomerHandler, IRequestMessageHandler requestMessageHandler,
-            IGetRequestMessageHandler getRequestMessageHandler)
+            IGetRequestMessageHandler getRequestMessageHandler, IUpdateChatRoomNameHandler updateChatRoomNameHandler)
         {
             _logger = logger;
 
@@ -56,6 +57,7 @@ namespace Cinnamon.Api.Core.Controllers
             this.getChatConnectionByCustomerHandler = getChatConnectionByCustomerHandler;
             this.requestMessageHandler = requestMessageHandler;
             this.getRequestMessageHandler = getRequestMessageHandler;
+            this.updateChatRoomNameHandler = updateChatRoomNameHandler;
         }
 
         [Route("Create")]
@@ -473,6 +475,38 @@ namespace Cinnamon.Api.Core.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new GetRequestMessageResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("UpdateChatRoomName")]
+        [HttpPost]
+        [ProducesResponseType(typeof(UpdateChatRoomNameResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateChatRoomName([FromBody] UpdateChatRoomNameArgs args)
+        {
+            try
+            {
+                var result = await updateChatRoomNameHandler.ExecuteAsync(new Services.ChatService.Interactors.UpdateChatRoomNameArgs
+                {
+                    ChatRoomId = args.ChatRoomId,
+                    ChatRoomName = args.ChatRoomName
+                });
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new UpdateChatRoomNameResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                var updateResult = result.Result;
+
+                return new JsonResult(new UpdateChatRoomNameResult
+                {
+                    IsSuccess = true,
+                    Result = updateResult.IsSuccess
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new UpdateChatRoomNameResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

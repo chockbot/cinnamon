@@ -30,25 +30,25 @@
                 </h3>
             </FieldLabel>
             <div class="ticket-limit-group">
-                <FieldBody>
-                    <RadioGroup TValue="int" Name="limit-type" CheckedValue="ModelState.IsLimit" CheckedValueChanged="CheckLimitChanged">
-                        <label for="no-limit" class="border-radius-10 prevent-select py-2 text-capitalize cursor-pointer">
-                            <Radio class="checkbox-round" ElementId="no-limit" TValue="int" Value="1">No Limit</Radio>
-                        </label>
-                        <label for="set-limit" class="border-radius-10 label-set-limit">
-                            <Radio class="checkbox-round" ElementId="set-limit" TValue="int" Value="2">Set Limit</Radio>
-                        </label>
-                    </RadioGroup>
-                    @if (ModelState.IsLimit == 2)
-                    {
+                <RadioGroup TValue="int" Name="limit-type" CheckedValue="ModelState.IsLimit" CheckedValueChanged="CheckLimitChanged">
+                    <label for="no-limit" class="border-radius-10 prevent-select py-2 text-capitalize cursor-pointer label-no-limit">
+                        <Radio class="checkbox-round" ElementId="no-limit" TValue="int" Value="1">No Limit</Radio>
+                    </label>
+                    <label for="set-limit" class="border-radius-10 label-set-limit">
+                        <Radio class="checkbox-round" ElementId="set-limit" TValue="int" Value="2">Set Limit</Radio>
+                    </label>
+                </RadioGroup>
+                @if (ModelState.IsLimit == 2)
+                {
+                    <div class="specify-limit-section d-flex">
                         <label for="specify-limit" class="border-radius-10 prevent-select px-3 py-2 specific-text">Specify:</label>
                         <NumericPicker ElementId="specify-limit" Decimals="0" ShowStepButtons="false" TValue="int" Size="Size.Medium" class="@LimitClass" @bind-Value="ModelState.EventTicketLimit">
                             <Feedback>
                                 <ValidationError />
                             </Feedback>
                         </NumericPicker>
-                    }
-                </FieldBody>
+                    </div>
+                }
             </div>
         </Field>
     </div>
@@ -777,7 +777,7 @@
     IJSObjectReference hoverEffectModule;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-       
+
         await Task.Delay(2000);
         await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.addHoverEffect", "#hoverDiv");
         if (IsEditRegistration)
@@ -1310,7 +1310,7 @@
     {
         if(pricing.TicketSold > 0)
         {
-             await NotificationService.Info("This ticket has already been purchased; other details cannot be edited. You can only edit the ticket name and quantity.", "Information");
+            await NotificationService.Info("This ticket has already been purchased; other details cannot be edited. You can only edit the ticket name and quantity.", "Information");
         }
         await OnEditTicket(pricing);
     }
@@ -1619,6 +1619,7 @@
         {
             modelPricing.RequiredApproval = false;
         }
+        ValidatePricing();
     }
     private void IsUnlimitedChanged(ChangeEventArgs e)
     {
