@@ -2421,7 +2421,7 @@ public class ActivityController : ControllerBase
     public async Task<IActionResult> RecommendedActivities()
     {
         try
-        {
+        {   
             var result = await recommendedActivitiesHandler.ExecuteAsync(new Services.ActivityService.Interactors.RecommendedActivityArgs { Count = 4});
 
             if (!result.Succeeded || result.Result == null)
@@ -2449,6 +2449,7 @@ public class ActivityController : ControllerBase
                         RegionName       = a.RegionName,
                         Barangay         = a.Barangay,
                         ExperienceTypeId = a.ExperienceTypeId,
+                        ExperienceCreationType = a.ExperienceCreationType,
                         Images           = a.Images.Select(i =>
                         {
                             return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage
@@ -2473,7 +2474,11 @@ public class ActivityController : ControllerBase
                                 PriceUnit2       = i.PriceUnit2,
                                 UnitPrice        = i.UnitPrice,
                             };
-                        })
+                        }),
+                        Schedule = a.Schedule is not null ? new ActivityDTO.OteSchedule {
+                        From = a.Schedule.From,
+                        To = a.Schedule.To,
+                        } : null,
                     };
                 })
             });
