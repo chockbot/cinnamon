@@ -2683,7 +2683,8 @@ public class ActivityController : ControllerBase
                         Price = p.Price,
                         Name = p.Name,
                         IsUnlimited = p.IsUnlimited,
-                        RequiredApproval = p.RequiredApproval
+                        RequiredApproval = p.RequiredApproval,
+                        ReserveSeatUuid = p.ReserveSeatUuid
                     };
                 }),
                 DateOverrides = args.DateOverrides is not null ? 
