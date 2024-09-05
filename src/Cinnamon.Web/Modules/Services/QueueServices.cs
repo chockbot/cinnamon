@@ -10,7 +10,7 @@ namespace Cinnamon.Web.Modules.Services
     {
         private readonly IConfiguration _configuration;
         private readonly QueueServiceClient _queueServiceClient;
-        private static readonly TimeSpan ProcessingTime = TimeSpan.FromMinutes(2);
+        private static readonly TimeSpan ProcessingTime = TimeSpan.FromMinutes(10);
         private Dictionary<string, Timer> _activeQueueTimers = new Dictionary<string, Timer>();
 
         public QueueServices(IConfiguration configuration)
@@ -96,7 +96,7 @@ namespace Cinnamon.Web.Modules.Services
             Timer timer = new Timer(async (state) =>
             {
                 await RemoveUserFromActiveQueueAsync(userId, activeQueueName);
-            }, null, TimeSpan.FromMinutes(2), Timeout.InfiniteTimeSpan);
+            }, null, TimeSpan.FromMinutes(10), Timeout.InfiniteTimeSpan);
             // Store the timer reference to prevent it from being garbage collected
             _activeQueueTimers[userId] = timer;
         }
@@ -164,10 +164,10 @@ namespace Cinnamon.Web.Modules.Services
             {
                 var totalUsersAhead    = message.numberAhead;
                 var firstUserRemaining = await GetFirstActiveUserInsertionTimeAsync(activeQueueName);
-                processingTimeElapsed  = firstUserRemaining.Value + TimeSpan.FromMinutes(2) - DateTime.Now;
+                processingTimeElapsed  = firstUserRemaining.Value + TimeSpan.FromMinutes(10) - DateTime.Now;
                 processingTimeElapsed  = TimeSpan.FromSeconds(Math.Floor(processingTimeElapsed.TotalSeconds));
 
-                estimatedWaitingTime   = TimeSpan.FromMinutes(totalUsersAhead * 2) + processingTimeElapsed;
+                estimatedWaitingTime   = TimeSpan.FromMinutes(totalUsersAhead * 10) + processingTimeElapsed;
                 expectedTimeOfArrival  = DateTime.Now.Add(estimatedWaitingTime);
             }
             else

@@ -35,7 +35,6 @@ public class OteActivity
     public bool IsOpen { get; set; }
     public bool IsCapacity { get; set; }
     public int CapacityCount { get; set; }
-
     public bool IsMultiple { get; set; }
 
     public bool IsEventSoldOut { get; set; }
