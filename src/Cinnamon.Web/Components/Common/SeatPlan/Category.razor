@@ -30,8 +30,9 @@
             await OnSeatSelected.InvokeAsync(new SelectedSeat
             {
                 CategoryUUID = SeatCategory.Uuid,
-                RowUUID = row.Uuid,
-                Seat = seat
+                RowUUID      = row.Uuid,
+                RowNumber    = row.RowNumber,
+                Seat         = seat
             });
         }
     }
@@ -41,6 +42,8 @@
         public string CategoryUUID { get; set; }
 
         public string RowUUID { get; set; }
+
+        public string RowNumber { get; set; }
 
         public SeatPlanModels.Seat Seat { get; set; }
     }

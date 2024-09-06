@@ -72,7 +72,8 @@ public class OteCreateRequestPaymentHandler : IOteCreateRequestPaymentHandler
                 {
                     validTickets.Add(new Ticket {
                         Count = ticket.TicketCount,
-                        Id = ticket.TicketId
+                        Id = ticket.TicketId,
+                        SeatNumber = ticket.SeatNumber
                     });
                 }
             }
@@ -83,7 +84,8 @@ public class OteCreateRequestPaymentHandler : IOteCreateRequestPaymentHandler
                 DateId = oteDate.Id,
                 Tickets = validTickets.Select(t => new Ticket {
                     Count = t.Count,
-                    Id = t.Id
+                    Id = t.Id,
+                    SeatNumber = t.SeatNumber,
                 }),
                 Questions = args.Questions?.Select(q => new ProviderQuestion {
                     Answer = q.Answer,
@@ -159,7 +161,8 @@ public class OteCreateRequestPaymentHandler : IOteCreateRequestPaymentHandler
                 SelectedDate = args.SelectedDate,
                 SelectedTickets = validTickets.Select(t => new OteCreateRequestPaymentResult.RequestPaymentTicket {
                     TicketCount = t.Count,
-                    TicketId = t.Id
+                    TicketId = t.Id,
+                    SeatNumber = t.SeatNumber
                 }),
                 Token = args.Token,
                 Used = args.Used,
@@ -188,6 +191,8 @@ public class OteCreateRequestPaymentHandler : IOteCreateRequestPaymentHandler
     {
         public int Id {get; set;}
         public int Count {get; set;}
+
+        public string SeatNumber { get; set; }
     }
 
     private class ProviderQuestion

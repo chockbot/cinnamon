@@ -83,7 +83,7 @@
                                     </div>
                                 }
                              </div>
-                             <button class="btn-confirm">Confirm Seats</button>
+                             <button class="btn-confirm" @onclick=ProceedToPayment>Confirm Seats</button>
                         </div>
                     </div>
                     @*Event Seat Plan*@
@@ -887,7 +887,7 @@
                 if (ticketToUpdate.Value != null)
                 {
                     ticketToUpdate.Value.Count += 1;
-                    ticketToUpdate.Value.Seat += $", {selectedSeat.Seat.SeatNumber}";
+                    ticketToUpdate.Value.Seat += $", {selectedSeat.RowNumber}-{selectedSeat.Seat.SeatNumber}";
                     ticketToUpdate.Value.SeatUUID += $", {selectedSeat.Seat.Uuid}";
                 }
                 else
@@ -899,7 +899,7 @@
                         Name             = selectedTicket.Name,
                         Price            = selectedTicket.Price,
                         RequiredApproval = selectedTicket.RequiredApproval,
-                        Seat             = selectedSeat.Seat.SeatNumber,
+                        Seat             = $"{selectedSeat.RowNumber}-{selectedSeat.Seat.SeatNumber}",
                         SeatUUID         = selectedSeat.Seat.Uuid
                     });
                 }
@@ -1447,7 +1447,8 @@
                 SelectedTickets = selectedTickets.Select(t => new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs.RequestPaymentTicket
                 {
                     TicketCount = t.Value.Count,
-                    TicketId = t.Value.Id
+                    TicketId = t.Value.Id,
+                    SeatNumber = t.Value.Seat
                 }),
                 Questions = question.Select(q => new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs.ProviderQuestion
                 {

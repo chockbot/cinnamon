@@ -41,7 +41,8 @@ public class OteRequestPaymentHandler : IOteRequestPaymentHandler
                 SelectedDate = args.SelectedDate,
                 SelectedTickets = args.SelectedTickets.Select(t => new OteCreateRequestPaymentArgs.RequestPaymentTicket {
                     TicketCount = t.TicketCount,
-                    TicketId = t.TicketId
+                    TicketId = t.TicketId,
+                    SeatNumber = t.SeatNumber
                 }),
                 Questions = args.Questions?.Select(q => new OteCreateRequestPaymentArgs.ProviderQuestion {
                     Answer = q.Answer,
@@ -61,7 +62,8 @@ public class OteRequestPaymentHandler : IOteRequestPaymentHandler
                 SelectedDate = createdRequest.SelectedDate,
                 SelectedTickets = createdRequest.SelectedTickets.Select(t => new OteRequestPaymentResult.RequestPaymentTicket {
                     TicketCount = t.TicketCount,
-                    TicketId = t.TicketId
+                    TicketId = t.TicketId,
+                    SeatNumber = t.SeatNumber
                 }),
                 Token = createdRequest.Token,
             }, "Successfully request payment");

@@ -24,6 +24,7 @@ public class OteCreateRequestPaymentArgs : IInteractor
     {
         public int TicketId {get; set;}
         public int TicketCount {get; set;}
+        public string SeatNumber { get; set; }
     }
 
     public class ProviderQuestion 

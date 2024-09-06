@@ -18,4 +18,5 @@ public class OtePricing
     public bool IsUnlimited { get; set; }
     public string ReserveSeatUuid { get; set; }
     public string TicketColor { get; set; }
+    public string SeatNumber { get; set; }
 }

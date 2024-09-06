@@ -26,6 +26,8 @@ public class PaymentRequestArgs
 
         [Required]
         public int TicketCount {get; set;}
+        
+        public string SeatNumber { get; set; }
     }
 
     public class ProviderQuestion 

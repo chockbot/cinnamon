@@ -53,51 +53,30 @@
             <Row>
                 <Column ColumnSize="ColumnSize.Is12.Is7.OnDesktop" class="left-order">
                     <section class="mt-5 item-pricings">
-                        <h3 class="font-20 font-weight-700 color-black-100 mb-5 m-font-18">Ticket Availed</h3>
-                        @foreach (var item in AvailableTickets)
-                        {
-                            <Row @key="item" class="mb-4 align-items-center">
-                                <Column ColumnSize="ColumnSize.Is8" class="item-pricings-details">
-                                    <p class="font-20 font-weight-700 color-black-100 mb-2">@item.Name</p>
-                                    <p class="font-20 font-weight-700 color-green-100 mb-0 d-flex align-items-center">
-                                        <span>@((item.Price == 0) ? "Free" : $"₱{item.Price:N0}")</span>
-                                    </p>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is4" class="item-pricings-slot">
-                                    <div class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
-                                        <span class="p-1 border-right-1-solid counter-item prevent-select disabled">
-                                            <span class="item-action">-</span>
-                                        </span>
-                                        <span class="p-1 border-right-1-solid counter-item">
-                                            @(selectedTickets.ContainsKey(item.Id) ? selectedTickets[item.Id].Count : 0)
-                                        </span>
-                                        <span class="p-1 counter-item prevent-select disabled">
-                                            @if (activity.EventTicketLimit != 0)
-                                            {
-                                                <Tooltip Text="@stringMaxTicket" Multiline>
-                                                <span class="item-action">+</span>
-                                            </Tooltip>
-                                            }
-                                            else
-                                            {
-                                                <span class="item-action">+</span>
-                                            }
-                                        </span>
-                                    </div>
-                                </Column>
-                            </Row>
-                        }
+                        <div class="selected-ticket-table">
+                            <div class="ticket-header">
+                                <p class="header-name">Tickets</p>
+                                <p class="header-name">Price</p>
+                                <p class="header-name">Quantity</p>
+                                <p class="header-name">Seat Number</p>
+                            </div>
+                            @foreach (var item in selectedTickets)
+                            {
+                                <div class="ticket-column">
+                                    <p class="header-name">@item.Value.Name</p>
+                                    <p class="header-name">@item.Value.Price</p>
+                                    <p class="header-name"> @item.Value.Count</p>
+                                    <p class="header-name">@item.Value.SeatNumber</p>
+                                </div>
+                            }
+                        </div>
                     </section>
                     <section class="mt-5">
-                        <Divider />
                         <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-0">Important Information</h5>
                         <p class="text-center mt-4">
                             <span class="color-grey-100">
-                                Your Booking is Protected by
+                                The cinnamon platform guarantees:
                             </span> 
-                            <span class="app-name">
-                                @Resources.App.appName
-                            </span>
                         </p>
                         <Row class="mt-5 m-margin-top-20">
                             <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
@@ -555,6 +534,7 @@
 
     [Parameter, SupplyParameterFromQuery]
     public string Token {get; set;}
+
     private Modal modaltime { get; set; }
     private OteActivity? activity;
     private int selectedTicketId = 0;
@@ -703,10 +683,10 @@
     {
         if (!string.IsNullOrEmpty(Token))
         {
-            var profileResult = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
+            var profileResult = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
             if (profileResult.Succeeded || profileResult.Result is not null && profileResult.Result.IsSuccess)
             {
-                currentLogin = mapper.Map<Models.Entities.CustomerProfile>(profileResult.Result.Result);
+                currentLogin = mapper.Map<CustomerProfile>(profileResult.Result.Result);
             }
         }
     }
@@ -800,16 +780,17 @@
             {
                 var sTicket = AvailableTickets.FirstOrDefault(t => t.Id == ticket.TicketId);
                 var otePricing = new OtePricing {
-                    Description = sTicket.Description,
-                    Id = sTicket.Id,
-                    IsAbsorbFees = sTicket.IsAbsorbFees,
-                    MaxSlots = sTicket.MaxSlots,
-                    Name = sTicket.Name,
-                    OteScheduleId = sTicket.OteScheduleId,
-                    Price = sTicket.Price,
-                    TicketSold = sTicket.TicketSold,
+                    Description      = sTicket.Description,
+                    Id               = sTicket.Id,
+                    IsAbsorbFees     = sTicket.IsAbsorbFees,
+                    MaxSlots         = sTicket.MaxSlots,
+                    Name             = sTicket.Name,
+                    OteScheduleId    = sTicket.OteScheduleId,
+                    Price            = sTicket.Price,
+                    TicketSold       = sTicket.TicketSold,
                     RequiredApproval = sTicket.RequiredApproval,
-                    IsUnlimited = sTicket.IsUnlimited
+                    IsUnlimited      = sTicket.IsUnlimited,
+                    SeatNumber       = ticket.SeatNumber
                 };
                 await AddSelectedTicket(otePricing);
             }
@@ -1106,9 +1087,11 @@
         {
             selectedTickets.Add(pricing.Id, new TicketInfo
             {
-                Count = 1,
-                Id = pricing.Id,
-                Price = pricing.Price,
+                Count            = 1,
+                Id               = pricing.Id,
+                Name             = pricing.Name,
+                Price            = pricing.Price,
+                SeatNumber       = pricing.SeatNumber,
                 RequiredApproval = pricing.RequiredApproval
             });
         }
@@ -1199,6 +1182,7 @@
                 {
                     NavigationManager.NavigateTo($"/purchase/order/?purchaseid={submit.Result.Result.Id}");
                 }
+                //Update seat payload occupied selected seats
             }
         }
         catch (System.Exception ex)
@@ -1224,7 +1208,7 @@
 
     private Task NavigateBack()
     {
-        NavigationManager.NavigateTo($"/explore/ote/{activity.Handler}");
+        NavigationManager.NavigateTo($"/explore/ote/reserved/{activity.Handler}");
         return Task.CompletedTask;
     }
 
@@ -1247,6 +1231,8 @@
         public int Id {get; set;}
         public int Count {get; set;}
         public decimal Price {get; set;}
+        public string Name { get; set; }
+        public string SeatNumber { get; set; }
         public bool RequiredApproval {get; set;}
     }
 }
