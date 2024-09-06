@@ -34,59 +34,59 @@
                             @foreach (var item in GetTicketSummary)
                             {
                                 <div class="ticket-column">
-                                    <p class="header-name">@item.Value.Name</p>
-                                    <p class="header-name">@item.Value.Price</p>
-                                    <p class="header-name"> @item.Value.Count</p>
-                                    <p class="header-name">@item.Value.SeatNumber</p>
+                                    <p class="header-name">@item.Name</p>
+                                    <p class="header-name">@item.Price</p>
+                                    <p class="header-name"> @item.Count</p>
+                                    @if(item.SeatNumber != string.Empty)
+                                    {
+                                        <p class="header-name">@item.SeatNumber</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="header-name">Free Seating</p>
+                                    }
                                 </div>
                             }
+                        </div>
+                        <div class="other-payment-section">
+                            <p class="other-details-text">Purchase Details</p>
+                            <div class="col-4">
+                                <div class="other-info">
+                                    <p class="discount-text">Discount</p>
+                                    <p class="discount-amount">₱@purchaseOrder.Discount.Value.ToString("#,##0.00")</p>
+                                </div>
+                                <div class="other-info">
+                                    <p class="service-text">Service fee (15%)</p>
+                                    <p class="service-amount">₱@purchaseOrder.ServiceFee.ToString("#,##0.00")</p>
+                                </div>
+                                <div class="other-info">
+                                    <p class="handling-text">Handling fee (2%)</p>
+                                    <p class="handling-amount">₱@purchaseOrder.HandlingFee.ToString("#,##0.00")</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12.Is5.OnDesktop">
                     @if (purchaseOrder.EventLocation != "Online")
                     {
-                        <div>
-                            <div class="d-flex align-items-center">
-                                <p class="mb-0 font-20 font-weight-700 color-black-100 me-4">Your ticket is here!</p>
-                                <a class="color-white-100 bg-orange-100 border-radius-5 px-4 py-2 hover-color-white text-decoration-none"
-                                   href="@purchaseOrder.TicketUrl" target="_blank" rel="noopener noreferrer">View</a>
+                        <div class="view-ticket-section">
+                            <div class="thank-you-text text-center">
+                                <p>Thank you for choosing Cinnamon!</p>
                             </div>
-                            <div class="mt-3 border-1-solid border-color-black-100 border-radius-5 overflow-hidden">
-                                <Table class="w-100">
-                                    <TableHeader class="bg-grey-100 color-white-100 font-14 font-weight-700">
-                                        <TableRow>
-                                            <TableHeaderCell class="p-2 text-center">Ticket #</TableHeaderCell>
-                                            <TableHeaderCell class="p-2">Ticket</TableHeaderCell>
-                                            <TableHeaderCell class="p-2">Amount</TableHeaderCell>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody class="font-14 color-black-100">
-                                        @foreach (var item in purchaseOrder.Tickets)
-                                        {
-                                            <TableRow>
-                                                <TableRowCell class="p-2 text-center" VerticalAlignment="VerticalAlignment.Middle">
-                                                    @FormattedId(item.Id)
-                                                </TableRowCell>
-                                                <TableRowCell class="p-2" VerticalAlignment="VerticalAlignment.Middle">@item.Name</TableRowCell>
-                                                <TableRowCell class="p-2" VerticalAlignment="VerticalAlignment.Middle">P @item.Price.ToString("#,##0.00")</TableRowCell>
-                                            </TableRow>
-                                        }
-                                    </TableBody>
-                                </Table>
+                            <div class="assistance-text text-center">
+                                <p>Should you require assistance in cancellation or change in order, Kindly email us in support@cinnamon.ph</p>
                             </div>
-                            <div class="text-center">
-                                <p class="font-14 color-grey-100 my-3">Should you require assistance in cancellation or change in order, Kindly email us in support@cinnamon.ph</p>
-                                <Button Clicked="NavigateToHome" class="color-white-100 rounded-pill bg-orange-100 px-4 hover-color-white mt-3">
-                                    Back to Home
-                                </Button>
+                            <div class="button-options">
+                                <button class="back-btn" @onclick="NavigateToHome">Back to home</button>
+                                <a class="view-btn" href="@purchaseOrder.TicketUrl" target="_blank" rel="noopener noreferrer">View Tickets</a>
                             </div>
                         </div>
                     }
                     else
                     {
                         <div class="online-event text-center">
-                            <div class="header">Thankyou for choosing <span class="cinnamon-text">Cinnamon!</span></div>
+                            <div class="header">Thank you for choosing <span class="cinnamon-text">Cinnamon!</span></div>
                             <p class="checkout-text">Checkout your event now!</p>
                             <div class="text-center">
                                 <a class="view-link text-decoration-none" href="@purchaseOrder.TicketUrl" target="_blank" rel="noopener noreferrer">View Link/s</a>
@@ -99,7 +99,6 @@
                             <div class="cancellation d-flex justify-content-center">
                                 <p class="cancellation-text">Should you require assistance in cancellation or change in order, Kindly email us in support@cinnamon.ph</p>
                             </div>
-
                         </div>
                     }
                 </Column>
@@ -177,7 +176,7 @@
                                 Id = item.Id,
                                 Name = item.Name,
                                 Price = item.Price,
-                                SeatName = item.Sea
+                                SeatNumber = item.SeatNumber
                             });
                     }
                 }
@@ -216,6 +215,6 @@
         public string Name { get; set; }
         public decimal Price { get; set; }
         public int Count { get; set; }
-        public string SeatName { get; set; }
+        public string SeatNumber { get; set; }
     }
 }

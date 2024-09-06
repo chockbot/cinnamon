@@ -22,6 +22,6 @@ public class OtePurchaseOrderDetailsResult
         public string Name {get; set;}
         public string Code {get; set;}
         public string ImageData {get; set;}
-        public string SeatName { get; set; }
+        public string SeatNumber { get; set; }
     }
 }

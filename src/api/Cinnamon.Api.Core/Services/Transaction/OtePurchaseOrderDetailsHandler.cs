@@ -159,7 +159,7 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
                         ImageData = t.QRImageData,
                         Name = t.Title,
                         Price = t.Amount,
-                        SeatName = deserializedPayload.Tickets is not null ? deserializedPayload.Tickets.FirstOrDefault(a => a.Id == t.Id).SeatNumber : string.Empty
+                        SeatNumber = deserializedPayload.Tickets is not null ? deserializedPayload.Tickets.FirstOrDefault(a => a.Id == t.Id).SeatNumber : string.Empty
                     };
                 }),
                 PurchasedDate = purchaseOrder.PurchaseDate,
