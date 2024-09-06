@@ -37,8 +37,6 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
     private readonly IGetOteRequestPaymentHandler getOteRequestPaymentHandler;
     private readonly IOteCreateRequestPaymentHandler createRequestPaymentHandler;
     private readonly ICreateChatHistoryHandler createChatHistoryHandler;
-    private readonly ICreateChatHistoryHandler createChatHistoryHandler;
-
     public OteFinishTransactionHandler(IGetActivityHandler getActivityHandler, IOteFindByHandler oteFindByHandler,
         IJsonSerializationProvider jsonSerializationProvider, IPurchaseOrderData purchaseOrderData,
         ICustomerData customerData, IUpdateCreditBalanceHandler updateCreditBalanceHandler,
