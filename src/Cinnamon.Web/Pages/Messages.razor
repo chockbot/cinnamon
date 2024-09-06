@@ -155,7 +155,8 @@
                 foreach (var chatRoom in FilteredChatRooms)
                 {
                     var fullName = $"{chatRoom.FromFirstName} {chatRoom.FromLastName}";
-                    <div class="row @GetNewMessageStyle(chatRoom.HasNewMessage) @GetActiveStyle(selectedChatRoomId == chatRoom.ChatRoomId) chatroom-list-item" @onclick="(() => GetChatHistoryByChatRoomId(chatRoom.ChatRoomId, true, false))">
+                    <div class="row @GetNewMessageStyle(chatRoom.HasNewMessage, chatRoom.ChatRoomId) @GetActiveStyle(selectedChatRoomId == chatRoom.ChatRoomId) chatroom-list-item"
+     @onclick="(() => { ToggleClick(chatRoom.ChatRoomId); GetChatHistoryByChatRoomId(chatRoom.ChatRoomId, true, false); })">
                         <input type="hidden" value="@chatRoom.DateCreated" id="date-created" />
                         <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="last-update-date">
@@ -207,6 +208,11 @@
         </div>
     </div>
     <div class="center-messages chat-section d-xl-block d-lg-block d-md-block d-sm-block @chatSectionDisplayStyle">
+        <div class="loading-overlay" id="loadingOverlay" style="@(isLoading ? "display: flex;" : "display: none;")">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
         <div class="row" style="@SetPlaceholderStyle(isLoading)">
             <div class="chat-profile-section">
                 <div class="row">
@@ -553,6 +559,11 @@
     </div>
     <div class="sidebar-messages profile-section messages-section d-xl-block d-lg-block d-md-block d-sm-block @profileSectionDisplayStyle">
         <div class="row" style="@SetPlaceholderStyle(isLoading)">
+            <div class="loading-overlay" id="loadingOverlay" style="@(isLoading ? "display: flex;" : "display: none;")">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
             <div class="row justify-content-center placeholder-glow">
                 <div class="col-lg-12 text-center">
                     <span class="placeholder col-9 profile-section-picture"></span>
@@ -572,6 +583,11 @@
             </div>
         </div>
         <div style="@SetMessagesStyle(isLoading)">
+            <div class="loading-overlay" id="loadingOverlay" style="@(isLoading ? "display: flex;" : "display: none;")">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
             @if (chatRooms.Count > 0)
             {
                 <div class="col-lg-12 d-block d-sm-none d-md-none d-lg-none d-xl-none">
@@ -731,6 +747,7 @@
     private bool showLeaveGroupConfirmation = false;
     private System.Threading.Timer? timer;
     private ChatMember maker = new ChatMember();
+    private Dictionary<int, bool> clickedChatRooms = new Dictionary<int, bool>();
 
     protected override async Task OnInitializedAsync()
     {   
@@ -1346,12 +1363,16 @@
         }
     }
 
-    private string GetNewMessageStyle(bool hasNewMessage)
+    private string GetNewMessageStyle(bool hasNewMessage, int chatRoomId)
     {
-        if (hasNewMessage)
-            return "chatroom-item-bold";
+        string baseStyle = hasNewMessage ? "chatroom-item-bold" : "chatroom-item";
 
-        return "chatroom-item";
+        if (clickedChatRooms.ContainsKey(chatRoomId) && clickedChatRooms[chatRoomId])
+        {
+            baseStyle += " chatroom-item-clicked";
+        }
+
+        return baseStyle;
     }
 
     private string GetActiveStyle(bool isEqual)
@@ -1649,5 +1670,21 @@
                         c.FromFirstName.ToLower().Contains(trimmedSearch) ||
                         c.FromLastName.ToLower().Contains(trimmedSearch) );
         }    
+    }
+
+    private async Task ToggleClick(int chatRoomId)
+    {
+        if (clickedChatRooms.ContainsKey(chatRoomId))
+        {
+            clickedChatRooms[chatRoomId] = true;
+        }
+        else
+        {
+            clickedChatRooms.Add(chatRoomId, true);
+        }
+        
+        await Task.Delay(500);
+        clickedChatRooms[chatRoomId] = false;
+        StateHasChanged();
     }
 }
