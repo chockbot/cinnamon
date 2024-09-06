@@ -137,6 +137,9 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
             }
             var tickets = ticketsRes.Result.Result;
 
+            //Deserialize Payload to get seatnumber
+
+
             var result = new OtePurchaseOrderDetailsResult
             {
                 EventDate = oteDate.DateStart,
@@ -155,7 +158,8 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
                         Id = t.Id,
                         ImageData = t.QRImageData,
                         Name = t.Title,
-                        Price = t.Amount
+                        Price = t.Amount,
+                        SeatName = deserializedPayload.Tickets is not null ? deserializedPayload.Tickets.FirstOrDefault(a => a.Id == t.Id).SeatNumber : string.Empty
                     };
                 }),
                 PurchasedDate = purchaseOrder.PurchaseDate,
@@ -190,6 +194,7 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
         public string Code {get; set;}
         public string ImageData {get; set;}
         public int OteDateId {get; set;}
+        public string SeatNumber { get; set;}   
     }
 
     class Fees {

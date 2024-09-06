@@ -29,6 +29,7 @@ public class OtePurchaseOrderArgs : IInteractor
     {
         public int Id {get; set;}
         public int Count {get; set;}
+        public string SeatNumber { get; set; }
     }
 
     public class ActivityQuestion 

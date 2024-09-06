@@ -1,0 +1,221 @@
+﻿@page "/purchase/order/ote/reserved/{OrderId:int}"
+@using System.Security.Claims;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject ITransactionApiHandler transactionApiHandler;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject INotificationService NotificationService;
+@inject NavigationManager NavigationManager;
+@inject IJSRuntime jsRuntime;
+
+@if (purchaseOrder is not null)
+{
+    <div class="purchase-ote-summary-wrapper py-5">
+        <Container>
+            <Row HorizontalGutter="50" VerticalGutter="30">
+                <Column ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
+                    <div class="payment-confirmation-section">
+                        <div class="header-section">
+                            <p class="header-text">Payment Confirmation</p>
+                            <p class="total-amount">₱@purchaseOrder.TotalPurchase.ToString("#,##0.00")</p>
+                        </div>
+                        <div class="event-info-section">
+                            <p class="event-name">@purchaseOrder.EventName</p>
+                            <p class="event-location">@purchaseOrder.EventLocation</p>
+                            <p class="event-date">@purchaseOrder.EventDate.ToString("dd MMMM yyyy | hh:mm tt")</p>
+                        </div>
+                        <div class="purchase-details-section">
+                            <p class="purchase-details-text">Purchase Details</p>
+                            <div class="ticket-header">
+                                <p class="header-name">Tickets</p>
+                                <p class="header-name">Price</p>
+                                <p class="header-name">Quantity</p>
+                                <p class="header-name">Seat Number</p>
+                            </div>
+                            @foreach (var item in GetTicketSummary)
+                            {
+                                <div class="ticket-column">
+                                    <p class="header-name">@item.Value.Name</p>
+                                    <p class="header-name">@item.Value.Price</p>
+                                    <p class="header-name"> @item.Value.Count</p>
+                                    <p class="header-name">@item.Value.SeatNumber</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is5.OnDesktop">
+                    @if (purchaseOrder.EventLocation != "Online")
+                    {
+                        <div>
+                            <div class="d-flex align-items-center">
+                                <p class="mb-0 font-20 font-weight-700 color-black-100 me-4">Your ticket is here!</p>
+                                <a class="color-white-100 bg-orange-100 border-radius-5 px-4 py-2 hover-color-white text-decoration-none"
+                                   href="@purchaseOrder.TicketUrl" target="_blank" rel="noopener noreferrer">View</a>
+                            </div>
+                            <div class="mt-3 border-1-solid border-color-black-100 border-radius-5 overflow-hidden">
+                                <Table class="w-100">
+                                    <TableHeader class="bg-grey-100 color-white-100 font-14 font-weight-700">
+                                        <TableRow>
+                                            <TableHeaderCell class="p-2 text-center">Ticket #</TableHeaderCell>
+                                            <TableHeaderCell class="p-2">Ticket</TableHeaderCell>
+                                            <TableHeaderCell class="p-2">Amount</TableHeaderCell>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody class="font-14 color-black-100">
+                                        @foreach (var item in purchaseOrder.Tickets)
+                                        {
+                                            <TableRow>
+                                                <TableRowCell class="p-2 text-center" VerticalAlignment="VerticalAlignment.Middle">
+                                                    @FormattedId(item.Id)
+                                                </TableRowCell>
+                                                <TableRowCell class="p-2" VerticalAlignment="VerticalAlignment.Middle">@item.Name</TableRowCell>
+                                                <TableRowCell class="p-2" VerticalAlignment="VerticalAlignment.Middle">P @item.Price.ToString("#,##0.00")</TableRowCell>
+                                            </TableRow>
+                                        }
+                                    </TableBody>
+                                </Table>
+                            </div>
+                            <div class="text-center">
+                                <p class="font-14 color-grey-100 my-3">Should you require assistance in cancellation or change in order, Kindly email us in support@cinnamon.ph</p>
+                                <Button Clicked="NavigateToHome" class="color-white-100 rounded-pill bg-orange-100 px-4 hover-color-white mt-3">
+                                    Back to Home
+                                </Button>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="online-event text-center">
+                            <div class="header">Thankyou for choosing <span class="cinnamon-text">Cinnamon!</span></div>
+                            <p class="checkout-text">Checkout your event now!</p>
+                            <div class="text-center">
+                                <a class="view-link text-decoration-none" href="@purchaseOrder.TicketUrl" target="_blank" rel="noopener noreferrer">View Link/s</a>
+                            </div>
+                            <div class="text-center">
+                                <Button Clicked="NavigateToHome" class="home-button">
+                                    Back to Home
+                                </Button>
+                            </div>
+                            <div class="cancellation d-flex justify-content-center">
+                                <p class="cancellation-text">Should you require assistance in cancellation or change in order, Kindly email us in support@cinnamon.ph</p>
+                            </div>
+
+                        </div>
+                    }
+                </Column>
+            </Row>
+        </Container>
+    </div>
+}
+
+@code
+{
+    [Parameter]
+    public int OrderId { get; set; }
+
+    private string token;
+    private Framework.ApiCommand.ApiCore.DTO.PurchaseOrder.OtePurchaseOrderDTO? purchaseOrder;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            token = user.FindFirstValue("Token");
+            if (string.IsNullOrEmpty(token))
+            {
+                NavigationManager.NavigateTo("/explore");
+                return;
+            }
+
+            await LoadPurchaseOrderDetails();
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "OTE Payment Page");
+        }
+    }
+
+    private async Task LoadPurchaseOrderDetails()
+    {
+        var orderSummaryRes = await transactionApiHandler.GetOtePurchaseOrder(OrderId, token);
+        if (!orderSummaryRes.Succeeded || orderSummaryRes.Result is null || !orderSummaryRes.Result.IsSuccess)
+        {
+            NavigationManager.NavigateTo("/not-found");
+            return;
+        }
+        purchaseOrder = orderSummaryRes.Result.Result;
+    }
+
+    private IEnumerable<TicketSummary> GetTicketSummary
+    {
+        get
+        {
+            var tickets = new Dictionary<int, TicketSummary>();
+
+            if (purchaseOrder is not null)
+            {
+                foreach (var item in purchaseOrder.Tickets)
+                {
+                    if (tickets.ContainsKey(item.Id))
+                    {
+                        tickets[item.Id].Count++;
+                    }
+                    else
+                    {
+                        tickets.Add(item.Id, new TicketSummary
+                            {
+                                Count = 1,
+                                Id = item.Id,
+                                Name = item.Name,
+                                Price = item.Price,
+                                SeatName = item.Sea
+                            });
+                    }
+                }
+            }
+
+            return tickets.Select(t => t.Value);
+        }
+    }
+
+    private Task NavigateToTickets()
+    {
+        if (purchaseOrder is not null)
+        {
+            NavigationManager.NavigateTo(purchaseOrder.TicketUrl);
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task NavigateToHome()
+    {
+        NavigationManager.NavigateTo("/explore");
+        return Task.CompletedTask;
+    }
+
+    private string FormattedId(int id)
+    {
+        var idString = id.ToString();
+        var template = "000000";
+        var referenceId = idString.Length > template.Length ? idString : template.Substring(idString.Length) + idString;
+        return referenceId;
+    }
+
+    private class TicketSummary
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public int Count { get; set; }
+        public string SeatName { get; set; }
+    }
+}

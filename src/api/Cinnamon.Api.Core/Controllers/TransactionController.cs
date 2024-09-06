@@ -310,7 +310,8 @@ public class TransactionController : ControllerBase
                 Tickets = args.Tickets.Select(t => {
                     return new Services.TransactionService.Interactors.OtePurchaseOrderArgs.Ticket {
                         Count = t.Count,
-                        Id = t.Id
+                        Id = t.Id,
+                        SeatNumber = t.SeatNumber
                     };
                 }),
                 Questions = args.Questions is not null ? args.Questions.Select(q => new Services.TransactionService.Interactors.OtePurchaseOrderArgs.ActivityQuestion {

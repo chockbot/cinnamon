@@ -209,13 +209,14 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 {
                     var qrcode = CreateCode();
                     selectedTickets.Add(new Ticket {
-                        Id = ticketPrice.Id,
-                        Name = ticketPrice.Name,
-                        Price = ticketPrice.Price,
-                        Code = qrcode,
-                        ImageData = GenerateQRCode(qrcode),
-                        OteDateId = ticketPrice.OteDateId,
+                        Id               = ticketPrice.Id,
+                        Name             = ticketPrice.Name,
+                        Price            = ticketPrice.Price,
+                        Code             = qrcode,
+                        ImageData        = GenerateQRCode(qrcode),
+                        OteDateId        = ticketPrice.OteDateId,
                         RequiredApproval = ticketPrice.RequiredApproval,
+                        SeatNumber       = ticket.SeatNumber
                     });
                 }
             }
@@ -404,7 +405,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                                 Price = first.Price,
                                 OteDateId = first.OteDateId,
                                 Date = oteDate.DateStart,
-                                Count = t.Count()
+                                Count = t.Count(),
+                                SeatName = first.SeatNumber
                             };
                             return ticket;
                         }),
@@ -531,5 +533,6 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         public string Code {get; set;}
         public string ImageData {get; set;}
         public bool RequiredApproval {get; set;}
+        public string SeatNumber { get; set; }
     }
 }

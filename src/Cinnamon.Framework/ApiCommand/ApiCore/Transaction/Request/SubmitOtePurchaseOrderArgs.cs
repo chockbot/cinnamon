@@ -46,6 +46,7 @@ public class SubmitOtePurchaseOrderArgs
         public int Id {get; set;}
         [Required]
         public int Count {get; set;}
+        public string SeatNumber { get; set; }
     }
 
     public class ActivityQuestion 
