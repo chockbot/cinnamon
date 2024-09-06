@@ -110,6 +110,12 @@
 </div>
 
 <div class="messages-container d-flex">
+    <!-- Loading Indicator -->
+    <div class="loading-overlay" id="loadingOverlay" style="@(isLoadingIndicator ? "display: flex;" : "display: none;")">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
     <div class="sidebar-messages left-sidebar messages-section d-xl-block d-lg-block d-md-block d-sm-block @messagesSectionDisplayStyle">
         <div class="message-title-section">
             <div class="row">
@@ -148,7 +154,8 @@
                 foreach (var chatRoom in FilteredChatRooms)
                 {
                     var fullName = $"{chatRoom.FromFirstName} {chatRoom.FromLastName}";
-                    <div class="row @GetNewMessageStyle(chatRoom.HasNewMessage) @GetActiveStyle(selectedChatRoomId == chatRoom.ChatRoomId) chatroom-list-item" @onclick="(() => GetChatHistoryByChatRoomId(chatRoom.ChatRoomId, true, false))">
+                    <div class="row @GetNewMessageStyle(chatRoom.HasNewMessage, chatRoom.ChatRoomId) @GetActiveStyle(selectedChatRoomId == chatRoom.ChatRoomId) chatroom-list-item"
+     @onclick="(() => { ToggleClick(chatRoom.ChatRoomId); GetChatHistoryByChatRoomId(chatRoom.ChatRoomId, true, false); })">
                         <input type="hidden" value="@chatRoom.DateCreated" id="date-created" />
                         <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="last-update-date">
@@ -200,143 +207,147 @@
         </div>
     </div>
     <div class="center-messages chat-section d-xl-block d-lg-block d-md-block d-sm-block @chatSectionDisplayStyle">
-        <LoadingIndicator @ref="loadingIndicator">
-            <div class="row" style="@SetPlaceholderStyle(isLoading)">
-                <div class="chat-profile-section">
-                    <div class="row">
-                        <div class="col-lg-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                            <div class="row">
-                                <div class="col-lg-1 chatmate-profile-picture-section placeholder-glow">
-                                    <span class="placeholder col-9 chatmate-profile-picture"></span>
+        <div class="loading-overlay" id="loadingOverlay" style="@(isLoading ? "display: flex;" : "display: none;")">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        <div class="row" style="@SetPlaceholderStyle(isLoading)">
+            <div class="chat-profile-section">
+                <div class="row">
+                    <div class="col-lg-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
+                        <div class="row">
+                            <div class="col-lg-1 chatmate-profile-picture-section placeholder-glow">
+                                <span class="placeholder col-9 chatmate-profile-picture"></span>
+                            </div>
+                            <div class="col-lg-10 placeholder-glow">
+                                <div class="chat-profile-name">
+                                    <span class="placeholder col-9"></span>
                                 </div>
-                                <div class="col-lg-10 placeholder-glow">
-                                    <div class="chat-profile-name">
-                                        <span class="placeholder col-9"></span>
-                                    </div>
-                                    <div class="last-seen">
-                                        <span class="placeholder col-9"></span>
-                                    </div>
+                                <div class="last-seen">
+                                    <span class="placeholder col-9"></span>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-lg-6 chat-profile-info-icon-section d-xl-block d-lg-block d-md-block d-sm-block d-none placeholder-glow">
-                            <span class="placeholder col-1"></span>
-                        </div>
-                        <div class="col-lg-12 d-block d-sm-none d-md-none d-lg-none d-xl-none placeholder-glow" style="padding: 0px;">
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <span class="placeholder col-9"></span>
-                                        </td>
-                                        <td>
-                                            <span class="placeholder col-9"></span>
-                                        </td>
-                                        <td class="chat-profile-info-icon-section">
-                                            <span class="placeholder col-1"></span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
                         </div>
                     </div>
-                </div>
-                <div class="conversation-section">
-                    <ul class="list-unstyled d-flex flex-column" id="chat-history-list">
-                        <li class="d-flex flex-row justify-content-end">
-                            <div class="self-message-placeholder">
-                                <div class="card-body">
-                                    <p class="card-text placeholder-glow">
-                                        <span class="placeholder col-12 placeholder-image"></span>
-                                        <span class="placeholder col-10"></span>
+                    <div class="col-lg-6 chat-profile-info-icon-section d-xl-block d-lg-block d-md-block d-sm-block d-none placeholder-glow">
+                        <span class="placeholder col-1"></span>
+                    </div>
+                    <div class="col-lg-12 d-block d-sm-none d-md-none d-lg-none d-xl-none placeholder-glow" style="padding: 0px;">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>
                                         <span class="placeholder col-9"></span>
-                                    </p>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="d-flex flex-row">
-                            <div class="sender-message-placeholder">
-                                <div class="card-body">
-                                    <p class="card-text placeholder-glow">
-                                        <span class="placeholder col-12 placeholder-image"></span>
-                                        <span class="placeholder col-10"></span>
+                                    </td>
+                                    <td>
                                         <span class="placeholder col-9"></span>
-                                    </p>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
+                                    </td>
+                                    <td class="chat-profile-info-icon-section">
+                                        <span class="placeholder col-1"></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-            <div style="@SetMessagesStyle(isLoading)">
-                @if (chatRooms.Count > 0)
-                {
-                    <div class="chat-profile-section">
-                        <div class="row">
-                            <div class="col-lg-6 col-sm-5 col-5 d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                                <div class="d-flex">
-                                    @if (chatMateChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
-                                    {
-                                        <div class="chatmate-profile-picture-section me-3">
-                                            <img src="@chatMateProfilePicture" class="chatmate-profile-picture" />
+            <div class="conversation-section">
+                <ul class="list-unstyled d-flex flex-column" id="chat-history-list">
+                    <li class="d-flex flex-row justify-content-end">
+                        <div class="self-message-placeholder">
+                            <div class="card-body">
+                                <p class="card-text placeholder-glow">
+                                    <span class="placeholder col-12 placeholder-image"></span>
+                                    <span class="placeholder col-10"></span>
+                                    <span class="placeholder col-9"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="d-flex flex-row">
+                        <div class="sender-message-placeholder">
+                            <div class="card-body">
+                                <p class="card-text placeholder-glow">
+                                    <span class="placeholder col-12 placeholder-image"></span>
+                                    <span class="placeholder col-10"></span>
+                                    <span class="placeholder col-9"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div style="@SetMessagesStyle(isLoading)">
+            @if (chatRooms.Count > 0)
+            {
+                <div class="chat-profile-section">
+                    <div class="row">
+                        <div class="col-lg-6 col-sm-5 col-5 d-xl-block d-lg-block d-md-block d-sm-block d-none">
+                            <div class="d-flex">
+                                @if (chatMateChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
+                                {
+                                    <div class="chatmate-profile-picture-section me-3">
+                                        <img src="@chatMateProfilePicture" class="chatmate-profile-picture" />
+                                        @if (!string.IsNullOrEmpty(chatMateConnectionId))
+                                        {
+                                            <span class="logged-in"></span>
+                                        }
+                                    </div>
+                                    <div class="">
+                                        <div class="chat-profile-name">
+                                            @chatMateFullName
+                                        </div>
+                                        <div class="last-seen">
                                             @if (!string.IsNullOrEmpty(chatMateConnectionId))
                                             {
-                                                <span class="logged-in"></span>
+                                                <span>Active Now</span>
+                                            }
+                                            else
+                                            {
+                                                <span id="last-seen-date" data-last-seen-date="@lastSeenDate.GetValueOrDefault()"></span>
                                             }
                                         </div>
-                                        <div class="">
-                                            <div class="chat-profile-name">
-                                                @chatMateFullName
-                                            </div>
-                                            <div class="last-seen">
-                                                @if (!string.IsNullOrEmpty(chatMateConnectionId))
-                                                {
-                                                    <span>Active Now</span>
-                                                }
-                                                else
-                                                {
-                                                    <span id="last-seen-date" data-last-seen-date="@lastSeenDate.GetValueOrDefault()"></span>
-                                                }
-                                            </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="chatmate-profile-picture-section">
+                                        <img src="@chatMateProfilePicture" class="chatmate-profile-picture me-3" />
+                                        @if (!string.IsNullOrEmpty(chatMateGroupName))
+                                        {
+                                            <span class="logged-in"></span>
+                                        }
+                                    </div>
+                                    <div class="">
+                                        <div class="chat-profile-name">
+                                            @chatMateChatName
                                         </div>
-                                    }
-                                    else
-                                    {
-                                        <div class="chatmate-profile-picture-section">
-                                            <img src="@chatMateProfilePicture" class="chatmate-profile-picture me-3" />
+                                        <div class="last-seen">
                                             @if (!string.IsNullOrEmpty(chatMateGroupName))
                                             {
-                                                <span class="logged-in"></span>
+                                                <span>Active Now</span>
+                                            }
+                                            else
+                                            {
+                                                <span id="last-seen-date" data-last-seen-date="@lastSeenDate.GetValueOrDefault()"></span>
                                             }
                                         </div>
-                                        <div class="">
-                                            <div class="chat-profile-name">
-                                                @chatMateChatName
-                                            </div>
-                                            <div class="last-seen">
-                                                @if (!string.IsNullOrEmpty(chatMateGroupName))
-                                                {
-                                                    <span>Active Now</span>
-                                                }
-                                                else
-                                                {
-                                                    <span id="last-seen-date" data-last-seen-date="@lastSeenDate.GetValueOrDefault()"></span>
-                                                }
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
+                                    </div>
+                                }
                             </div>
-                            <div class="col-lg-6 col-sm-7 col-7 chat-profile-info-icon-section d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                                @if (maker.FromUserId != currentUserId && chatMateChatType == ChatType.GroupChat)
+                        </div>
+                        <div class="col-lg-6 col-sm-7 col-7 chat-profile-info-icon-section d-xl-block d-lg-block d-md-block d-sm-block d-none">
+                            @if (maker.FromUserId != currentUserId && chatMateChatType == ChatType.GroupChat)
+                            {
+                                var details = new ChatMember
                                 {
-                                    var details = new ChatMember
-                                    {
-                                        FromUserId = maker.FromUserId,
-                                        FromFirstName = maker.FromFirstName,
-                                        FromLastName = maker.FromLastName,
-                                        FromProfilePath = maker.FromProfilePath
-                                    };
+                                    FromUserId = maker.FromUserId,
+                                    FromFirstName = maker.FromFirstName,
+                                    FromLastName = maker.FromLastName,
+                                    FromProfilePath = maker.FromProfilePath
+                                };
 
                                     <span data-toggle="tooltip" title="Message Activity Provider" data-bs-toggle="tooltip" data-bs-placement="left">
                                         <img src="images/messages/personal-message.svg" class="personal-message-icon" @onclick="(() => CreatePrivateMessage(details))" />
@@ -551,6 +562,11 @@
     </div>
     <div class="sidebar-messages profile-section messages-section d-xl-block d-lg-block d-md-block d-sm-block @profileSectionDisplayStyle">
         <div class="row" style="@SetPlaceholderStyle(isLoading)">
+            <div class="loading-overlay" id="loadingOverlay" style="@(isLoading ? "display: flex;" : "display: none;")">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
             <div class="row justify-content-center placeholder-glow">
                 <div class="col-lg-12 text-center">
                     <span class="placeholder col-9 profile-section-picture"></span>
@@ -570,6 +586,11 @@
             </div>
         </div>
         <div style="@SetMessagesStyle(isLoading)">
+            <div class="loading-overlay" id="loadingOverlay" style="@(isLoading ? "display: flex;" : "display: none;")">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
             @if (chatRooms.Count > 0)
             {
                 <div class="col-lg-12 d-block d-sm-none d-md-none d-lg-none d-xl-none">
@@ -748,6 +769,8 @@
     private DateTime? lastMessageDateCreated;
     private DateTime? lastSeenDate;
     private bool isLoading = false;
+
+    private bool isLoadingIndicator = true;
     [Inject] HubConnection hubConnection { get; set; }
     private string messagesSectionDisplayStyle = string.Empty;
     private string chatSectionDisplayStyle = string.Empty;
@@ -757,6 +780,7 @@
     private bool showLeaveGroup = false;
     private bool showLeaveGroupConfirmation = false;
     private ChatMember maker = new ChatMember();
+    private Dictionary<int, bool> clickedChatRooms = new Dictionary<int, bool>();
 
     private Modal? modalEditChatGroupName;
     private string editedGroupChatName = string.Empty;
@@ -764,7 +788,7 @@
     private LoadingIndicator? loadingIndicator;
 
     protected override async Task OnInitializedAsync()
-    {
+    {   
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         Token = user.FindFirstValue("Token");
 
@@ -979,6 +1003,9 @@
         await LoadRequestMessage();
 
         NavigationManager.LocationChanged += LocationChanged;
+
+        await Task.Delay(5000);
+        isLoadingIndicator = false;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -1341,12 +1368,16 @@
         }
     }
 
-    private string GetNewMessageStyle(bool hasNewMessage)
+    private string GetNewMessageStyle(bool hasNewMessage, int chatRoomId)
     {
-        if (hasNewMessage)
-            return "chatroom-item-bold";
+        string baseStyle = hasNewMessage ? "chatroom-item-bold" : "chatroom-item";
 
-        return "chatroom-item";
+        if (clickedChatRooms.ContainsKey(chatRoomId) && clickedChatRooms[chatRoomId])
+        {
+            baseStyle += " chatroom-item-clicked";
+        }
+
+        return baseStyle;
     }
 
     private string GetActiveStyle(bool isEqual)
@@ -1693,5 +1724,21 @@
             await Task.Delay(500);
             StartConnection();
         }
+    }
+
+    private async Task ToggleClick(int chatRoomId)
+    {
+        if (clickedChatRooms.ContainsKey(chatRoomId))
+        {
+            clickedChatRooms[chatRoomId] = true;
+        }
+        else
+        {
+            clickedChatRooms.Add(chatRoomId, true);
+        }
+        
+        await Task.Delay(500);
+        clickedChatRooms[chatRoomId] = false;
+        StateHasChanged();
     }
 }
