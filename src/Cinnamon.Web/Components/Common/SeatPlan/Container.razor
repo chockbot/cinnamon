@@ -2,6 +2,7 @@
 @using SeatPlanModels = Cinnamon.Framework.Models.SeatPlan;
 @using Cinnamon.Framework.Providers;
 @inject IJsonSerializationProvider JsonSerializationProvider;
+@inject IJSRuntime jsRuntime;
 
 <div id="seat-plan-container" class="w-100 overflow-hidden">
     <div class="categories-container" style="@GetCategoryStyle">
@@ -14,10 +15,10 @@
             }
         }
     </div>
-    <div class="seat-plan-actions text-end">
+    @* <div class="seat-plan-actions text-end">
         <Button Clicked="ScaleUp" class="bg-orange-100 color-white-100" Border="Border.Is0">+</Button>
         <Button Clicked="ScaleDown" class="bg-orange-100 color-white-100" Border="Border.Is0">-</Button>
-    </div>
+    </div> *@
 </div>
 
 @code
@@ -40,6 +41,14 @@
     protected override async Task OnInitializedAsync()
     {
         await SerializePayload();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Utils.dragElement", "#seat-plan-container", ".categories-container");
+        }
     }
 
     private Task SerializePayload()
@@ -76,7 +85,8 @@
     {
         get
         {
-            return $"transform: scale({currentScale});";
+            return "";
+            //return $"transform: scale({currentScale});";
         }
     }
 }
