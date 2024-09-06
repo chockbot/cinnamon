@@ -2286,4 +2286,32 @@ public class ActivityRepository : IActivityRepository
             return AppResult<IEnumerable<OteAlreadyBookDate>>.CreateFailed(ex, "An error occured when getting ote already booked dates.");
         }
     }
+
+    public async Task<AppResult<OteScheduleDateDTO>> UpdateOteDatePayload(int dateId, string payload)
+    {
+        try
+        {
+            var oteDateRes = await dataStore.OteDate.GetByIdAsync(dateId);
+            if(!oteDateRes.Succeeded || oteDateRes.Result is null)
+            {
+                return AppResult<OteScheduleDateDTO>.CreateFailed(new ApplicationException(oteDateRes.Message), oteDateRes.Message);
+            }
+            var oteDate = oteDateRes.Result;
+
+            oteDate.SeatPlanPayload = payload;
+
+            var updateRes = await dataStore.OteDate.Update(oteDate);
+            if(!updateRes.Succeeded || updateRes.Result is null)
+            {
+                return AppResult<OteScheduleDateDTO>.CreateFailed(new ApplicationException(updateRes.Message), updateRes.Message);
+            }
+
+            var updated = mapper.Map<OteScheduleDateDTO>(updateRes.Result);
+            return AppResult<OteScheduleDateDTO>.CreateSucceeded(updated, "Successfully update ote date payload.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteScheduleDateDTO>.CreateFailed(ex, "An error occured when updating ote date payload.");
+        }
+    }
 }
