@@ -9,7 +9,8 @@
             @foreach (var seat in row.Value.Seats)
             {
                 <Seat @key="seat" RowSeat="seat.Value" RowNumber="@row.Value.RowNumber" 
-                    CategoryColor="@SeatCategory.Color" OnSeatSelected="(seat) => OnSeatSelectedHandler(seat, row.Value)" />
+                    CategoryColor="@SeatCategory.Color" OnSeatSelected="(seat) => OnSeatSelectedHandler(seat, row.Value)"
+                    ViewOnly="ViewOnly" />
             }
         }
     </div>
@@ -22,6 +23,9 @@
 
     [Parameter]
     public EventCallback<SelectedSeat> OnSeatSelected { get; set; }
+
+    [Parameter]
+    public bool ViewOnly { get; set; }
 
     private async Task OnSeatSelectedHandler(SeatPlanModels.Seat seat, SeatPlanModels.Row row)
     {

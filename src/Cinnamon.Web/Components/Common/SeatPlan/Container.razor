@@ -3,22 +3,21 @@
 @using Cinnamon.Framework.Providers;
 @inject IJsonSerializationProvider JsonSerializationProvider;
 
-<div id="seat-plan-container" class="w-100">
-    @if(seatPlanFormat is not null)
-    {
-        <div class="categories-container">
+<div id="seat-plan-container" class="w-100 overflow-hidden">
+    <div class="categories-container" style="@GetCategoryStyle">
+        @if(seatPlanFormat is not null)
+        {
             @foreach (var category in seatPlanFormat.Categories)
             {
-                <Cinnamon.Web.Components.Common.SeatPlan.Category SeatCategory="category.Value" OnSeatSelected="OnSeatSelected" />
+                <Cinnamon.Web.Components.Common.SeatPlan.Category ViewOnly="ViewOnly" 
+                    SeatCategory="category.Value" OnSeatSelected="OnSeatSelected" />
             }
-        </div>
-    }
-    else
-    {
-        <div class="seat-plan">
-            <p>Seat plan not available</p>
-        </div>
-    }
+        }
+    </div>
+    <div class="seat-plan-actions text-end">
+        <Button Clicked="ScaleUp" class="bg-orange-100 color-white-100" Border="Border.Is0">+</Button>
+        <Button Clicked="ScaleDown" class="bg-orange-100 color-white-100" Border="Border.Is0">-</Button>
+    </div>
 </div>
 
 @code
@@ -29,7 +28,14 @@
     [Parameter]
     public EventCallback<Category.SelectedSeat> OnSeatSelected { get; set; }
 
+    [Parameter]
+    public bool ViewOnly { get; set; }
+
     private SeatPlanModels.Format? seatPlanFormat;
+
+    private const float MAXSCALE = 1.5f;
+    private const float MINSCALE = 0.4f;
+    private float currentScale = 0.7f;
 
     protected override async Task OnInitializedAsync()
     {
@@ -44,5 +50,33 @@
         }
 
         return Task.CompletedTask;
+    }
+
+    private Task ScaleUp()
+    {
+        if (currentScale < MAXSCALE)
+        {
+            currentScale += 0.1f;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task ScaleDown()
+    {
+        if (currentScale > MINSCALE)
+        {
+            currentScale -= 0.1f;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private string GetCategoryStyle 
+    {
+        get
+        {
+            return $"transform: scale({currentScale});";
+        }
     }
 }
