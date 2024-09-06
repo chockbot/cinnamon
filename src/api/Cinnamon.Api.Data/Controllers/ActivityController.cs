@@ -795,4 +795,25 @@ public class ActivityController : ControllerBase
             return new JsonResult(new OteAlreadyBookedResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [HttpPost]
+    [Route("UpdateOteDatePayload")]
+    [ProducesResponseType(typeof(UpdateOteDatePayloadResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateOteDatePayload([FromBody] UpdateOteDatePayloadArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.UpdateOteDatePayload(args.Id, args.Payload);
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateOteDatePayloadResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateOteDatePayloadResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateOteDatePayloadResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

@@ -46,4 +46,5 @@ public interface IActivityData
     Task<AppResult<GetOteWaitlistByProviderResult>> GetOteWaitlistByProvider(GetOteWaitlistByProviderArgs args);
     Task<AppResult<DeleteOteWaitlistResult>> DeleteOteWaitlist(DeleteOteWaitlistArgs args);
     Task<AppResult<GetWaitListResult>> GetOteWaitList(int id);
+    Task<AppResult<UpdateOteDatePayloadResult>> UpdateOteDatePayload(UpdateOteDatePayloadArgs args);
 }
