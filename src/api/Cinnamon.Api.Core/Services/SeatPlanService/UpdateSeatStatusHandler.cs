@@ -1,8 +1,10 @@
+using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.SeatPlanService.Handler;
 using Cinnamon.Api.Core.Services.SeatPlanService.Interactors;
 using Cinnamon.Api.Core.Services.SeatPlanService.Interactors.Result;
 using Cinnamon.Framework.Common;
+using Cinnamon.Framework.Models.SeatPlan;
 
 namespace Cinnamon.Api.Core.Services.SeatPlanService;
 
@@ -10,16 +12,19 @@ public class UpdateSeatStatusHandler : IUpdateSeatStatusHandler
 {
     private readonly IGetActivityHandler getActivityHandler;
     private readonly IOteFindByHandler oteFindByHandler;
+    private readonly IJsonSerializationProvider jsonSerializationProvider;
 
-    public UpdateSeatStatusHandler(IGetActivityHandler getActivityHandler, IOteFindByHandler oteFindByHandler)
+    public UpdateSeatStatusHandler(IGetActivityHandler getActivityHandler, IOteFindByHandler oteFindByHandler,
+        IJsonSerializationProvider jsonSerializationProvider)
     {
         this.getActivityHandler = getActivityHandler;
         this.oteFindByHandler = oteFindByHandler;
+        this.jsonSerializationProvider = jsonSerializationProvider;
     }
 
     public AppResult<UpdateSeatStatusResult> Execute(UpdateSeatStatusArgs args)
     {
-        throw new NotImplementedException();
+        return ExecuteAsync(args).Result;
     }
 
     public async Task<AppResult<UpdateSeatStatusResult>> ExecuteAsync(UpdateSeatStatusArgs args)
@@ -47,8 +52,49 @@ public class UpdateSeatStatusHandler : IUpdateSeatStatusHandler
                     new ApplicationException(oteRes.Message), oteRes.Message);
             }
             var oteActivity = oteRes.Result;
-            
 
+            var oteDate = oteActivity.OteDates.FirstOrDefault(d => d.Date.Date == args.EventDate.Date);
+            if(oteDate is null)
+            {
+                return AppResult<UpdateSeatStatusResult>.CreateFailed(
+                    new ApplicationException("No OTE date found for the given date"), "No OTE date found for the given date");
+            }
+
+            var seatplanPayload = oteDate.SeatPlanPayload ?? string.Empty;
+
+            var deserializedPayload = jsonSerializationProvider.Deserialize<Format>(seatplanPayload);
+            if(deserializedPayload is null)
+            {
+                return AppResult<UpdateSeatStatusResult>.CreateFailed(
+                    new ApplicationException("Failed to deserialize seat plan payload"), "Failed to deserialize seat plan payload");
+            }
+
+            if(deserializedPayload.Categories[args.CategoryId] is null)
+            {
+                return AppResult<UpdateSeatStatusResult>.CreateFailed(
+                    new ApplicationException("Category not found in seat plan payload"), "Category not found in seat plan payload");
+            }
+
+            if(deserializedPayload.Categories[args.CategoryId].Rows[args.RowId] is null)
+            {
+                return AppResult<UpdateSeatStatusResult>.CreateFailed(
+                    new ApplicationException("Row not found in seat plan payload"), "Row not found in seat plan payload");
+            }
+
+            if(deserializedPayload.Categories[args.CategoryId].Rows[args.RowId].Seats[args.SeatId] is null)
+            {
+                return AppResult<UpdateSeatStatusResult>.CreateFailed(
+                    new ApplicationException("Seat not found in seat plan payload"), "Seat not found in seat plan payload");
+            }
+
+            var seat = deserializedPayload.Categories[args.CategoryId].Rows[args.RowId].Seats[args.SeatId];
+            seat.Occupied = args.Occupied;
+
+            var serializedPayload = jsonSerializationProvider.Serialize(deserializedPayload);
+
+            return AppResult<UpdateSeatStatusResult>.CreateSucceeded(new UpdateSeatStatusResult {
+
+            }, "Seat status updated successfully");
         }
         catch (Exception ex)
         {
