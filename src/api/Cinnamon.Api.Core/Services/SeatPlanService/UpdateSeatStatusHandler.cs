@@ -1,3 +1,4 @@
+using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.SeatPlanService.Handler;
@@ -13,13 +14,15 @@ public class UpdateSeatStatusHandler : IUpdateSeatStatusHandler
     private readonly IGetActivityHandler getActivityHandler;
     private readonly IOteFindByHandler oteFindByHandler;
     private readonly IJsonSerializationProvider jsonSerializationProvider;
+    private readonly IActivityData activityData;
 
     public UpdateSeatStatusHandler(IGetActivityHandler getActivityHandler, IOteFindByHandler oteFindByHandler,
-        IJsonSerializationProvider jsonSerializationProvider)
+        IJsonSerializationProvider jsonSerializationProvider, IActivityData activityData)
     {
         this.getActivityHandler = getActivityHandler;
         this.oteFindByHandler = oteFindByHandler;
         this.jsonSerializationProvider = jsonSerializationProvider;
+        this.activityData = activityData;
     }
 
     public AppResult<UpdateSeatStatusResult> Execute(UpdateSeatStatusArgs args)
@@ -91,6 +94,16 @@ public class UpdateSeatStatusHandler : IUpdateSeatStatusHandler
             seat.Occupied = args.Occupied;
 
             var serializedPayload = jsonSerializationProvider.Serialize(deserializedPayload);
+
+            var updateOteDatePayload = await activityData.UpdateOteDatePayload(new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteDatePayloadArgs {
+                Id = oteDate.Id,
+                Payload = serializedPayload
+            });
+            if(!updateOteDatePayload.Succeeded || updateOteDatePayload.Result is null || !updateOteDatePayload.Result.IsSuccess)
+            {
+                return AppResult<UpdateSeatStatusResult>.CreateFailed(
+                    new ApplicationException(updateOteDatePayload.Result?.ErrorInfo?.Message), updateOteDatePayload.Message);
+            }
 
             return AppResult<UpdateSeatStatusResult>.CreateSucceeded(new UpdateSeatStatusResult {
 
