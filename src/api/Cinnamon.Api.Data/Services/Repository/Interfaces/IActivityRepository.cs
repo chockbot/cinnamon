@@ -84,4 +84,6 @@ public interface IActivityRepository
         int? categoryId = null, int? starReview = null, int? experienceType = null, int? experienceCategory = null);
     Task<AppResult<bool>> BatchSummaryUpdate();
     Task<AppResult<IEnumerable<OteAlreadyBookDate>>> OteAlreadyBooked(int activityId);
+
+    Task<AppResult<OteScheduleDateDTO>> UpdateOteDatePayload(int dateId, string payload);
 }

@@ -1,7 +1,7 @@
 @namespace Cinnamon.Web.Components.Common.SeatPlan
 @using SeatPlanModels = Cinnamon.Framework.Models.SeatPlan;
 
-<div class="seat-plan-category">
+<div class="seat-plan-category text-center mt-3">
     <label>@SeatCategory.Name</label>
     <div class="category-row d-flex flex-wrap justify-content-center">
         @foreach (var row in SeatCategory.Rows)
@@ -9,7 +9,8 @@
             @foreach (var seat in row.Value.Seats)
             {
                 <Seat @key="seat" RowSeat="seat.Value" RowNumber="@row.Value.RowNumber" 
-                    CategoryColor="@SeatCategory.Color" OnSeatSelected="(seat) => OnSeatSelectedHandler(seat, row.Value)" />
+                    CategoryColor="@SeatCategory.Color" OnSeatSelected="(seat) => OnSeatSelectedHandler(seat, row.Value)"
+                    ViewOnly="ViewOnly" />
             }
         }
     </div>
@@ -22,6 +23,9 @@
 
     [Parameter]
     public EventCallback<SelectedSeat> OnSeatSelected { get; set; }
+
+    [Parameter]
+    public bool ViewOnly { get; set; }
 
     private async Task OnSeatSelectedHandler(SeatPlanModels.Seat seat, SeatPlanModels.Row row)
     {

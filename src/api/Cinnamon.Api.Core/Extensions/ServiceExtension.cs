@@ -327,6 +327,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.SeatPlanService.Handler.IGetTemplatesHandler, Services.SeatPlanService.GetTemplatesHandler>();
         services.AddTransient<Services.SeatPlanService.Handler.IGetTemplateHandler, Services.SeatPlanService.GetTemplateHandler>();
         services.AddTransient<Services.SeatPlanService.Handler.IChangeSeatPlanStatusHandler, Services.SeatPlanService.ChangeSeatPlanStatusHandler>();
+        services.AddTransient<Services.SeatPlanService.Handler.IUpdateSeatStatusHandler, Services.SeatPlanService.UpdateSeatStatusHandler>();
 
         return services;
     }
