@@ -715,4 +715,25 @@ public class ActivityData: IActivityData
 			return AppResult<GetWaitListResult>.CreateFailed(ex, "An error occured when getting ote waitlist.");
 		}
 	}
+
+	public async Task<AppResult<UpdateOteDatePayloadResult>> UpdateOteDatePayload(UpdateOteDatePayloadArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request("Activity/UpdateOteDatePayload")
+							.PostJsonAsync(args)
+							.ReceiveJson<UpdateOteDatePayloadResult>();
+
+			return AppResult<UpdateOteDatePayloadResult>.CreateSucceeded(result, "Successfully updated ote date payload.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<UpdateOteDatePayloadResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<UpdateOteDatePayloadResult>.CreateFailed(ex, "An error occurred when updating ote date payload.");
+		}
+	}
 }

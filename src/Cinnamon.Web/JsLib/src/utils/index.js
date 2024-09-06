@@ -7,6 +7,7 @@ import { countWords } from "./wordsCount.js";
 import clipboardCopy from "./clipboardCopy.js";
 import navigation from "./navigation.js";
 import localStorage from "./localStorage.js";
+import dragElement from "./dragElement.js";
 
 export default {
   cookieManager,
@@ -19,4 +20,5 @@ export default {
   clipboardCopy,
   navigation,
   localStorage,
+  dragElement,
 };
