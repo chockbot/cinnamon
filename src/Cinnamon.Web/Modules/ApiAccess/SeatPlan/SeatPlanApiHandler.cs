@@ -2,7 +2,6 @@ using Cinnamon.Framework.ApiCommand.ApiCore.SeatPlan.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.SeatPlan.Response;
 using Cinnamon.Framework.Common;
 using Cinnamon.Web.Modules.ApiAccess.Handlers;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Flurl.Http;
 using Flurl.Http.Configuration;
 

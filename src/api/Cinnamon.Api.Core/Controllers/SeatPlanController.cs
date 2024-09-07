@@ -132,6 +132,7 @@ public class SeatPlanController : ControllerBase
             return new JsonResult(new ChangeSeatPlanStatusResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
     [Route("UpdateSeatStatus")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateSeatStatusResult), StatusCodes.Status200OK)]
@@ -155,7 +156,7 @@ public class SeatPlanController : ControllerBase
 
             return new JsonResult(new UpdateSeatStatusResult { IsSuccess = true });
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             return new JsonResult(new UpdateSeatStatusResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
