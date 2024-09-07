@@ -17,6 +17,7 @@
 @inject INotificationService NotificationService;
 @inject IActivityApiHandler activityHandler;
 @inject ITransactionApiHandler transactionApiHandler;
+@inject ISeatPlanApiHandler seatplanApiHandler;
 @inject IMapper mapper;
 @inject ILocalStorage localStorage;
 
@@ -550,6 +551,7 @@
     private CustomerProfile? currentLogin { get; set; }
     private IDictionary<int, TicketInfo> selectedTickets = new Dictionary<int, TicketInfo>();
     private IEnumerable<OtePricing> AvailableTickets {get; set;} = Enumerable.Empty<OtePricing>();
+    private DateTime SelectedDate { get; set; }
     private Modal? failedModal;
     private string selectedDate { get; set; }
     private bool IsLimit { get; set; }
@@ -568,6 +570,19 @@
             {
                 await failedModal.Show();   
             }
+        }
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            await LoadOteDetails();
+            await LoadProvideDetails();
+            await LoadSelectedTickets();
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
         }
     }
 
@@ -614,6 +629,7 @@
             await NotificationService.Error("An error occured. Please try again later.", "Error");
         }
     }
+
     private async Task MonitorQueue(string userId, TimeSpan time)
     {
         try
@@ -651,6 +667,7 @@
             await NotificationService.Error("An error occurred while monitoring the queue. Please try again later.", "Error");
         }
     }
+
     private async void StartCountdownTimer(TimeSpan span)
     {
         // Set the countdown timer to 10 minutes
@@ -679,6 +696,7 @@
         _isProcessing = false;
         await modaltime.Show();
     }
+
     private async Task LoadProfile()
     {
         if (!string.IsNullOrEmpty(Token))
@@ -688,19 +706,6 @@
             {
                 currentLogin = mapper.Map<CustomerProfile>(profileResult.Result.Result);
             }
-        }
-    }
-    protected override async Task OnParametersSetAsync()
-    {
-        try
-        {
-            await LoadOteDetails();
-            await LoadProvideDetails();
-            await LoadSelectedTickets();
-        }
-        catch (Exception ex)
-        {
-            await NotificationService.Error("An error occured. Please try again later.", "Error");
         }
     }
 
@@ -763,6 +768,10 @@
             NavigationManager.NavigateTo($"/explore/ote/{Handler}");
             return;
         }
+        //set selected date
+        selectedDate = $"{tracker.SelectedDate.ToString("MMMM dd, yyyy")} | {tracker.SelectedDate.ToString("hh:mm tt").ToUpper()}";
+        SelectedDate = tracker.SelectedDate;
+
 
         var defaultDatePricing = activity.OteDates.FirstOrDefault(d => d.Date.Date == tracker.SelectedDate.Date);
         if(defaultDatePricing is null)
@@ -790,7 +799,10 @@
                     TicketSold       = sTicket.TicketSold,
                     RequiredApproval = sTicket.RequiredApproval,
                     IsUnlimited      = sTicket.IsUnlimited,
-                    SeatNumber       = ticket.SeatNumber
+                    SeatNumber       = ticket.SeatNumber,
+                    CategoryUUID     = ticket.CategoryUUID,
+                    SeatUUID         = ticket.SeatUUID,
+                    RowUUID          = ticket.RowUUID
                 };
                 await AddSelectedTicket(otePricing);
             }
@@ -1092,7 +1104,10 @@
                 Name             = pricing.Name,
                 Price            = pricing.Price,
                 SeatNumber       = pricing.SeatNumber,
-                RequiredApproval = pricing.RequiredApproval
+                RequiredApproval = pricing.RequiredApproval,
+                CategotyUUID     = pricing.CategoryUUID,
+                RowUUID          = pricing.RowUUID,
+                SeatUUID         = pricing.SeatUUID
             });
         }
         return Task.CompletedTask;
@@ -1170,7 +1185,27 @@
                 submitting = false;
 
                 await localStorage.RemoveItem(TRACKER_ID);
-
+                //Update seat payload occupied selected seat
+                foreach (var ticket in selectedTickets)
+                {
+                    var seatList = ticket.Value.SeatUUID.Split(", ").ToList();
+                    foreach (var seat in seatList)
+                    {
+                        var updateSeatPlan = await seatplanApiHandler.UpdateSeatStatus(new Framework.ApiCommand.ApiCore.SeatPlan.Request.UpdateSeatStatusArgs
+                            {
+                                ActivityId = activity.Id,
+                                EventDate = SelectedDate,
+                                CategoryId = ticket.Value.CategotyUUID,
+                                RowId = ticket.Value.RowUUID,
+                                SeatId = seat,
+                                Occupied = true
+                            }, token);
+                        if (!updateSeatPlan.Succeeded || updateSeatPlan.Result is null || !updateSeatPlan.Result.IsSuccess)
+                        {
+                            await NotificationService.Error("An error occured. Please contact support.", "Error");
+                        }
+                    }
+                }
                 if (submit.Result.Result.Action == 1)
                 {
                     NavigationManager.NavigateTo(submit.Result.Result.Url);
@@ -1183,8 +1218,6 @@
                 {
                     NavigationManager.NavigateTo($"/purchase/order/?purchaseid={submit.Result.Result.Id}");
                 }
-                //Update seat payload occupied selected seats
-
             }
         }
         catch (System.Exception ex)
@@ -1236,5 +1269,8 @@
         public string Name { get; set; }
         public string SeatNumber { get; set; }
         public bool RequiredApproval {get; set;}
+        public string CategotyUUID { get; set; }
+        public string RowUUID { get; set; }
+        public string SeatUUID { get; set; }
     }
 }

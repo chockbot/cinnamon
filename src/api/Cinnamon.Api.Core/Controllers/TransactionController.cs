@@ -420,7 +420,10 @@ public class TransactionController : ControllerBase
                 SelectedTickets = args.SelectedTickets.Select(t => new Services.TransactionService.Interactors.OteRequestPaymentArgs.RequestPaymentTicket {
                     TicketCount = t.TicketCount,
                     TicketId = t.TicketId,
-                    SeatNumber = t.SeatNumber
+                    SeatNumber = t.SeatNumber,
+                    CategoryUUID = t.CategoryUUID,
+                    RowUUID = t.RowUUID,
+                    SeatUUID = t.SeatUUID
                 }),
                 Questions = args.Questions?.Select(q => new Services.TransactionService.Interactors.OteRequestPaymentArgs.ProviderQuestion {
                     Answer = q.Answer,

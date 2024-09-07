@@ -900,6 +900,8 @@
                         Price            = selectedTicket.Price,
                         RequiredApproval = selectedTicket.RequiredApproval,
                         Seat             = $"{selectedSeat.RowNumber}-{selectedSeat.Seat.SeatNumber}",
+                        CategoryUUID     = selectedSeat.CategoryUUID,
+                        RowUUID          = selectedSeat.RowUUID,
                         SeatUUID         = selectedSeat.Seat.Uuid
                     });
                 }
@@ -1446,9 +1448,12 @@
                 SelectedDate = SelectedDate,
                 SelectedTickets = selectedTickets.Select(t => new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs.RequestPaymentTicket
                 {
-                    TicketCount = t.Value.Count,
-                    TicketId = t.Value.Id,
-                    SeatNumber = t.Value.Seat
+                    TicketCount  = t.Value.Count,
+                    TicketId     = t.Value.Id,
+                    SeatNumber   = t.Value.Seat,
+                    CategoryUUID = t.Value.CategoryUUID,
+                    SeatUUID     = t.Value.SeatUUID,
+                    RowUUID      = t.Value.RowUUID
                 }),
                 Questions = question.Select(q => new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs.ProviderQuestion
                 {
@@ -1717,6 +1722,8 @@
         public bool IsUnlimited { get; set; }
         public bool IsFree => Price == 0;
         public string Seat { get; set; }
+        public string CategoryUUID { get; set; }
+        public string RowUUID { get; set; }
         public string SeatUUID { get; set; }
     }
     private class QueueInfo

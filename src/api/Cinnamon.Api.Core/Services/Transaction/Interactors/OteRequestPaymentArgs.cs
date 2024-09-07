@@ -14,9 +14,12 @@ public class OteRequestPaymentArgs : IInteractor
 
     public class RequestPaymentTicket
     {
-        public int TicketId { get; set; }
+        public int TicketId {get; set;}
         public int TicketCount { get; set; }
         public string SeatNumber { get; set; }
+        public string CategoryUUID { get; set; }
+        public string RowUUID { get; set; }
+        public string SeatUUID { get; set; }
     }
     public class ProviderQuestion 
     {

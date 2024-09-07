@@ -28,6 +28,12 @@ public class PaymentRequestArgs
         public int TicketCount {get; set;}
         
         public string SeatNumber { get; set; }
+
+        public string CategoryUUID { get; set; }
+
+        public string RowUUID { get; set; }
+
+        public string SeatUUID { get; set; }
     }
 
     public class ProviderQuestion 

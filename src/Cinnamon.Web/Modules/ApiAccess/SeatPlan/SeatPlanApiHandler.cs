@@ -2,6 +2,7 @@ using Cinnamon.Framework.ApiCommand.ApiCore.SeatPlan.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.SeatPlan.Response;
 using Cinnamon.Framework.Common;
 using Cinnamon.Web.Modules.ApiAccess.Handlers;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Flurl.Http;
 using Flurl.Http.Configuration;
 
@@ -106,6 +107,28 @@ public class SeatPlanApiHandler : ISeatPlanApiHandler
         catch (Exception ex)
         {
             return AppResult<ChangeSeatPlanStatusResult>.CreateFailed(ex, "An error occurred while changing seat plan status");
+        }
+    }
+
+    public async Task<AppResult<UpdateSeatStatusResult>> UpdateSeatStatus(UpdateSeatStatusArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("SeatPlan/UpdateSeatStatus")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateSeatStatusResult>();
+
+            return AppResult<UpdateSeatStatusResult>.CreateSucceeded(result, "Seat  status changed successfully");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdateSeatStatusResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateSeatStatusResult>.CreateFailed(ex, "An error occurred while changing seat status");
         }
     }
 }

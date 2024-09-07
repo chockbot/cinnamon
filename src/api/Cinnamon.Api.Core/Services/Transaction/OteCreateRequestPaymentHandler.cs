@@ -71,9 +71,12 @@ public class OteCreateRequestPaymentHandler : IOteCreateRequestPaymentHandler
                 if(dateTicket is not null)
                 {
                     validTickets.Add(new Ticket {
-                        Count = ticket.TicketCount,
-                        Id = ticket.TicketId,
-                        SeatNumber = ticket.SeatNumber
+                        Count        = ticket.TicketCount,
+                        Id           = ticket.TicketId,
+                        SeatNumber   = ticket.SeatNumber,
+                        CategoryUUID = ticket.CategoryUUID, 
+                        RowUUID      = ticket.RowUUID,
+                        SeatUUID     =ticket.SeatUUID
                     });
                 }
             }
@@ -83,9 +86,12 @@ public class OteCreateRequestPaymentHandler : IOteCreateRequestPaymentHandler
                 ActivityId = args.ActivityId,
                 DateId = oteDate.Id,
                 Tickets = validTickets.Select(t => new Ticket {
-                    Count = t.Count,
-                    Id = t.Id,
-                    SeatNumber = t.SeatNumber,
+                    Count        = t.Count,
+                    Id           = t.Id,
+                    SeatNumber   = t.SeatNumber,
+                    CategoryUUID = t.CategoryUUID,
+                    RowUUID      = t.RowUUID,
+                    SeatUUID     = t.SeatUUID
                 }),
                 Questions = args.Questions?.Select(q => new ProviderQuestion {
                     Answer = q.Answer,
@@ -160,9 +166,12 @@ public class OteCreateRequestPaymentHandler : IOteCreateRequestPaymentHandler
                 Guid = args.Guid,
                 SelectedDate = args.SelectedDate,
                 SelectedTickets = validTickets.Select(t => new OteCreateRequestPaymentResult.RequestPaymentTicket {
-                    TicketCount = t.Count,
-                    TicketId = t.Id,
-                    SeatNumber = t.SeatNumber
+                    TicketCount  = t.Count,
+                    TicketId     = t.Id,
+                    SeatNumber   = t.SeatNumber,
+                    CategoryUUID = t.CategoryUUID,
+                    RowUUID      = t.RowUUID,
+                    SeatUUID     = t.SeatUUID
                 }),
                 Token = args.Token,
                 Used = args.Used,
@@ -193,6 +202,10 @@ public class OteCreateRequestPaymentHandler : IOteCreateRequestPaymentHandler
         public int Count {get; set;}
 
         public string SeatNumber { get; set; }
+
+        public string CategoryUUID { get; set; }
+        public string RowUUID { get; set; }
+        public string SeatUUID { get; set; }
     }
 
     private class ProviderQuestion
