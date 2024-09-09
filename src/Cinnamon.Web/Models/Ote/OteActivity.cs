@@ -30,6 +30,7 @@ public class OteActivity
     public int Sold { get; set; }
     public int Available { get; set; }
     public string EventImage { get; set; }
+    public bool ReserveSeat { get; set; }
     public bool ForceDisable {get; set;}
     public int EventTicketLimit { get; set; }
     public bool IsOpen { get; set; }

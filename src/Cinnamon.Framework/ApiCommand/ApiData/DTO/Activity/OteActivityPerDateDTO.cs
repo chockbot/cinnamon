@@ -13,6 +13,7 @@ public class OteActivityPerDateDTO
     public string CityName {get; set;}
     public string RegionName {get; set;}
     public bool ForceDisable {get; set;}
+    public bool ReserveSeat { get; set; }
     public DateTime Date {get; set;}
     public DateTime DateStart {get; set;}
     public DateTime DateEnd {get; set;}

@@ -689,7 +689,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 			string customerIdQuery = providerId is not null ? "and ac.\"CreatedBy\" = @providerId " : string.Empty;
 
 			string query = "select ac.\"Id\", ac.\"Title\", ac.\"Description\", ac.\"Handler\", ac.\"ForceDisable\", ad.\"PinnedLocation\", " +
-							   "ad.\"CityName\", ad.\"RegionName\", ac.\"ExperienceTypeId\", od.\"Date\", " +
+                               "ad.\"CityName\", ad.\"RegionName\", ac.\"ExperienceTypeId\", od.\"Date\", os.\"ReserveSeat\", " +
 							   "od.\"DateStart\", od.\"DateEnd\", od.\"Id\" \"DateId\", " +
 							   "( " +
 								   "SELECT \"ImageLocation\" " +
@@ -729,21 +729,22 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 						dt.Load(dr);
 
 						listResult = dt.AsEnumerable().Select(item => new OteActivityPerDateDTO {
-							ActivityId = Convert.ToInt32(item["Id"]),
-							CityName = item["CityName"].ToString() ?? string.Empty,
-							Date = Convert.ToDateTime(item["Date"]),
-							DateEnd = Convert.ToDateTime(item["DateEnd"]),
-							DateId = Convert.ToInt32(item["DateId"]),
-							DateStart = Convert.ToDateTime(item["DateStart"]),
-							Description = item["Description"].ToString() ?? string.Empty,
-							EventImage = item["EventImage"].ToString() ?? string.Empty,
+							ActivityId       = Convert.ToInt32(item["Id"]),
+							CityName         = item["CityName"].ToString() ?? string.Empty,
+							Date             = Convert.ToDateTime(item["Date"]),
+							DateEnd          = Convert.ToDateTime(item["DateEnd"]),
+							DateId           = Convert.ToInt32(item["DateId"]),
+							DateStart        = Convert.ToDateTime(item["DateStart"]),
+							Description      = item["Description"].ToString() ?? string.Empty,
+							EventImage       = item["EventImage"].ToString() ?? string.Empty,
 							ExperienceTypeId = Convert.ToInt32(item["ExperienceTypeId"]),
-							Handler = item["Handler"].ToString() ?? string.Empty,
-							PinnedLocation = item["PinnedLocation"].ToString() ?? string.Empty,
-							RegionName = item["RegionName"].ToString() ?? string.Empty,
-							Title = item["Title"].ToString() ?? string.Empty,
-							ForceDisable = Convert.ToBoolean(item["ForceDisable"])
-						}).ToList();
+							Handler          = item["Handler"].ToString() ?? string.Empty,
+							PinnedLocation   = item["PinnedLocation"].ToString() ?? string.Empty,
+							RegionName       = item["RegionName"].ToString() ?? string.Empty,
+							Title            = item["Title"].ToString() ?? string.Empty,
+							ForceDisable     = Convert.ToBoolean(item["ForceDisable"]),
+							ReserveSeat      = Convert.ToBoolean(item["ReserveSeat"])
+                        }).ToList();
 					}
 				}
 			}
