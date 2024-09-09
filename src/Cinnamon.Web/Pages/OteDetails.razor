@@ -1179,8 +1179,12 @@
                 SelectedDate = selectedDate,
                 SelectedTickets = selectedTickets.Select(t => new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs.RequestPaymentTicket
                 {
-                    TicketCount = t.Value.Count,
-                    TicketId = t.Value.Id
+                    TicketCount  = t.Value.Count,
+                    TicketId     = t.Value.Id,
+                    SeatNumber   = string.Empty,
+                    CategoryUUID =  string.Empty,
+                    SeatUUID     =  string.Empty,
+                    RowUUID      =  string.Empty
                 }),
                 Questions = question.Select(q => new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs.ProviderQuestion
                 {
