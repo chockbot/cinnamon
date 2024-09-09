@@ -8,7 +8,7 @@
         {
             @foreach (var seat in row.Value.Seats)
             {
-                <Seat @key="seat" RowSeat="seat.Value" RowNumber="@row.Value.RowNumber" 
+                <Seat @key="seat" RowSeat="seat.Value" RowNumber="@row.Value.RowNumber" Occupied="seat.Value.Occupied"
                     CategoryColor="@SeatCategory.Color" OnSeatSelected="(seat) => OnSeatSelectedHandler(seat, row.Value)"
                     ViewOnly="ViewOnly" />
             }
