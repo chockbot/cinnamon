@@ -1242,9 +1242,6 @@
             }
             else
             {
-                submitting = false;
-
-                await localStorage.RemoveItem(TRACKER_ID);
                 //Update seat payload occupied selected seat
                 foreach (var ticket in selectedTickets)
                 {
@@ -1266,6 +1263,8 @@
                         }
                     }
                 }
+                submitting = false;
+                await localStorage.RemoveItem(TRACKER_ID);
                 if (submit.Result.Result.Action == 1)
                 {
                     NavigationManager.NavigateTo(submit.Result.Result.Url);
