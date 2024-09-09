@@ -205,6 +205,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 }
 
                 // create selected ticket instance
+                var seatNumberList = ticket.SeatNumber.Split(",").ToList();
                 for(int i = 0; i < ticket.Count; i++)
                 {
                     var qrcode = CreateCode();
@@ -216,7 +217,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                         ImageData        = GenerateQRCode(qrcode),
                         OteDateId        = ticketPrice.OteDateId,
                         RequiredApproval = ticketPrice.RequiredApproval,
-                        SeatNumber       = ticket.SeatNumber
+                        SeatNumber       = seatNumberList[i]
                     });
                 }
             }

@@ -86,27 +86,28 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
         try
         {
             var query = applicationContext.OteTickets.Where(t => t.PurchaseOrderId == purchaseOrderId);
-
             if (includeCustomer)
             {
                 query = query.Include(t => t.Customer);
+                query = query.Include(t => t.PurchaseOrder);
             }
 
             if (!includeImageData)
             {
                 query = query.Select(t => new OteTicket
                 {
-                    ActivityId = t.ActivityId,
-                    Amount = t.Amount,
-                    CustomerId = t.CustomerId,
-                    Id = t.Id,
-                    OteScheduleId = t.OteScheduleId,
+                    ActivityId           = t.ActivityId,
+                    Amount               = t.Amount,
+                    CustomerId           = t.CustomerId,
+                    Id                   = t.Id,
+                    OteScheduleId        = t.OteScheduleId,
                     OteSchedulePricingId = t.OteSchedulePricingId,
-                    PurchaseOrderId = t.PurchaseOrderId,
-                    QRCode = t.QRCode,
-                    Status = t.Status,
-                    Title = t.Title,
-                    Customer = t.Customer
+                    PurchaseOrderId      = t.PurchaseOrderId,
+                    QRCode               = t.QRCode,
+                    Status               = t.Status,
+                    Title                = t.Title,
+                    Customer             = t.Customer,
+                    Payload              = t.PurchaseOrder.Payload
                 });
             }
 

@@ -93,7 +93,7 @@ public class UpdateSeatStatusHandler : IUpdateSeatStatusHandler
             var seat = deserializedPayload.Categories[args.CategoryId].Rows[args.RowId].Seats[args.SeatId];
             seat.Occupied = args.Occupied;
 
-            var serializedPayload = jsonSerializationProvider.Serialize(seat);
+            var serializedPayload = jsonSerializationProvider.Serialize(deserializedPayload);
 
             var updateOteDatePayload = await activityData.UpdateOteDatePayload(new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteDatePayloadArgs {
                 Id = oteDate.Id,

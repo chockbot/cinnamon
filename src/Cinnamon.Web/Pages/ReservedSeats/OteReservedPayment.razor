@@ -569,6 +569,7 @@
     private CustomerProfile? currentLogin { get; set; }
     private IDictionary<int, TicketInfo> selectedTickets = new Dictionary<int, TicketInfo>();
     private IEnumerable<OtePricing> AvailableTickets {get; set;} = Enumerable.Empty<OtePricing>();
+    private List<string> Seats = new List<string>();
     private DateTime SelectedDate { get; set; }
     private Modal? failedModal;
     private string selectedDate { get; set; }
@@ -827,6 +828,29 @@
                 await AddSelectedTicket(otePricing);
             }
         }
+    }
+    private Task AddSelectedTicket(OtePricing pricing)
+    {
+        if(selectedTickets.ContainsKey(pricing.Id))
+        {
+            selectedTickets[pricing.Id].Count++;
+        }
+        else 
+        {
+            selectedTickets.Add(pricing.Id, new TicketInfo
+            {
+                Count            = 1,
+                Id               = pricing.Id,
+                Name             = pricing.Name,
+                Price            = pricing.Price,
+                SeatNumber       = pricing.SeatNumber,
+                RequiredApproval = pricing.RequiredApproval,
+                CategotyUUID     = pricing.CategoryUUID,
+                RowUUID          = pricing.RowUUID,
+                SeatUUID         = pricing.SeatUUID
+            });
+        }
+        return Task.CompletedTask;
     }
     private void NavigateToOteReserved()
     {
@@ -1114,29 +1138,7 @@
         }
     }
 
-    private Task AddSelectedTicket(OtePricing pricing)
-    {
-        if(selectedTickets.ContainsKey(pricing.Id))
-        {
-            selectedTickets[pricing.Id].Count++;
-        }
-        else 
-        {
-            selectedTickets.Add(pricing.Id, new TicketInfo
-            {
-                Count            = 1,
-                Id               = pricing.Id,
-                Name             = pricing.Name,
-                Price            = pricing.Price,
-                SeatNumber       = pricing.SeatNumber,
-                RequiredApproval = pricing.RequiredApproval,
-                CategotyUUID     = pricing.CategoryUUID,
-                RowUUID          = pricing.RowUUID,
-                SeatUUID         = pricing.SeatUUID
-            });
-        }
-        return Task.CompletedTask;
-    }
+    
 
     private Task RemoveSelectedTicket(OtePricing pricing)
     {
@@ -1246,8 +1248,8 @@
                 //Update seat payload occupied selected seat
                 foreach (var ticket in selectedTickets)
                 {
-                    var seatList = ticket.Value.SeatUUID.Split(",").ToList();
-                    foreach (var seat in seatList)
+                    Seats = ticket.Value.SeatUUID.Split(",").ToList();
+                    foreach (var seat in Seats)
                     {
                         var updateSeatPlan = await seatplanApiHandler.UpdateSeatStatus(new Framework.ApiCommand.ApiCore.SeatPlan.Request.UpdateSeatStatusArgs
                             {

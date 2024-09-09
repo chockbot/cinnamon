@@ -14,9 +14,12 @@ public class OteTicket : BaseEntity
     public string Status {get; set;}
     public int? OteDateId {get; set;}
 
+    public string Payload { get; set; }
+
     public Activity Activity {get; set;}
     public OteSchedule OteSchedule {get; set;}
     public OteSchedulePricing OteSchedulePricing {get; set;}
     public Customer Customer {get; set;}
+    public PurchaseOrder PurchaseOrder { get; set;}
     public OteDate? OteDate {get; set;}
 }

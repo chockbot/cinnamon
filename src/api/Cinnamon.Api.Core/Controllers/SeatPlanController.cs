@@ -136,7 +136,7 @@ public class SeatPlanController : ControllerBase
     [Route("UpdateSeatStatus")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateSeatStatusResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdateSeatStatus([FromForm] UpdateSeatStatusArgs args)
+    public async Task<IActionResult> UpdateSeatStatus([FromBody] UpdateSeatStatusArgs args)
     {
         try
         {

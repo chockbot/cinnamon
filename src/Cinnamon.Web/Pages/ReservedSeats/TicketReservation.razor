@@ -565,15 +565,7 @@
             await LoadProfile();
             SelectedDate = DateTime.Parse(Date);
             //Set Seat Plan
-            if (activity != null && activity.OteDates != null)
-            {
-                var selectedOteDate = activity.OteDates.FirstOrDefault(a => a.Date == SelectedDate.Date);
-                if (selectedOteDate != null)
-                {
-                    selectedPayload = selectedOteDate.SeatPlanPayload;
-                }
-                ViewAvailableDates();
-            }
+            await GetUpdatedSeatPayload();
 
             var url = $"/reservation/{Handler}/?date={Date}&token={Token}";
             // Queue the user
@@ -636,6 +628,7 @@
         {
             while (true)
             {
+                await GetUpdatedSeatPayload();
                 // Fetch the user's reserved queue info
                 var reservedQueueInfo = await QueueServices.GetReservedQueueUserInfoAsync(
                     $"{Handler}-reserved-queue",
@@ -1698,7 +1691,19 @@
 
         return questions;
     }
-
+    private async Task GetUpdatedSeatPayload()
+    {
+         //Set Seat Plan
+         if (activity != null && activity.OteDates != null)
+         {
+             var selectedOteDate = activity.OteDates.FirstOrDefault(a => a.Date == SelectedDate.Date);
+             if (selectedOteDate != null)
+             {
+                 selectedPayload = selectedOteDate.SeatPlanPayload;
+             }
+             await ViewAvailableDates();
+         }
+    }
     private class CouponDetails
     {
         public string CouponCode { get; set; }
