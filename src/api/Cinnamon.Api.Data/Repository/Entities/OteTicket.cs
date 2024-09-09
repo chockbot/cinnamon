@@ -13,9 +13,6 @@ public class OteTicket : BaseEntity
     public string QRImageData {get; set;}
     public string Status {get; set;}
     public int? OteDateId {get; set;}
-
-    public string Payload { get; set; }
-
     public Activity Activity {get; set;}
     public OteSchedule OteSchedule {get; set;}
     public OteSchedulePricing OteSchedulePricing {get; set;}

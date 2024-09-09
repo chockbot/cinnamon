@@ -122,25 +122,25 @@ public class OteTicketData : IOteTicketData
 	}
 
 	public async Task<AppResult<GetByPurchaseOrderIdResult>> GetByPurchaseOrderId(int purchaseOrderId, GetByPurchaseOrderIdArgs args)
-    {
-        try
-        {
-            var result = await flurlClient
-                            .Request($"OteTicket/by-purchase-order/{purchaseOrderId}")
-                            .SetQueryParams(args)
-                            .GetJsonAsync<GetByPurchaseOrderIdResult>();
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request($"OteTicket/by-purchase-order/{purchaseOrderId}")
+							.SetQueryParams(args)
+							.GetJsonAsync<GetByPurchaseOrderIdResult>();
 
-            return AppResult<GetByPurchaseOrderIdResult>.CreateSucceeded(result, "Successfully getting get all tickets");
-        }
-        catch (FlurlHttpException ex)
-        {
-            return AppResult<GetByPurchaseOrderIdResult>.CreateFailed(ex, ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return AppResult<GetByPurchaseOrderIdResult>.CreateFailed(ex, "An error occured when getting all tickets");
-        }
-    }
+			return AppResult<GetByPurchaseOrderIdResult>.CreateSucceeded(result, "Successfully getting get all tickets");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<GetByPurchaseOrderIdResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<GetByPurchaseOrderIdResult>.CreateFailed(ex, "An error occured when getting all tickets");
+		}
+	}
 
 	public async Task<AppResult<CreateSharedLinkResult>> CreateSharedLink(CreateSharedLinkArgs args)
 	{
@@ -151,17 +151,17 @@ public class OteTicketData : IOteTicketData
 				.PostJsonAsync(args)
 				.ReceiveJson<CreateSharedLinkResult>();
 
-            return AppResult<CreateSharedLinkResult>.CreateSucceeded(result, "Successfully posting create shared link.");
-        }
-        catch (FlurlHttpException ex)
-        {
-            return AppResult<CreateSharedLinkResult>.CreateFailed(ex, ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return AppResult<CreateSharedLinkResult>.CreateFailed(ex, "An error occured when posting create shared link.");
-        }
-    }
+			return AppResult<CreateSharedLinkResult>.CreateSucceeded(result, "Successfully posting create shared link.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<CreateSharedLinkResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<CreateSharedLinkResult>.CreateFailed(ex, "An error occured when posting create shared link.");
+		}
+	}
 
 	public async Task<AppResult<GetSharedLinkResult>> GetSharedLink(GetSharedLinkArgs args)
 	{
@@ -193,17 +193,17 @@ public class OteTicketData : IOteTicketData
 				.PostJsonAsync(args)
 				.ReceiveJson<UpdateSharedLinkStatusResult>();
 
-            return AppResult<UpdateSharedLinkStatusResult>.CreateSucceeded(result, "Successfully posting update shared link status.");
-        }
-        catch (FlurlHttpException ex)
-        {
-            return AppResult<UpdateSharedLinkStatusResult>.CreateFailed(ex, ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return AppResult<UpdateSharedLinkStatusResult>.CreateFailed(ex, "An error occured when posting update shared link status.");
-        }
-    }
+			return AppResult<UpdateSharedLinkStatusResult>.CreateSucceeded(result, "Successfully posting update shared link status.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<UpdateSharedLinkStatusResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<UpdateSharedLinkStatusResult>.CreateFailed(ex, "An error occured when posting update shared link status.");
+		}
+	}
 
 	public async Task<AppResult<CountBookedTicketsResult>> CountBookedTickets(CountBookedTicketsArgs args)
 	{
