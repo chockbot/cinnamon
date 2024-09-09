@@ -2618,251 +2618,251 @@ public class ActivityController : ControllerBase
         }
     }
 
-    //[Route("CreateOte")]
-    //[HttpPost]
-    //[ProducesResponseType(typeof(CreateOteResult), StatusCodes.Status200OK)]
-    //public async Task<IActionResult> CreateOte([FromBody] CreateOteArgs args)
-    //{
-    //    try
-    //    {
-    //        var activity = args.Activity;
-    //        var result = await oteCreateHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteCreateArgs
-    //        {
-    //            Activity = new Services.ActivityService.Interactors.OteCreateArgs.OteActivity
-    //            {
-    //                BarangayCode = activity.BarangayCode ?? string.Empty,
-    //                BarangayName = activity.BarangayName ?? string.Empty,
-    //                CityName = activity.CityName ?? string.Empty,
-    //                CityNumber = activity.CityNumber ?? string.Empty,
-    //                Description = activity.Description,
-    //                EventName = activity.EventName,
-    //                ExperienceCreationTypeId = activity.ExperienceCreationTypeId,
-    //                CategoryId = activity.CategoryId,
-    //                ExperienceTypeId = activity.ExperienceTypeId,
-    //                HouseNo = activity.HouseNo ?? string.Empty,
-    //                IsPublished = activity.IsPublished,
-    //                PinnedLocation = activity.PinnedLocation ?? string.Empty,
-    //                PostalCode = activity.PostalCode ?? string.Empty,
-    //                Recurrence = activity.Recurrence,
-    //                RegionCode = activity.RegionCode ?? string.Empty,
-    //                RegionName = activity.RegionName ?? string.Empty,
-    //                ScheduleFrom = activity.ScheduleFrom,
-    //                ScheduleTo = activity.ScheduleTo,
-    //                IsComingSoon = activity.IsComingSoon,
+    [Route("CreateOte")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateOteResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateOte([FromBody] CreateOteArgs args)
+    {
+        try
+        {
+            var activity = args.Activity;
+            var result = await oteCreateHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteCreateArgs
+            {
+                Activity = new Services.ActivityService.Interactors.OteCreateArgs.OteActivity
+                {
+                    BarangayCode = activity.BarangayCode ?? string.Empty,
+                    BarangayName = activity.BarangayName ?? string.Empty,
+                    CityName = activity.CityName ?? string.Empty,
+                    CityNumber = activity.CityNumber ?? string.Empty,
+                    Description = activity.Description,
+                    EventName = activity.EventName,
+                    ExperienceCreationTypeId = activity.ExperienceCreationTypeId,
+                    CategoryId = activity.CategoryId,
+                    ExperienceTypeId = activity.ExperienceTypeId,
+                    HouseNo = activity.HouseNo ?? string.Empty,
+                    IsPublished = activity.IsPublished,
+                    PinnedLocation = activity.PinnedLocation ?? string.Empty,
+                    PostalCode = activity.PostalCode ?? string.Empty,
+                    Recurrence = activity.Recurrence,
+                    RegionCode = activity.RegionCode ?? string.Empty,
+                    RegionName = activity.RegionName ?? string.Empty,
+                    ScheduleFrom = activity.ScheduleFrom,
+                    ScheduleTo = activity.ScheduleTo,
+                    IsComingSoon = activity.IsComingSoon,
 
-    //                DurationEnd = activity.DurationEnd,
-    //                DurationEvery = activity.DurationEvery,
-    //                DurationStart = activity.DurationStart,
-    //                MonthDay = activity.MonthDay,
-    //                MonthRepeat = activity.MonthRepeat,
-    //                MonthSelection = activity.MonthSelection,
-    //                OnDayDate = activity.OnDayDate,
-    //                WeekString = activity.WeekString,
+                    DurationEnd = activity.DurationEnd,
+                    DurationEvery = activity.DurationEvery,
+                    DurationStart = activity.DurationStart,
+                    MonthDay = activity.MonthDay,
+                    MonthRepeat = activity.MonthRepeat,
+                    MonthSelection = activity.MonthSelection,
+                    OnDayDate = activity.OnDayDate,
+                    WeekString = activity.WeekString,
 
-    //                EventDurationCount = activity.EventDurationCount,
-    //                EventDurationTimeUnit = activity.EventDurationTimeUnit,
-    //                EventTicketLimit = activity.EventTicketLimit,
-    //                IsOpen = activity.IsOpen,
-    //                IsCapacity = activity.IsCapacity,
-    //                CapacityCount = activity.CapacityCount,
-    //                EmailFeedbackDays = activity.EmailFeedbackDays,
-    //                EmailReminderDays = activity.EmailReminderDays,
-    //                FeedbackBody = activity.FeedbackBody,
-    //                FeedbackSubject = activity.FeedbackSubject,
-    //                ReminderBody = activity.ReminderBody,
-    //                ReminderSubject = activity.ReminderSubject,
-    //                CustomAcceptedBody = activity.CustomAcceptedBody,
-    //                CustomDeclinedBody = activity.CustomDeclinedBody,
-    //                CustomPendingBody = activity.CustomPendingBody,
-    //                ReserveSeat = activity.ReserveSeat,
-    //                SeatPlanTemplateId = activity.SeatPlanTemplateId,
-    //            },
-    //            Pricings = args.Pricings.Select(p =>
-    //            {
-    //                return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing
-    //                {
-    //                    Description = p.Description,
-    //                    IsAbsorbFees = p.IsAbsorbFees,
-    //                    MaxSlots = p.MaxSlots,
-    //                    Price = p.Price,
-    //                    Name = p.Name,
-    //                    IsUnlimited = p.IsUnlimited,
-    //                    RequiredApproval = p.RequiredApproval,
-    //                    ReserveSeatUuid = p.ReserveSeatUuid
-    //                };
-    //            }),
-    //            DateOverrides = args.DateOverrides is not null ?
-    //                args.DateOverrides.Select(d => new Services.ActivityService.Interactors.OteCreateArgs.DateOverride
-    //                {
-    //                    Date = d.Date,
-    //                    TimeEnd = d.TimeEnd,
-    //                    TimeStart = d.TimeStart
-    //                }) : null,
-    //            OteOnlineEvents = args.OnlineEvents is not null ?
-    //                args.OnlineEvents.Select(s => new Services.ActivityService.Interactors.OteCreateArgs.OteOnlinEvent
-    //                {
-    //                    Title = s.Title,
-    //                    Description = s.Description,
-    //                    VideoLink = s.VideoLink,
-    //                    TicketRestriction = s.TicketRestriction,
-    //                }) : null,
-    //            Questions = args.Questions is not null ? args.Questions.Select(s => new Services.ActivityService.Interactors.OteCreateArgs.CustomQuestion
-    //            {
-    //                FieldType = s.FieldType,
-    //                Question = s.Question,
-    //                Required = s.Required
-    //            }) : null,
-    //        });
+                    EventDurationCount = activity.EventDurationCount,
+                    EventDurationTimeUnit = activity.EventDurationTimeUnit,
+                    EventTicketLimit = activity.EventTicketLimit,
+                    IsOpen = activity.IsOpen,
+                    IsCapacity = activity.IsCapacity,
+                    CapacityCount = activity.CapacityCount,
+                    EmailFeedbackDays = activity.EmailFeedbackDays,
+                    EmailReminderDays = activity.EmailReminderDays,
+                    FeedbackBody = activity.FeedbackBody,
+                    FeedbackSubject = activity.FeedbackSubject,
+                    ReminderBody = activity.ReminderBody,
+                    ReminderSubject = activity.ReminderSubject,
+                    CustomAcceptedBody = activity.CustomAcceptedBody,
+                    CustomDeclinedBody = activity.CustomDeclinedBody,
+                    CustomPendingBody = activity.CustomPendingBody,
+                    ReserveSeat = activity.ReserveSeat,
+                    SeatPlanTemplateId = activity.SeatPlanTemplateId,
+                },
+                Pricings = args.Pricings.Select(p =>
+                {
+                    return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing
+                    {
+                        Description = p.Description,
+                        IsAbsorbFees = p.IsAbsorbFees,
+                        MaxSlots = p.MaxSlots,
+                        Price = p.Price,
+                        Name = p.Name,
+                        IsUnlimited = p.IsUnlimited,
+                        RequiredApproval = p.RequiredApproval,
+                        ReserveSeatUuid = p.ReserveSeatUuid
+                    };
+                }),
+                DateOverrides = args.DateOverrides is not null ?
+                    args.DateOverrides.Select(d => new Services.ActivityService.Interactors.OteCreateArgs.DateOverride
+                    {
+                        Date = d.Date,
+                        TimeEnd = d.TimeEnd,
+                        TimeStart = d.TimeStart
+                    }) : null,
+                OteOnlineEvents = args.OnlineEvents is not null ?
+                    args.OnlineEvents.Select(s => new Services.ActivityService.Interactors.OteCreateArgs.OteOnlinEvent
+                    {
+                        Title = s.Title,
+                        Description = s.Description,
+                        VideoLink = s.VideoLink,
+                        TicketRestriction = s.TicketRestriction,
+                    }) : null,
+                Questions = args.Questions is not null ? args.Questions.Select(s => new Services.ActivityService.Interactors.OteCreateArgs.CustomQuestion
+                {
+                    FieldType = s.FieldType,
+                    Question = s.Question,
+                    Required = s.Required
+                }) : null,
+            });
 
-    //        if (!result.Succeeded || result.Result == null)
-    //        {
-    //            return new JsonResult(new CreateOteResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-    //        }
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CreateOteResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
 
-    //        return new JsonResult(new CreateOteResult
-    //        {
-    //            IsSuccess = result.Succeeded,
-    //            Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO
-    //            {
-    //                ActivityId = result.Result.Id
-    //            }
-    //        });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new JsonResult(new CreateOteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-    //    }
-    //}
-    //[Route("UpdateOte")]
-    //[HttpPost]
-    //[ProducesResponseType(typeof(UpdateOteResult), StatusCodes.Status200OK)]
-    //public async Task<IActionResult> UpdateOte([FromBody] UpdateOteArgs args)
-    //{
-    //    try
-    //    {
-    //        var activity = args.Activity;
-    //        var result = await oteUpdateHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteUpdateArgs
-    //        {
-    //            Activity = new Services.ActivityService.Interactors.OteUpdateArgs.OteActivity
-    //            {
-    //                BarangayCode = activity.BarangayCode ?? string.Empty,
-    //                BarangayName = activity.BarangayName ?? string.Empty,
-    //                CategoryId = activity.CategoryId,
-    //                CityName = activity.CityName ?? string.Empty,
-    //                CityNumber = activity.CityNumber ?? string.Empty,
-    //                Description = activity.Description,
-    //                EventName = activity.EventName,
-    //                ExperienceTypeId = activity.ExperienceTypeId,
-    //                HouseNo = activity.HouseNo ?? string.Empty,
-    //                Id = activity.Id,
-    //                IsPublished = activity.IsPublished,
-    //                PinnedLocation = activity.PinnedLocation ?? string.Empty,
-    //                PostalCode = activity.PostalCode ?? string.Empty,
-    //                Recurrence = activity.Recurrence,
-    //                RegionCode = activity.RegionCode ?? string.Empty,
-    //                RegionName = activity.RegionName ?? string.Empty,
-    //                ScheduleFrom = activity.ScheduleFrom,
-    //                ScheduleTo = activity.ScheduleTo,
-    //                IsComingSoon = activity.IsComingSoon,
+            return new JsonResult(new CreateOteResult
+            {
+                IsSuccess = result.Succeeded,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO
+                {
+                    ActivityId = result.Result.Id
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateOteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("UpdateOte")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateOteResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateOte([FromBody] UpdateOteArgs args)
+    {
+        try
+        {
+            var activity = args.Activity;
+            var result = await oteUpdateHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteUpdateArgs
+            {
+                Activity = new Services.ActivityService.Interactors.OteUpdateArgs.OteActivity
+                {
+                    BarangayCode = activity.BarangayCode ?? string.Empty,
+                    BarangayName = activity.BarangayName ?? string.Empty,
+                    CategoryId = activity.CategoryId,
+                    CityName = activity.CityName ?? string.Empty,
+                    CityNumber = activity.CityNumber ?? string.Empty,
+                    Description = activity.Description,
+                    EventName = activity.EventName,
+                    ExperienceTypeId = activity.ExperienceTypeId,
+                    HouseNo = activity.HouseNo ?? string.Empty,
+                    Id = activity.Id,
+                    IsPublished = activity.IsPublished,
+                    PinnedLocation = activity.PinnedLocation ?? string.Empty,
+                    PostalCode = activity.PostalCode ?? string.Empty,
+                    Recurrence = activity.Recurrence,
+                    RegionCode = activity.RegionCode ?? string.Empty,
+                    RegionName = activity.RegionName ?? string.Empty,
+                    ScheduleFrom = activity.ScheduleFrom,
+                    ScheduleTo = activity.ScheduleTo,
+                    IsComingSoon = activity.IsComingSoon,
 
-    //                DurationEnd = activity.DurationEnd,
-    //                DurationEvery = activity.DurationEvery,
-    //                DurationStart = activity.DurationStart,
-    //                MonthDay = activity.MonthDay,
-    //                MonthRepeat = activity.MonthRepeat,
-    //                MonthSelection = activity.MonthSelection,
-    //                OnDayDate = activity.OnDayDate,
-    //                WeekString = activity.WeekString,
+                    DurationEnd = activity.DurationEnd,
+                    DurationEvery = activity.DurationEvery,
+                    DurationStart = activity.DurationStart,
+                    MonthDay = activity.MonthDay,
+                    MonthRepeat = activity.MonthRepeat,
+                    MonthSelection = activity.MonthSelection,
+                    OnDayDate = activity.OnDayDate,
+                    WeekString = activity.WeekString,
 
-    //                EventDurationCount = activity.EventDurationCount,
-    //                EventDurationTimeUnit = activity.EventDurationTimeUnit,
-    //                EventTicketLimit = activity.EventTicketLimit,
-    //                IsOpen = activity.IsOpen,
-    //                IsCapacity = activity.IsCapacity,
-    //                CapacityCount = activity.CapacityCount,
-    //                EmailFeedbackDays = activity.EmailFeedbackDays,
-    //                EmailReminderDays = activity.EmailReminderDays,
-    //                FeedbackBody = activity.FeedbackBody,
-    //                FeedbackSubject = activity.FeedbackSubject,
-    //                ReminderBody = activity.ReminderBody,
-    //                ReminderSubject = activity.ReminderSubject,
-    //                CustomAcceptedBody = activity.CustomAcceptedBody,
-    //                CustomDeclinedBody = activity.CustomDeclinedBody,
-    //                CustomPendingBody = activity.CustomPendingBody
-    //            },
-    //            Pricings = args.Pricings.Select(p =>
-    //            {
-    //                return new Services.ActivityService.Interactors.OteUpdateArgs.OtePricing
-    //                {
-    //                    Description = p.Description,
-    //                    Id = p.Id,
-    //                    IsAbsorbFees = p.IsAbsorbFees,
-    //                    MaxSlots = p.MaxSlots,
-    //                    Price = p.Price,
-    //                    Name = p.Name,
-    //                    IsUnlimited = p.IsUnlimited,
-    //                    RequiredApproval = p.RequiredApproval
-    //                };
-    //            }),
-    //            DateOverrides = args.DateOverrides is not null ?
-    //                args.DateOverrides.Select(d => new Services.ActivityService.Interactors.OteUpdateArgs.DateOverride
-    //                {
-    //                    Date = d.Date,
-    //                    TimeEnd = d.TimeEnd,
-    //                    TimeStart = d.TimeStart
-    //                }) : null,
-    //            OnlineEvents = args.OnlineEvents is not null ? args.OnlineEvents.Select(s =>
-    //            {
-    //                return new Services.ActivityService.Interactors.OteUpdateArgs.OteOnlineEvent
-    //                {
-    //                    Id = s.Id,
-    //                    Title = s.Title,
-    //                    Description = s.Description,
-    //                    VideoLink = s.VideoLink,
-    //                    TicketRestriction = s.TicketRestriction,
-    //                };
-    //            }) : null,
-    //            OteReschedules = args.OteReschedules is not null ? args.OteReschedules.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.OteReschedule
-    //            {
-    //                OldDate = s.OldDate,
-    //                NewDate = s.NewDate,
-    //                Id = s.Id
-    //            }) : null,
-    //            NewQuestions = args.NewQuestions is not null ? args.NewQuestions.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.CustomQuestion
-    //            {
-    //                FieldType = s.FieldType,
-    //                Question = s.Question,
-    //                Required = s.Required
-    //            }) : null,
-    //            UpdatedQuestions = args.UpdatedQuestions is not null ? args.UpdatedQuestions.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.CustomQuestion
-    //            {
-    //                FieldType = s.FieldType,
-    //                Question = s.Question,
-    //                Required = s.Required,
-    //                Id = s.Id
-    //            }) : null,
-    //            DeletedQuestions = args.DeletedQuestions
-    //        });
+                    EventDurationCount = activity.EventDurationCount,
+                    EventDurationTimeUnit = activity.EventDurationTimeUnit,
+                    EventTicketLimit = activity.EventTicketLimit,
+                    IsOpen = activity.IsOpen,
+                    IsCapacity = activity.IsCapacity,
+                    CapacityCount = activity.CapacityCount,
+                    EmailFeedbackDays = activity.EmailFeedbackDays,
+                    EmailReminderDays = activity.EmailReminderDays,
+                    FeedbackBody = activity.FeedbackBody,
+                    FeedbackSubject = activity.FeedbackSubject,
+                    ReminderBody = activity.ReminderBody,
+                    ReminderSubject = activity.ReminderSubject,
+                    CustomAcceptedBody = activity.CustomAcceptedBody,
+                    CustomDeclinedBody = activity.CustomDeclinedBody,
+                    CustomPendingBody = activity.CustomPendingBody
+                },
+                Pricings = args.Pricings.Select(p =>
+                {
+                    return new Services.ActivityService.Interactors.OteUpdateArgs.OtePricing
+                    {
+                        Description = p.Description,
+                        Id = p.Id,
+                        IsAbsorbFees = p.IsAbsorbFees,
+                        MaxSlots = p.MaxSlots,
+                        Price = p.Price,
+                        Name = p.Name,
+                        IsUnlimited = p.IsUnlimited,
+                        RequiredApproval = p.RequiredApproval
+                    };
+                }),
+                DateOverrides = args.DateOverrides is not null ?
+                    args.DateOverrides.Select(d => new Services.ActivityService.Interactors.OteUpdateArgs.DateOverride
+                    {
+                        Date = d.Date,
+                        TimeEnd = d.TimeEnd,
+                        TimeStart = d.TimeStart
+                    }) : null,
+                OnlineEvents = args.OnlineEvents is not null ? args.OnlineEvents.Select(s =>
+                {
+                    return new Services.ActivityService.Interactors.OteUpdateArgs.OteOnlineEvent
+                    {
+                        Id = s.Id,
+                        Title = s.Title,
+                        Description = s.Description,
+                        VideoLink = s.VideoLink,
+                        TicketRestriction = s.TicketRestriction,
+                    };
+                }) : null,
+                OteReschedules = args.OteReschedules is not null ? args.OteReschedules.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.OteReschedule
+                {
+                    OldDate = s.OldDate,
+                    NewDate = s.NewDate,
+                    Id = s.Id
+                }) : null,
+                NewQuestions = args.NewQuestions is not null ? args.NewQuestions.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.CustomQuestion
+                {
+                    FieldType = s.FieldType,
+                    Question = s.Question,
+                    Required = s.Required
+                }) : null,
+                UpdatedQuestions = args.UpdatedQuestions is not null ? args.UpdatedQuestions.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.CustomQuestion
+                {
+                    FieldType = s.FieldType,
+                    Question = s.Question,
+                    Required = s.Required,
+                    Id = s.Id
+                }) : null,
+                DeletedQuestions = args.DeletedQuestions
+            });
 
-    //        if (!result.Succeeded || result.Result == null)
-    //        {
-    //            return new JsonResult(new UpdateOteResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-    //        }
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateOteResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
 
-    //        return new JsonResult(new UpdateOteResult
-    //        {
-    //            IsSuccess = result.Succeeded,
-    //            Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO
-    //            {
-    //                ActivityId = result.Result.Id
-    //            }
-    //        });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new JsonResult(new UpdateOteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-    //    }
-    //}
+            return new JsonResult(new UpdateOteResult
+            {
+                IsSuccess = result.Succeeded,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO
+                {
+                    ActivityId = result.Result.Id
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateOteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 
     [Route("OteByHandler/{handler}")]
     [HttpGet]

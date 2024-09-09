@@ -406,84 +406,84 @@ public class TransactionController : ControllerBase
         }
     }
 
-    //[Route("PaymentRequest")]
-    //[HttpPost]
-    //[ProducesResponseType(typeof(PaymentRequestResult), StatusCodes.Status200OK)]
-    //public async Task<IActionResult> PaymentRequest([FromBody] PaymentRequestArgs args)
-    //{
-    //    try
-    //    {
-    //        var result = await oteRequestPaymentHandler.ExecuteAsync(new Services.TransactionService.Interactors.OteRequestPaymentArgs
-    //        {
-    //            ActivityId = args.ActivityId,
-    //            Guid = args.Guid,
-    //            SelectedDate = args.SelectedDate,
-    //            Token = args.Token,
-    //            SelectedTickets = args.SelectedTickets.Select(t => new Services.TransactionService.Interactors.OteRequestPaymentArgs.RequestPaymentTicket
-    //            {
-    //                TicketCount = t.TicketCount,
-    //                TicketId = t.TicketId,
-    //                SeatNumber = t.SeatNumber,
-    //                CategoryUUID = t.CategoryUUID,
-    //                RowUUID = t.RowUUID,
-    //                SeatUUID = t.SeatUUID
-    //            }),
-    //            Questions = args.Questions?.Select(q => new Services.TransactionService.Interactors.OteRequestPaymentArgs.ProviderQuestion
-    //            {
-    //                Answer = q.Answer,
-    //                Id = q.Id,
-    //                Question = q.Question
-    //            })
-    //        });
+    [Route("PaymentRequest")]
+    [HttpPost]
+    [ProducesResponseType(typeof(PaymentRequestResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> PaymentRequest([FromBody] PaymentRequestArgs args)
+    {
+        try
+        {
+            var result = await oteRequestPaymentHandler.ExecuteAsync(new Services.TransactionService.Interactors.OteRequestPaymentArgs
+            {
+                ActivityId = args.ActivityId,
+                Guid = args.Guid,
+                SelectedDate = args.SelectedDate,
+                Token = args.Token,
+                SelectedTickets = args.SelectedTickets.Select(t => new Services.TransactionService.Interactors.OteRequestPaymentArgs.RequestPaymentTicket
+                {
+                    TicketCount = t.TicketCount,
+                    TicketId = t.TicketId,
+                    SeatNumber = t.SeatNumber,
+                    CategoryUUID = t.CategoryUUID,
+                    RowUUID = t.RowUUID,
+                    SeatUUID = t.SeatUUID
+                }),
+                Questions = args.Questions?.Select(q => new Services.TransactionService.Interactors.OteRequestPaymentArgs.ProviderQuestion
+                {
+                    Answer = q.Answer,
+                    Id = q.Id,
+                    Question = q.Question
+                })
+            });
 
-    //        if (!result.Succeeded || result.Result == null)
-    //        {
-    //            return new JsonResult(new PaymentRequestResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-    //        }
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new PaymentRequestResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
 
-    //        var dto = mapper.Map<PaymentRequestDTO>(result.Result);
+            var dto = mapper.Map<PaymentRequestDTO>(result.Result);
 
-    //        return new JsonResult(new PaymentRequestResult
-    //        {
-    //            IsSuccess = true,
-    //            Result = dto
-    //        });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new JsonResult(new PaymentRequestResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-    //    }
-    //}
+            return new JsonResult(new PaymentRequestResult
+            {
+                IsSuccess = true,
+                Result = dto
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new PaymentRequestResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 
-    //[Route("PaymentRequest")]
-    //[HttpGet]
-    //[ProducesResponseType(typeof(GetRequestPaymentResult), StatusCodes.Status200OK)]
-    //public async Task<IActionResult> GetRequestPayment([FromQuery] GetRequestPaymentArgs args)
-    //{
-    //    try
-    //    {
-    //        var result = await getOteRequestPayment.ExecuteAsync(new Services.TransactionService.Interactors.OteGetRequestPaymentArgs
-    //        {
-    //            Guid = args.Guid,
-    //            Token = args.Token
-    //        });
+    [Route("PaymentRequest")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetRequestPaymentResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetRequestPayment([FromQuery] GetRequestPaymentArgs args)
+    {
+        try
+        {
+            var result = await getOteRequestPayment.ExecuteAsync(new Services.TransactionService.Interactors.OteGetRequestPaymentArgs
+            {
+                Guid = args.Guid,
+                Token = args.Token
+            });
 
-    //        if (!result.Succeeded || result.Result == null)
-    //        {
-    //            return new JsonResult(new GetRequestPaymentResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-    //        }
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetRequestPaymentResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
 
-    //        var dto = mapper.Map<PaymentRequestDTO>(result.Result);
+            var dto = mapper.Map<PaymentRequestDTO>(result.Result);
 
-    //        return new JsonResult(new GetRequestPaymentResult
-    //        {
-    //            IsSuccess = true,
-    //            Result = dto
-    //        });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new JsonResult(new GetRequestPaymentResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-    //    }
-    //}
+            return new JsonResult(new GetRequestPaymentResult
+            {
+                IsSuccess = true,
+                Result = dto
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetRequestPaymentResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

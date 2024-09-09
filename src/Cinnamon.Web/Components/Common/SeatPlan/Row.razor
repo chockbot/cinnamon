@@ -4,8 +4,8 @@
 <div id="seat-plan-row" class="d-flex flex-wrap">
     @foreach (var seat in RowCategory.Seats)
     {
-        <Seat RowSeat="seat.Value" RowNumber="@RowCategory.RowNumber" CategoryColor="@CategoryColor"
-            ViewOnly="ViewOnly" />
+        <Seat RowSeat="seat.Value" RowNumber="@RowCategory.RowNumber" CategoryColor="@CategoryColor" Occupied="seat.Value.Occupied"
+            ViewOnly="ViewOnly"/>
     }
 </div>
 
