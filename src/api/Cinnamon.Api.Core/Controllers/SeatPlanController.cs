@@ -149,12 +149,16 @@ public class SeatPlanController : ControllerBase
                 SeatId     = args.SeatId,
                 Occupied   = args.Occupied
             });
+
             if (!result.Succeeded || result.Result is null)
             {
                 return new JsonResult(new UpdateSeatStatusResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
-            return new JsonResult(new UpdateSeatStatusResult { IsSuccess = true });
+            return new JsonResult(new UpdateSeatStatusResult 
+            { 
+                IsSuccess = result.Result.IsSuccess 
+            });
         }
         catch (Exception ex)
         {

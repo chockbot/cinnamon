@@ -20,6 +20,7 @@
 @inject ISeatPlanApiHandler seatplanApiHandler;
 @inject IMapper mapper;
 @inject ILocalStorage localStorage;
+@inject Cinnamon.Framework.Providers.IJsonSerializationProvider jsonSerializationProvider
 
 <PageTitle>Checkout Payment | CinnamonPH</PageTitle>
 <SeoMeta Title="Checkout Payment" Subject="Checkout Payment" />
@@ -507,7 +508,7 @@
         </ModalBody>
     </ModalContent>
 </Modal>
- <Modal @ref="modaltime">
+<Modal @ref="modaltime">
     <ModalContent Centered>
         <ModalBody>
             <div class="queue-up d-flex">
@@ -518,6 +519,20 @@
             </div>
             <p class="congratulations-text">Unfortunately, you've lost your chance to purchase tickets. Please start a new reservation.</p>
             <button class="btn-try" @onclick="NavigateToOteReserved">Try Again</button>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+<Modal @ref="modalUnAvailable">
+    <ModalContent Centered>
+        <ModalBody>
+            <div class="queue-up d-flex">
+                <img class="img-logo" src="images/ote/information.svg" />
+                <div class="queue-up-text">
+                    <p class="expired-text">Seats Unavailable</p>
+                </div>
+            </div>
+            <p class="congratulations-text">Unfortunately, the seats(@unavailableSeats) you selected have already been purchased by another customer. Please choose different seats to continue with your booking.</p>
+            <button class="btn-try" @onclick="NavigateToTicketReservation">Select other ticket</button>
         </ModalBody>
     </ModalContent>
 </Modal>
@@ -537,6 +552,9 @@
     public string Token {get; set;}
 
     private Modal modaltime { get; set; }
+
+    private Modal modalUnAvailable { get; set; }
+
     private OteActivity? activity;
     private int selectedTicketId = 0;
     private int ticketCount = 1;
@@ -558,9 +576,11 @@
     private int ticketLimit { get; set; }
     private string stringMaxTicket { get; set; }
     public TimeSpan RemainingTime { get; set; }
+    private string? selectedPayload { get; set; }
     private const string TRACKER_ID = "checkout";
     private Timer _countdownTimer;
     private bool _isProcessing;
+    private string unavailableSeats { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -811,6 +831,11 @@
     private void NavigateToOteReserved()
     {
         NavigationManager.NavigateTo($"/explore/ote/reserved/{Handler}");
+    }
+    private void NavigateToTicketReservation()
+    {
+        string paymentUrl = $"/reservation/{Handler}/?date={selectedDate}&token={token}";
+        NavigationManager.NavigateTo(paymentUrl);
     }
     private async Task LoadProvideDetails()
     {
@@ -1152,6 +1177,39 @@
 
             StateHasChanged();
 
+            //Check if seat are not occupied
+            await LoadOteDetails();
+            if (activity != null && activity.OteDates != null)
+            {
+                var selectedOteDate = activity.OteDates.FirstOrDefault(a => a.Date == SelectedDate.Date);
+                if (selectedOteDate != null)
+                {
+                    List<string> unavailableSeatsList = new List<string>();
+                    selectedPayload = selectedOteDate.SeatPlanPayload;
+                    var deserializedPayload = jsonSerializationProvider.Deserialize<Cinnamon.Framework.Models.SeatPlan.Format>(selectedPayload);
+                    //check selected seat if occupied
+                    foreach (var ticket in selectedTickets)
+                    {
+                        var seatList = ticket.Value.SeatUUID.Split(",").ToList();
+                        foreach (var seat in seatList)
+                        {
+                            var seatOccupied = deserializedPayload.Categories[ticket.Value.CategotyUUID].Rows[ticket.Value.RowUUID].Seats[seat];
+                            if (seatOccupied.Occupied)
+                            {
+                                 unavailableSeatsList.Add(seat); // Add unavailable seat to the list.
+                                 selectedTickets.Remove(ticket); // Remove the ticket from the list.
+                            }
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(unavailableSeats))
+                    {
+                        string unavailableSeats = string.Join(", ", unavailableSeatsList);
+                        await modalUnAvailable.Show();
+                        return;
+                    }
+                }
+            }
+
             var submit = await transactionApiHandler.SubmitOtePurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs {
                 ActivityId = activity.Id,
                 CardInformation = SelectedPaymentCode == "CARD" ? new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs.OteCardDetails {
@@ -1188,17 +1246,17 @@
                 //Update seat payload occupied selected seat
                 foreach (var ticket in selectedTickets)
                 {
-                    var seatList = ticket.Value.SeatUUID.Split(", ").ToList();
+                    var seatList = ticket.Value.SeatUUID.Split(",").ToList();
                     foreach (var seat in seatList)
                     {
                         var updateSeatPlan = await seatplanApiHandler.UpdateSeatStatus(new Framework.ApiCommand.ApiCore.SeatPlan.Request.UpdateSeatStatusArgs
                             {
                                 ActivityId = activity.Id,
-                                EventDate = SelectedDate,
+                                EventDate  = SelectedDate,
                                 CategoryId = ticket.Value.CategotyUUID,
-                                RowId = ticket.Value.RowUUID,
-                                SeatId = seat,
-                                Occupied = true
+                                RowId      = ticket.Value.RowUUID,
+                                SeatId     = seat,
+                                Occupied   = true
                             }, token);
                         if (!updateSeatPlan.Succeeded || updateSeatPlan.Result is null || !updateSeatPlan.Result.IsSuccess)
                         {
