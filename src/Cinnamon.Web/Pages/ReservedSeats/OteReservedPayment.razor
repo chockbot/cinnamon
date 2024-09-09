@@ -1138,7 +1138,7 @@
         }
     }
 
-    
+
 
     private Task RemoveSelectedTicket(OtePricing pricing)
     {
@@ -1198,8 +1198,8 @@
                             var seatOccupied = deserializedPayload.Categories[ticket.Value.CategotyUUID].Rows[ticket.Value.RowUUID].Seats[seat];
                             if (seatOccupied.Occupied)
                             {
-                                 unavailableSeatsList.Add(seat); // Add unavailable seat to the list.
-                                 selectedTickets.Remove(ticket); // Remove the ticket from the list.
+                                unavailableSeatsList.Add(seat); // Add unavailable seat to the list.
+                                selectedTickets.Remove(ticket); // Remove the ticket from the list.
                             }
                         }
                     }
@@ -1278,7 +1278,8 @@
                     NavigationManager.NavigateTo($"/purchase/order/reserved/?purchaseid={submit.Result.Result.Id}");
                 }
                 //Dequeue user after purchase
-                
+                string activeQueueName = $"{Handler}-active-queue";
+                await QueueServices.RemoveUserFromActiveQueueAsync(currentLogin.Handler, activeQueueName);
             }
         }
         catch (System.Exception ex)

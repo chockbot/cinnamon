@@ -101,7 +101,7 @@ namespace Cinnamon.Web.Modules.Services
             _activeQueueTimers[userId] = timer;
         }
 
-        private async Task RemoveUserFromActiveQueueAsync(string userId, string activeQueueName)
+        public async Task RemoveUserFromActiveQueueAsync(string userId, string activeQueueName)
         {
             // Remove and dispose of the timer after the user is processed
             if (_activeQueueTimers.ContainsKey(userId))
