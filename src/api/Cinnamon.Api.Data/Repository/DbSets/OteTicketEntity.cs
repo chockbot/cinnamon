@@ -89,7 +89,6 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
             if (includeCustomer)
             {
                 query = query.Include(t => t.Customer);
-                query = query.Include(t => t.PurchaseOrder);
             }
 
             if (!includeImageData)
@@ -107,7 +106,6 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
                     Status               = t.Status,
                     Title                = t.Title,
                     Customer             = t.Customer,
-                    Payload              = t.PurchaseOrder.Payload
                 });
             }
 

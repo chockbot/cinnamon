@@ -1275,8 +1275,10 @@
                 }
                 else
                 {
-                    NavigationManager.NavigateTo($"/purchase/order/?purchaseid={submit.Result.Result.Id}");
+                    NavigationManager.NavigateTo($"/purchase/order/reserved/?purchaseid={submit.Result.Result.Id}");
                 }
+                //Dequeue user after purchase
+                
             }
         }
         catch (System.Exception ex)

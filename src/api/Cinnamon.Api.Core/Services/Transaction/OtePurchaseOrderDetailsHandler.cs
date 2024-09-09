@@ -159,7 +159,6 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
                         ImageData = t.QRImageData,
                         Name = t.Title,
                         Price = t.Amount,
-                        SeatNumber = deserializedPayload.Tickets is not null ? deserializedPayload.Tickets.FirstOrDefault(a => a.Id == t.Id).SeatNumber : string.Empty
                     };
                 }),
                 PurchasedDate = purchaseOrder.PurchaseDate,
@@ -194,7 +193,6 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
         public string Code {get; set;}
         public string ImageData {get; set;}
         public int OteDateId {get; set;}
-        public string SeatNumber { get; set;}   
     }
 
     class Fees {

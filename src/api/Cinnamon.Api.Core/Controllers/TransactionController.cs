@@ -348,6 +348,7 @@ public class TransactionController : ControllerBase
     [Route("GetOtePurchaseOrder/{id}")]
     [HttpGet]
     [ProducesResponseType(typeof(OteGetPurchaseOrderResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
     public async Task<IActionResult> GetOtePurchaseOrder(int id)
     {
         try
