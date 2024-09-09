@@ -40,7 +40,6 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Make it responsive */
 @media (max-width: 768px) {
     .loading-spinner {
         width: 80px;
@@ -90,7 +89,13 @@
     padding: 6px 20px 15px 20px;
     cursor: pointer;
     font-weight: 400;
-}
+    transition: background-color 0.3s ease;
+  }
+  
+  .chatroom-item-clicked {
+    background-color: #fac687f5;
+  }
+  
 
 .chatroom-item-active {
     padding: 6px 20px 15px 20px;
@@ -656,6 +661,18 @@ input[type=text] {
     font-size: 20px;
     color: #717171;
 }
+
+@media (min-width: 0px) and (max-width: 350px) {
+    .chat-profile-name {
+      width: 225px !important;
+    }
+  }
+  
+  @media (min-width: 351px) and (max-width: 425px) {
+    .chat-profile-name {
+      width: 260px !important;
+    }
+  }
 
 @media (min-width: 0px) and (max-width: 575.98px) {
     .search-section {
