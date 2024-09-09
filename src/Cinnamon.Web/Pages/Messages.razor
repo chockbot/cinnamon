@@ -111,12 +111,6 @@
 </div>
 
 <div class="messages-container d-flex">
-    <!-- Loading Indicator -->
-    <div class="loading-overlay" id="loadingOverlay" style="@(isLoadingIndicator ? "display: flex;" : "display: none;")">
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    </div>
     <div class="sidebar-messages left-sidebar messages-section d-xl-block d-lg-block d-md-block d-sm-block @messagesSectionDisplayStyle">
         <div class="message-title-section">
             <div class="row">
@@ -208,11 +202,6 @@
         </div>
     </div>
     <div class="center-messages chat-section d-xl-block d-lg-block d-md-block d-sm-block @chatSectionDisplayStyle">
-        <div class="loading-overlay" id="loadingOverlay" style="@(isLoading ? "display: flex;" : "display: none;")">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
         <div class="row" style="@SetPlaceholderStyle(isLoading)">
             <div class="chat-profile-section">
                 <div class="row">
@@ -559,11 +548,6 @@
     </div>
     <div class="sidebar-messages profile-section messages-section d-xl-block d-lg-block d-md-block d-sm-block @profileSectionDisplayStyle">
         <div class="row" style="@SetPlaceholderStyle(isLoading)">
-            <div class="loading-overlay" id="loadingOverlay" style="@(isLoading ? "display: flex;" : "display: none;")">
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
             <div class="row justify-content-center placeholder-glow">
                 <div class="col-lg-12 text-center">
                     <span class="placeholder col-9 profile-section-picture"></span>
