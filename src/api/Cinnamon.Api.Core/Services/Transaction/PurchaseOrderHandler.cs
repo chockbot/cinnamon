@@ -301,7 +301,8 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
             {
                 ActivityId = result.Result.Result.ActivityId,
                 TransactionId = result.Result.Result.Id,
-                ScheduleId = args.ScheduleId
+                ScheduleId = args.ScheduleId,
+                Url = successUrl,
             };
 
             var tokenSerializedPayload = jsonSerializationProvider.Serialize(payload);
