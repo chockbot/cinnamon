@@ -36,4 +36,6 @@ public class CreateOteTicketArgs
 
     [Required]
     public int OteDateId {get; set;}
+
+    public string SeatNumber { get; set; }
 }

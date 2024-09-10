@@ -1,11 +1,17 @@
 ﻿@page "/purchase/order/ote/reserved/{Handler}/{OrderId:int}"
+@using AutoMapper;
 @using System.Security.Claims;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.Services
+@inject QueueServices QueueServices
 @inject ITransactionApiHandler transactionApiHandler;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject INotificationService NotificationService;
 @inject NavigationManager NavigationManager;
+@inject IAccountApiHandler accountApiHandler;
 @inject IJSRuntime jsRuntime;
+@inject IMapper mapper;
 
 @if (purchaseOrder is not null)
 {
@@ -116,6 +122,9 @@
     public string Handler { get; set; }
 
     private string token;
+
+    private CustomerProfile? currentLogin { get; set; }
+
     private Framework.ApiCommand.ApiCore.DTO.PurchaseOrder.OtePurchaseOrderDTO? purchaseOrder;
 
     protected override async Task OnParametersSetAsync()
@@ -129,8 +138,9 @@
                 NavigationManager.NavigateTo("/explore");
                 return;
             }
-
+            await LoadProfile();
             await LoadPurchaseOrderDetails();
+
         }
         catch (Exception ex)
         {
@@ -154,6 +164,9 @@
             NavigationManager.NavigateTo("/not-found");
             return;
         }
+        //Dequeue user to the active queue
+        string activeQueueName = $"{Handler}-active-queue";
+        await QueueServices.RemoveUserFromActiveQueueAsync(currentLogin.Handler, activeQueueName);
         purchaseOrder = orderSummaryRes.Result.Result;
     }
 
@@ -189,7 +202,17 @@
             return tickets.Select(t => t.Value);
         }
     }
-
+    private async Task LoadProfile()
+    {
+        if (!string.IsNullOrEmpty(token))
+        {
+            var profileResult = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+            if (profileResult.Succeeded || profileResult.Result is not null && profileResult.Result.IsSuccess)
+            {
+                currentLogin = mapper.Map<CustomerProfile>(profileResult.Result.Result);
+            }
+        }
+    }
     private Task NavigateToTickets()
     {
         if (purchaseOrder is not null)

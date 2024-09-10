@@ -132,11 +132,12 @@ public class OteTicketDetailsHandler : IOteTicketDetailsHandler
                         onlineEvent = oteActivity.OnlineEvent?.FirstOrDefault(a => a.TicketRestriction == "1");
                     }
                     return new OteTicketDetailsResult.Ticket {
-                        Id = t.Id,
-                        Name = t.Title,
+                        Id         = t.Id,
+                        Name       = t.Title,
                         QRCodeData = t.QRImageData,
-                        VideoLink = onlineEvent?.Videolink,
-                        LinkTitle = onlineEvent?.Title,
+                        VideoLink  = onlineEvent?.Videolink,
+                        LinkTitle  = onlineEvent?.Title,
+                        SeatNumber = t.SeatNumber
                     };
                 })
             };

@@ -156,17 +156,18 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                 IncludeImageAsResult = false,
                 Tickets = ticketsToCreate.Select(t => {
                     return new Framework.ApiCommand.ApiData.OteTicket.Request.CreateOteTicketArgs {
-                        ActivityId = oteActivity.Id,
-                        Amount = t.Price,
-                        CustomerId = purchaseOrder.CustomerId,
-                        OteScheduleId = deserializedPayload.OteScheduleId,
+                        ActivityId           = oteActivity.Id,
+                        Amount               = t.Price,
+                        CustomerId           = purchaseOrder.CustomerId,
+                        OteScheduleId        = deserializedPayload.OteScheduleId,
                         OteSchedulePricingId = t.Id,
-                        PurchaseOrderId = purchaseOrder.Id,
-                        QRCode = t.Code,
-                        QRImageData = t.ImageData,
-                        Status = "UNVERIFIED",
-                        Title = t.Name,
-                        OteDateId = t.OteDateId,
+                        PurchaseOrderId      = purchaseOrder.Id,
+                        QRCode               = t.Code,
+                        QRImageData          = t.ImageData,
+                        Status               = "UNVERIFIED",
+                        Title                = t.Name,
+                        OteDateId            = t.OteDateId,
+                        SeatNumber           = t.SeatNumber
                     };
                 })
             });

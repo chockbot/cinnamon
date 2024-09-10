@@ -20,5 +20,6 @@ public class OteTicketDetailsResult
         public string QRCodeData {get; set;}
         public string VideoLink { get; set;}
         public string LinkTitle { get; set; }
+        public string SeatNumber { get; set; }
     }
 }

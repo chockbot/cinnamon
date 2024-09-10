@@ -89,7 +89,8 @@
                             <p class="waitlist-sub-leave">If you can no longer join,  <span><a class="user-leave" @onclick="() => confirmDialogRef.Open()">you can leave the waitlist</a></span>.</p>
                         </div>
                     }
-                    else if (IsApprovedWaitlist)
+
+                    @if(IsApprovedWaitlist)
                     {
                         @*Body*@
                         <div class="waitlist-section">
@@ -110,89 +111,57 @@
                             <p class="waitlist-sub-text">An approval email has been sent to <span><a class="user-email">@currentLogin.Email</a></span>. Check your email to proceed purchasing your tickets.</p>
                         </div>
                     }
-                    else
+
+                    @*Not on waitlist*@
+                    @if(activity.Schedule.IsOpen && !IsApprovedWaitlist || !IsOnWaitlist)
                     {
-                        //Not on waitlist
-                        @if(activity.Schedule.IsOpen)
-                        {
-                            if (selectedTickets.Count != 0)
-                            {
-                                if (activity.Schedule.IsCapacity && activity.IsEventSoldOut && selectedTickets.Count <= capacityLimit && !selectedTickets.First().Value.IsUnlimited)
+                        <div class="ticket-event-section">
+                            <p class="ticket-section">Select seat for your tickets</p>
+                            <div class="ticket-box">
+                                <Cinnamon.Web.Components.Common.SeatPlan.Container Payload="@selectedPayload" OnSeatSelected="HandleSeatSelection"/>
+                            </div>
+                    
+                            <div class="ticket-options">
+                                <div class="ticket-names">
+                                    @foreach (var item in AvailablePriceList)
+                                    {
+                                        <div class="ticket-info">
+                                            <div class="ticket-color" style="width: 20px;height: 20px;background-color:@item.TicketColor;border-radius: 50%;"></div>
+                                            <div class="ticket-name">@item.Name</div>
+                                        </div>
+                                    }
+                                </div>
+                    
+                                @if (selectedTickets.Count != 0)
                                 {
-                                    <div class="ticket-event-section">
-                                        <p class="ticket-section">Select seat for your tickets</p>
-                                        <div class="ticket-box">
-                                            <Cinnamon.Web.Components.Common.SeatPlan.Container Payload="@selectedPayload" OnSeatSelected="HandleSeatSelection"/>
-                                        </div>
-                                        <div class="ticket-options">
-                                            <div class="ticket-names">    
-                                                @foreach (var item in AvailablePriceList)
-                                                {
-                                                    <div class="ticket-info">
-                                                        <div class="ticket-color" style="width: 20px;height: 20px;background-color:@item.TicketColor;border-radius: 50%;"></div>
-                                                        <div class="ticket-name">@item.Name</div>
-                                                    </div>
-                                                }
-                                             </div>
-                                             <button class="btn-confirm" @onclick=JoinWaitlist>Join Waitlist</button>
-                                        </div>
-                                    </div>
+                                    @if (activity.Schedule.IsCapacity && activity.IsEventSoldOut && selectedTickets.Count <= capacityLimit && !selectedTickets.First().Value.IsUnlimited)
+                                    {
+                                        <button class="btn-confirm" @onclick=JoinWaitlist>Join Waitlist</button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn-confirm" @onclick=ProceedToPayment>Confirm Seats</button>
+                                    }
                                 }
                                 else
                                 {
-                                     <div class="ticket-event-section">
-                                     <p class="ticket-section">Select seat for your tickets</p>
-                                     <div class="ticket-box">
-                                         <Cinnamon.Web.Components.Common.SeatPlan.Container Payload="@selectedPayload" OnSeatSelected="HandleSeatSelection"/>
-                                     </div>
-                                     <div class="ticket-options">
-                                         <div class="ticket-names">    
-                                             @foreach (var item in AvailablePriceList)
-                                             {
-                                                 <div class="ticket-info">
-                                                     <div class="ticket-color" style="width: 20px;height: 20px;background-color:@item.TicketColor;border-radius: 50%;"></div>
-                                                     <div class="ticket-name">@item.Name</div>
-                                                 </div>
-                                             }
-                                          </div>
-                                          <button class="btn-confirm" @onclick=ProceedToPayment>Confirm Seats</button>
-                                         </div>
-                                     </div>
+                                    <button class="btn-confirm" @onclick=ProceedToPayment>Confirm Seats</button>
                                 }
-                            }
-                            else
-                            {
-                                <div class="ticket-event-section">
-                                <p class="ticket-section">Select seat for your tickets</p>
-                                <div class="ticket-box">
-                                    <Cinnamon.Web.Components.Common.SeatPlan.Container Payload="@selectedPayload" OnSeatSelected="HandleSeatSelection"/>
-                                </div>
-                                <div class="ticket-options">
-                                    <div class="ticket-names">    
-                                        @foreach (var item in AvailablePriceList)
-                                        {
-                                            <div class="ticket-info">
-                                                <div class="ticket-color" style="width: 20px;height: 20px;background-color:@item.TicketColor;border-radius: 50%;"></div>
-                                                <div class="ticket-name">@item.Name</div>
-                                            </div>
-                                        }
-                                     </div>
-                                     <button class="btn-confirm" @onclick=ProceedToPayment>Confirm Seats</button>
-                                    </div>
-                                </div>
-                            }
-                        }
-                        else
-                        {
-                            <div class="waitlist-section">
-                                <div class="ticket-close">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 23c6.075 0 11-4.925 11-11S18.075 1 12 1 1 5.925 1 12s4.925 11 11 11M7 10a2 2 0 1 0 0 4h10a2 2 0 1 0 0-4z"></path></svg>
-                                    <p class="close-text">Ticket Sales Closed</p>
-                                </div>
-                                <p class="close-sub-text">This event is not currently selling tickets. You may contact the host to receive updates.</p>
                             </div>
-                        }
+                        </div>
                     }
+
+
+                    @if(!activity.Schedule.IsOpen){
+                        <div class="waitlist-section">
+                            <div class="ticket-close">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 23c6.075 0 11-4.925 11-11S18.075 1 12 1 1 5.925 1 12s4.925 11 11 11M7 10a2 2 0 1 0 0 4h10a2 2 0 1 0 0-4z"></path></svg>
+                                <p class="close-text">Ticket Sales Closed</p>
+                            </div>
+                            <p class="close-sub-text">This event is not currently selling tickets. You may contact the host to receive updates.</p>
+                        </div>
+                    }
+                    
                     @*Event Seat Plan*@
                     @if (!string.IsNullOrEmpty(SetPlanImage))
                     {
@@ -957,10 +926,7 @@
     private void HandleSeatSelection(Category.SelectedSeat selectedSeat)
     {
         var selectedTicket = activity.Pricings.FirstOrDefault(a => a.ReserveSeatUuid == selectedSeat.CategoryUUID);
-        
-        if (selectedTicket is null)
-            return;
-    
+       
         var ticketToUpdate = selectedTickets.FirstOrDefault(t => t.Value.Id == selectedTicket.Id);
     
         // If the seat is already selected, update the ticket info
