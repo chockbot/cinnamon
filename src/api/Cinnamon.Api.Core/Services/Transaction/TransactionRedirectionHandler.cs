@@ -141,6 +141,9 @@ public class TransactionRedirectionHandler : ITransactionRedirectionHandler
                 _ => "/not-found"
             };
 
+            redirect = string.IsNullOrEmpty(deserializedPayload.Url) ? 
+                        applicationConfig.FrontendUrl.AppendPathSegment("not-found") : deserializedPayload.Url;
+
             return AppResult<TransactionRedirectionResult>.CreateSucceeded(new TransactionRedirectionResult {
                 RedirectUrl = redirect,
             }, "Successfully validate and redirect transcation.");
@@ -157,5 +160,6 @@ public class TransactionRedirectionHandler : ITransactionRedirectionHandler
         public int ScheduleId {get; set;}
         public int TransactionId {get; set;}
         public string OteQuery {get; set;}
+        public string Url {get; set;}
     }
 }
