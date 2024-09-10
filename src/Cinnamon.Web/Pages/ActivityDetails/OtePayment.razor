@@ -1056,7 +1056,8 @@
                 Tickets = selectedTickets.Select(t => {
                     return new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs.OTeTicket {
                         Count = t.Value.Count,
-                        Id = t.Value.Id
+                        Id = t.Value.Id,
+                        SeatNumber = string.Empty
                     };
                 }),
                 Guid = Guid,

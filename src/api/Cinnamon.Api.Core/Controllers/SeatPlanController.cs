@@ -18,17 +18,19 @@ public class SeatPlanController : ControllerBase
     private readonly IGetTemplatesHandler getTemplatesHandler;
     private readonly IGetTemplateHandler getTemplateHandler;
     private readonly IChangeSeatPlanStatusHandler changeSeatPlanStatusHandler;
+    private readonly IUpdateSeatStatusHandler updateSeatStatusHandler;
     private readonly IMapper mapper;
 
     public SeatPlanController(ICreateSeatPlanTemplateHandler createSeatPlanTemplateHandler,
         IGetTemplatesHandler getTemplatesHandler, IMapper mapper, IGetTemplateHandler getTemplateHandler,
-        IChangeSeatPlanStatusHandler changeSeatPlanStatusHandler)
+        IChangeSeatPlanStatusHandler changeSeatPlanStatusHandler, IUpdateSeatStatusHandler updateSeatStatusHandler)
     {
         this.createSeatPlanTemplateHandler = createSeatPlanTemplateHandler;
         this.getTemplatesHandler = getTemplatesHandler;
         this.mapper = mapper;
         this.getTemplateHandler = getTemplateHandler;
         this.changeSeatPlanStatusHandler = changeSeatPlanStatusHandler;
+        this.updateSeatStatusHandler = updateSeatStatusHandler; 
     }
 
     [HttpGet]
@@ -128,6 +130,39 @@ public class SeatPlanController : ControllerBase
         catch (System.Exception ex)
         {
             return new JsonResult(new ChangeSeatPlanStatusResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("UpdateSeatStatus")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateSeatStatusResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateSeatStatus([FromBody] UpdateSeatStatusArgs args)
+    {
+        try
+        {
+            var result = await updateSeatStatusHandler.ExecuteAsync(new Services.SeatPlanService.Interactors.UpdateSeatStatusArgs
+            {
+                ActivityId = args.ActivityId,
+                EventDate  = args.EventDate,
+                CategoryId = args.CategoryId,
+                RowId      = args.RowId,
+                SeatId     = args.SeatId,
+                Occupied   = args.Occupied
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateSeatStatusResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateSeatStatusResult 
+            { 
+                IsSuccess = result.Result.IsSuccess 
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateSeatStatusResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

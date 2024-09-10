@@ -129,17 +129,8 @@ public class TransactionRedirectionHandler : ITransactionRedirectionHandler
                 }, "Successfully validate and redirect transaction.");
             }
 
-            redirect = activity.ExperienceCreationType switch {
-                Framework.Enums.Enums.ExperienceCreationType.GeneralExperience => 
-                    applicationConfig.FrontendUrl
-                        .AppendPathSegment("purchase/order")
-                        .SetQueryParam("purchaseid", transaction.Id),
-                Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents =>
-                    applicationConfig.FrontendUrl
-                        .AppendPathSegment("purchase/order/ote")
-                        .AppendPathSegment(transaction.Id),
-                _ => "/not-found"
-            };
+            redirect = string.IsNullOrEmpty(deserializedPayload.Url) ? 
+                        applicationConfig.FrontendUrl.AppendPathSegment("not-found") : deserializedPayload.Url;
 
             return AppResult<TransactionRedirectionResult>.CreateSucceeded(new TransactionRedirectionResult {
                 RedirectUrl = redirect,
@@ -157,5 +148,6 @@ public class TransactionRedirectionHandler : ITransactionRedirectionHandler
         public int ScheduleId {get; set;}
         public int TransactionId {get; set;}
         public string OteQuery {get; set;}
+        public string Url {get; set;}
     }
 }

@@ -98,8 +98,12 @@ public class OteGetRequestPaymentHandler : IGetOteRequestPaymentHandler
                 Guid = args.Guid,
                 SelectedDate = selectedOteDate.Date.Date,
                 SelectedTickets = deserializedPayload.Tickets.Select(t => new OteGetRequestPaymentResult.RequestPaymentTicket {
-                    TicketCount = t.Count,
-                    TicketId = t.Id
+                    TicketCount  = t.Count,
+                    TicketId     = t.Id,
+                    SeatNumber   = t.SeatNumber,
+                    CategoryUUID = t.CategoryUUID,
+                    RowUUID      = t.RowUUID,
+                    SeatUUID     = t.SeatUUID
                 }),
                 Token = args.Token,
                 Questions = deserializedPayload.Questions?.Select(q => new OteGetRequestPaymentResult.ProviderQuestion {
@@ -138,6 +142,11 @@ public class OteGetRequestPaymentHandler : IGetOteRequestPaymentHandler
     {
         public int Id {get; set;}
         public int Count {get; set;}
+        public string SeatNumber { get; set; }
+        public string CategoryUUID { get; set; }
+        public string RowUUID { get; set; }
+        public string SeatUUID { get; set; }
+
     }
 
     private class ProviderQuestion

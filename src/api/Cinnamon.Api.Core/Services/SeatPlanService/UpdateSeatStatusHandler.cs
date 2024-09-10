@@ -106,7 +106,7 @@ public class UpdateSeatStatusHandler : IUpdateSeatStatusHandler
             }
 
             return AppResult<UpdateSeatStatusResult>.CreateSucceeded(new UpdateSeatStatusResult {
-
+                IsSuccess = updateOteDatePayload.Result.IsSuccess
             }, "Seat status updated successfully");
         }
         catch (Exception ex)

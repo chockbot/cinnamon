@@ -1,0 +1,224 @@
+﻿@page "/purchase/order/ote/reserved/{Handler}/{OrderId:int}"
+@using System.Security.Claims;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject ITransactionApiHandler transactionApiHandler;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject INotificationService NotificationService;
+@inject NavigationManager NavigationManager;
+@inject IJSRuntime jsRuntime;
+
+@if (purchaseOrder is not null)
+{
+    <div class="purchase-ote-summary-wrapper py-5">
+        <Container>
+            <Row HorizontalGutter="50" VerticalGutter="30">
+                <Column ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
+                    <div class="payment-confirmation-section">
+                        <div class="header-section">
+                            <p class="header-text">Payment Confirmation</p>
+                            <p class="total-amount">₱@purchaseOrder.TotalPurchase.ToString("#,##0.00")</p>
+                        </div>
+                        <div class="event-info-section">
+                            <p class="event-name">@purchaseOrder.EventName</p>
+                            <p class="event-location">@purchaseOrder.EventLocation</p>
+                            <p class="event-date">@purchaseOrder.EventDate.ToString("dd MMMM yyyy | hh:mm tt")</p>
+                        </div>
+                        <div class="purchase-details-section">
+                            <p class="purchase-details-text">Purchase Details</p>
+                            <div class="ticket-header">
+                                <p class="header-name">Tickets</p>
+                                <p class="header-name">Price</p>
+                                <p class="header-name">Quantity</p>
+                                <p class="header-name">Seat Number</p>
+                            </div>
+                            @foreach (var item in GetTicketSummary)
+                            {
+                                <div class="ticket-column">
+                                    <p class="header-name">@item.Name</p>
+                                    <p class="header-name">₱@item.Price</p>
+                                    <p class="header-name"> @item.Count</p>
+                                    @if(item.SeatNumber != string.Empty)
+                                    {
+                                        <p class="header-name">@item.SeatNumber</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="header-name">Free Seating</p>
+                                    }
+                                </div>
+                            }
+                        </div>
+                        <div class="other-payment-section">
+                            <p class="other-details-text">Purchase Details</p>
+                            <div class="col-4">
+                                <div class="other-info">
+                                    <p class="discount-text">Discount</p>
+                                    <p class="discount-amount">₱@purchaseOrder.Discount.Value.ToString("#,##0.00")</p>
+                                </div>
+                                <div class="other-info">
+                                    <p class="service-text">Service fee (15%)</p>
+                                    <p class="service-amount">₱@purchaseOrder.ServiceFee.ToString("#,##0.00")</p>
+                                </div>
+                                <div class="other-info">
+                                    <p class="handling-text">Handling fee (2%)</p>
+                                    <p class="handling-amount">₱@purchaseOrder.HandlingFee.ToString("#,##0.00")</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is5.OnDesktop">
+                    @if (purchaseOrder.EventLocation != "Online")
+                    {
+                        <div class="view-ticket-section">
+                            <div class="thank-you-text text-center">
+                                <p>Thank you for choosing Cinnamon!</p>
+                            </div>
+                            <div class="assistance-text text-center">
+                                <p>Should you require assistance in cancellation or change in order, Kindly email us in support@cinnamon.ph</p>
+                            </div>
+                            <div class="button-options">
+                                <button class="back-btn" @onclick="NavigateToHome">Back to home</button>
+                                <a class="view-btn" href="@purchaseOrder.TicketUrl" target="_blank" rel="noopener noreferrer">View Tickets</a>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="online-event text-center">
+                            <div class="header">Thank you for choosing <span class="cinnamon-text">Cinnamon!</span></div>
+                            <p class="checkout-text">Checkout your event now!</p>
+                            <div class="text-center">
+                                <a class="view-link text-decoration-none" href="@purchaseOrder.TicketUrl" target="_blank" rel="noopener noreferrer">View Link/s</a>
+                            </div>
+                            <div class="text-center">
+                                <Button Clicked="NavigateToHome" class="home-button">
+                                    Back to Home
+                                </Button>
+                            </div>
+                            <div class="cancellation d-flex justify-content-center">
+                                <p class="cancellation-text">Should you require assistance in cancellation or change in order, Kindly email us in support@cinnamon.ph</p>
+                            </div>
+                        </div>
+                    }
+                </Column>
+            </Row>
+        </Container>
+    </div>
+}
+
+@code
+{
+    [Parameter]
+    public int OrderId { get; set; }
+
+    [Parameter]
+    public string Handler { get; set; }
+
+    private string token;
+    private Framework.ApiCommand.ApiCore.DTO.PurchaseOrder.OtePurchaseOrderDTO? purchaseOrder;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            token = user.FindFirstValue("Token");
+            if (string.IsNullOrEmpty(token))
+            {
+                NavigationManager.NavigateTo("/explore");
+                return;
+            }
+
+            await LoadPurchaseOrderDetails();
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "OTE Payment Page");
+        }
+    }
+
+    private async Task LoadPurchaseOrderDetails()
+    {
+        var orderSummaryRes = await transactionApiHandler.GetOtePurchaseOrder(OrderId, token);
+        if (!orderSummaryRes.Succeeded || orderSummaryRes.Result is null || !orderSummaryRes.Result.IsSuccess)
+        {
+            NavigationManager.NavigateTo("/not-found");
+            return;
+        }
+        purchaseOrder = orderSummaryRes.Result.Result;
+    }
+
+    private IEnumerable<TicketSummary> GetTicketSummary
+    {
+        get
+        {
+            var tickets = new Dictionary<int, TicketSummary>();
+
+            if (purchaseOrder is not null)
+            {
+                foreach (var item in purchaseOrder.Tickets)
+                {
+                    if (tickets.ContainsKey(item.Id))
+                    {
+                        tickets[item.Id].Count++;
+                        tickets[item.Id].SeatNumber += $",{item.SeatNumber}";
+                    }
+                    else
+                    {
+                        tickets.Add(item.Id, new TicketSummary
+                            {
+                                Count      = 1,
+                                Id         = item.Id,
+                                Name       = item.Name,
+                                Price      = item.Price,
+                                SeatNumber = item.SeatNumber
+                            });
+                    }
+                }
+            }
+
+            return tickets.Select(t => t.Value);
+        }
+    }
+
+    private Task NavigateToTickets()
+    {
+        if (purchaseOrder is not null)
+        {
+            NavigationManager.NavigateTo(purchaseOrder.TicketUrl);
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task NavigateToHome()
+    {
+        NavigationManager.NavigateTo("/explore");
+        return Task.CompletedTask;
+    }
+
+    private string FormattedId(int id)
+    {
+        var idString = id.ToString();
+        var template = "000000";
+        var referenceId = idString.Length > template.Length ? idString : template.Substring(idString.Length) + idString;
+        return referenceId;
+    }
+
+    private class TicketSummary
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public int Count { get; set; }
+        public string SeatNumber { get; set; }
+    }
+}

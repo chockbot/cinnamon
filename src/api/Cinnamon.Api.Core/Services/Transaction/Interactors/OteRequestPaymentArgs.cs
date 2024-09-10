@@ -12,12 +12,15 @@ public class OteRequestPaymentArgs : IInteractor
 
     public IEnumerable<ProviderQuestion>? Questions {get; set;}
 
-    public class RequestPaymentTicket 
+    public class RequestPaymentTicket
     {
         public int TicketId {get; set;}
-        public int TicketCount {get; set;}
+        public int TicketCount { get; set; }
+        public string SeatNumber { get; set; }
+        public string CategoryUUID { get; set; }
+        public string RowUUID { get; set; }
+        public string SeatUUID { get; set; }
     }
-
     public class ProviderQuestion 
     {
         public int Id {get; set;}

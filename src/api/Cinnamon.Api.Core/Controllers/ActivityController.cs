@@ -2639,57 +2639,61 @@ public class ActivityController : ControllerBase
         try
         {
             var activity = args.Activity;
-            var result = await oteCreateHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteCreateArgs {
-                Activity = new Services.ActivityService.Interactors.OteCreateArgs.OteActivity {
-                    BarangayCode             = activity.BarangayCode ?? string.Empty,
-                    BarangayName             = activity.BarangayName ?? string.Empty,
-                    CityName                 = activity.CityName ?? string.Empty,
-                    CityNumber               = activity.CityNumber ?? string.Empty,
-                    Description              = activity.Description,
-                    EventName                = activity.EventName,
+            var result = await oteCreateHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteCreateArgs
+            {
+                Activity = new Services.ActivityService.Interactors.OteCreateArgs.OteActivity
+                {
+                    BarangayCode = activity.BarangayCode ?? string.Empty,
+                    BarangayName = activity.BarangayName ?? string.Empty,
+                    CityName = activity.CityName ?? string.Empty,
+                    CityNumber = activity.CityNumber ?? string.Empty,
+                    Description = activity.Description,
+                    EventName = activity.EventName,
                     ExperienceCreationTypeId = activity.ExperienceCreationTypeId,
-                    CategoryId               = activity.CategoryId,
-                    ExperienceTypeId         = activity.ExperienceTypeId,
-                    HouseNo                  = activity.HouseNo ?? string.Empty,
-                    IsPublished              = activity.IsPublished,
-                    PinnedLocation           = activity.PinnedLocation ?? string.Empty,
-                    PostalCode               = activity.PostalCode ?? string.Empty,
-                    Recurrence               = activity.Recurrence,
-                    RegionCode               = activity.RegionCode ?? string.Empty,
-                    RegionName               = activity.RegionName ?? string.Empty,
-                    ScheduleFrom             = activity.ScheduleFrom,
-                    ScheduleTo               = activity.ScheduleTo,
-                    IsComingSoon             = activity.IsComingSoon,
-                    
-                    DurationEnd    = activity.DurationEnd,
-                    DurationEvery  = activity.DurationEvery,
-                    DurationStart  = activity.DurationStart,
-                    MonthDay       = activity.MonthDay,
-                    MonthRepeat    = activity.MonthRepeat,
-                    MonthSelection = activity.MonthSelection,
-                    OnDayDate      = activity.OnDayDate,
-                    WeekString     = activity.WeekString,
+                    CategoryId = activity.CategoryId,
+                    ExperienceTypeId = activity.ExperienceTypeId,
+                    HouseNo = activity.HouseNo ?? string.Empty,
+                    IsPublished = activity.IsPublished,
+                    PinnedLocation = activity.PinnedLocation ?? string.Empty,
+                    PostalCode = activity.PostalCode ?? string.Empty,
+                    Recurrence = activity.Recurrence,
+                    RegionCode = activity.RegionCode ?? string.Empty,
+                    RegionName = activity.RegionName ?? string.Empty,
+                    ScheduleFrom = activity.ScheduleFrom,
+                    ScheduleTo = activity.ScheduleTo,
+                    IsComingSoon = activity.IsComingSoon,
 
-                    EventDurationCount    = activity.EventDurationCount,
+                    DurationEnd = activity.DurationEnd,
+                    DurationEvery = activity.DurationEvery,
+                    DurationStart = activity.DurationStart,
+                    MonthDay = activity.MonthDay,
+                    MonthRepeat = activity.MonthRepeat,
+                    MonthSelection = activity.MonthSelection,
+                    OnDayDate = activity.OnDayDate,
+                    WeekString = activity.WeekString,
+
+                    EventDurationCount = activity.EventDurationCount,
                     EventDurationTimeUnit = activity.EventDurationTimeUnit,
-                    EventTicketLimit      = activity.EventTicketLimit,
-                    IsOpen                = activity.IsOpen,
-                    IsCapacity            = activity.IsCapacity,
-                    CapacityCount         = activity.CapacityCount,
-                    EmailFeedbackDays     = activity.EmailFeedbackDays,
-                    EmailReminderDays     = activity.EmailReminderDays,
-                    FeedbackBody          = activity.FeedbackBody,
-                    FeedbackSubject       = activity.FeedbackSubject,
-                    ReminderBody          = activity.ReminderBody,
-                    ReminderSubject       = activity.ReminderSubject,
-                    CustomAcceptedBody    = activity.CustomAcceptedBody,
-                    CustomDeclinedBody    = activity.CustomDeclinedBody,
-                    CustomPendingBody     = activity.CustomPendingBody,
-                    ReserveSeat          = activity.ReserveSeat,
-                    SeatPlanTemplateId   = activity.SeatPlanTemplateId,
+                    EventTicketLimit = activity.EventTicketLimit,
+                    IsOpen = activity.IsOpen,
+                    IsCapacity = activity.IsCapacity,
+                    CapacityCount = activity.CapacityCount,
+                    EmailFeedbackDays = activity.EmailFeedbackDays,
+                    EmailReminderDays = activity.EmailReminderDays,
+                    FeedbackBody = activity.FeedbackBody,
+                    FeedbackSubject = activity.FeedbackSubject,
+                    ReminderBody = activity.ReminderBody,
+                    ReminderSubject = activity.ReminderSubject,
+                    CustomAcceptedBody = activity.CustomAcceptedBody,
+                    CustomDeclinedBody = activity.CustomDeclinedBody,
+                    CustomPendingBody = activity.CustomPendingBody,
+                    ReserveSeat = activity.ReserveSeat,
+                    SeatPlanTemplateId = activity.SeatPlanTemplateId,
                 },
-                Pricings = args.Pricings.Select(p => {
-                    return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {
+                Pricings = args.Pricings.Select(p =>
+                {
+                    return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing
+                    {
                         Description = p.Description,
                         IsAbsorbFees = p.IsAbsorbFees,
                         MaxSlots = p.MaxSlots,
@@ -2700,8 +2704,9 @@ public class ActivityController : ControllerBase
                         ReserveSeatUuid = p.ReserveSeatUuid
                     };
                 }),
-                DateOverrides = args.DateOverrides is not null ? 
-                    args.DateOverrides.Select(d => new Services.ActivityService.Interactors.OteCreateArgs.DateOverride {
+                DateOverrides = args.DateOverrides is not null ?
+                    args.DateOverrides.Select(d => new Services.ActivityService.Interactors.OteCreateArgs.DateOverride
+                    {
                         Date = d.Date,
                         TimeEnd = d.TimeEnd,
                         TimeStart = d.TimeStart
@@ -2711,10 +2716,11 @@ public class ActivityController : ControllerBase
                     {
                         Title = s.Title,
                         Description = s.Description,
-                        VideoLink = s.VideoLink,    
+                        VideoLink = s.VideoLink,
                         TicketRestriction = s.TicketRestriction,
                     }) : null,
-                Questions = args.Questions is not null ? args.Questions.Select(s => new Services.ActivityService.Interactors.OteCreateArgs.CustomQuestion {
+                Questions = args.Questions is not null ? args.Questions.Select(s => new Services.ActivityService.Interactors.OteCreateArgs.CustomQuestion
+                {
                     FieldType = s.FieldType,
                     Question = s.Question,
                     Required = s.Required
@@ -2728,10 +2734,11 @@ public class ActivityController : ControllerBase
 
             return new JsonResult(new CreateOteResult
             {
-               IsSuccess = result.Succeeded,
-               Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO {
-                ActivityId = result.Result.Id
-               }
+                IsSuccess = result.Succeeded,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO
+                {
+                    ActivityId = result.Result.Id
+                }
             });
         }
         catch (Exception ex)
@@ -2747,55 +2754,59 @@ public class ActivityController : ControllerBase
         try
         {
             var activity = args.Activity;
-            var result = await oteUpdateHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteUpdateArgs {
-                Activity = new Services.ActivityService.Interactors.OteUpdateArgs.OteActivity {
-                    BarangayCode     = activity.BarangayCode ?? string.Empty,
-                    BarangayName     = activity.BarangayName ?? string.Empty,
-                    CategoryId       = activity.CategoryId,
-                    CityName         = activity.CityName ?? string.Empty,
-                    CityNumber       = activity.CityNumber ?? string.Empty,
-                    Description      = activity.Description,
-                    EventName        = activity.EventName,
+            var result = await oteUpdateHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteUpdateArgs
+            {
+                Activity = new Services.ActivityService.Interactors.OteUpdateArgs.OteActivity
+                {
+                    BarangayCode = activity.BarangayCode ?? string.Empty,
+                    BarangayName = activity.BarangayName ?? string.Empty,
+                    CategoryId = activity.CategoryId,
+                    CityName = activity.CityName ?? string.Empty,
+                    CityNumber = activity.CityNumber ?? string.Empty,
+                    Description = activity.Description,
+                    EventName = activity.EventName,
                     ExperienceTypeId = activity.ExperienceTypeId,
-                    HouseNo          = activity.HouseNo ?? string.Empty,
-                    Id               = activity.Id,
-                    IsPublished      = activity.IsPublished,
-                    PinnedLocation   = activity.PinnedLocation ?? string.Empty,
-                    PostalCode       = activity.PostalCode ?? string.Empty,
-                    Recurrence       = activity.Recurrence,
-                    RegionCode       = activity.RegionCode ?? string.Empty,
-                    RegionName       = activity.RegionName ?? string.Empty,
-                    ScheduleFrom     = activity.ScheduleFrom,
-                    ScheduleTo       = activity.ScheduleTo,
-                    IsComingSoon     = activity.IsComingSoon,
+                    HouseNo = activity.HouseNo ?? string.Empty,
+                    Id = activity.Id,
+                    IsPublished = activity.IsPublished,
+                    PinnedLocation = activity.PinnedLocation ?? string.Empty,
+                    PostalCode = activity.PostalCode ?? string.Empty,
+                    Recurrence = activity.Recurrence,
+                    RegionCode = activity.RegionCode ?? string.Empty,
+                    RegionName = activity.RegionName ?? string.Empty,
+                    ScheduleFrom = activity.ScheduleFrom,
+                    ScheduleTo = activity.ScheduleTo,
+                    IsComingSoon = activity.IsComingSoon,
 
-                    DurationEnd    = activity.DurationEnd,
-                    DurationEvery  = activity.DurationEvery,
-                    DurationStart  = activity.DurationStart,
-                    MonthDay       = activity.MonthDay,
-                    MonthRepeat    = activity.MonthRepeat,
+                    DurationEnd = activity.DurationEnd,
+                    DurationEvery = activity.DurationEvery,
+                    DurationStart = activity.DurationStart,
+                    MonthDay = activity.MonthDay,
+                    MonthRepeat = activity.MonthRepeat,
                     MonthSelection = activity.MonthSelection,
-                    OnDayDate      = activity.OnDayDate,
-                    WeekString     = activity.WeekString,
+                    OnDayDate = activity.OnDayDate,
+                    WeekString = activity.WeekString,
 
-                    EventDurationCount    = activity.EventDurationCount,
+                    EventDurationCount = activity.EventDurationCount,
                     EventDurationTimeUnit = activity.EventDurationTimeUnit,
-                    EventTicketLimit      = activity.EventTicketLimit,
-                    IsOpen                = activity.IsOpen,
-                    IsCapacity            = activity.IsCapacity,
-                    CapacityCount         = activity.CapacityCount,
-                    EmailFeedbackDays     = activity.EmailFeedbackDays,
-                    EmailReminderDays     = activity.EmailReminderDays,
-                    FeedbackBody          = activity.FeedbackBody,
-                    FeedbackSubject       = activity.FeedbackSubject,
-                    ReminderBody          = activity.ReminderBody,
-                    ReminderSubject       = activity.ReminderSubject,
-                    CustomAcceptedBody    = activity.CustomAcceptedBody,
-                    CustomDeclinedBody    = activity.CustomDeclinedBody,
-                    CustomPendingBody     = activity.CustomPendingBody
+                    EventTicketLimit = activity.EventTicketLimit,
+                    IsOpen = activity.IsOpen,
+                    IsCapacity = activity.IsCapacity,
+                    CapacityCount = activity.CapacityCount,
+                    EmailFeedbackDays = activity.EmailFeedbackDays,
+                    EmailReminderDays = activity.EmailReminderDays,
+                    FeedbackBody = activity.FeedbackBody,
+                    FeedbackSubject = activity.FeedbackSubject,
+                    ReminderBody = activity.ReminderBody,
+                    ReminderSubject = activity.ReminderSubject,
+                    CustomAcceptedBody = activity.CustomAcceptedBody,
+                    CustomDeclinedBody = activity.CustomDeclinedBody,
+                    CustomPendingBody = activity.CustomPendingBody
                 },
-                Pricings = args.Pricings.Select(p => {
-                    return new Services.ActivityService.Interactors.OteUpdateArgs.OtePricing {
+                Pricings = args.Pricings.Select(p =>
+                {
+                    return new Services.ActivityService.Interactors.OteUpdateArgs.OtePricing
+                    {
                         Description = p.Description,
                         Id = p.Id,
                         IsAbsorbFees = p.IsAbsorbFees,
@@ -2813,7 +2824,8 @@ public class ActivityController : ControllerBase
                         TimeEnd = d.TimeEnd,
                         TimeStart = d.TimeStart
                     }) : null,
-                OnlineEvents = args.OnlineEvents is not null ? args.OnlineEvents.Select(s => {
+                OnlineEvents = args.OnlineEvents is not null ? args.OnlineEvents.Select(s =>
+                {
                     return new Services.ActivityService.Interactors.OteUpdateArgs.OteOnlineEvent
                     {
                         Id = s.Id,
@@ -2822,25 +2834,28 @@ public class ActivityController : ControllerBase
                         VideoLink = s.VideoLink,
                         TicketRestriction = s.TicketRestriction,
                     };
-                }): null,
-                OteReschedules = args.OteReschedules is not null ? args.OteReschedules.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.OteReschedule {
+                }) : null,
+                OteReschedules = args.OteReschedules is not null ? args.OteReschedules.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.OteReschedule
+                {
                     OldDate = s.OldDate,
                     NewDate = s.NewDate,
                     Id = s.Id
                 }) : null,
-                NewQuestions = args.NewQuestions is not null ? args.NewQuestions.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.CustomQuestion {
+                NewQuestions = args.NewQuestions is not null ? args.NewQuestions.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.CustomQuestion
+                {
                     FieldType = s.FieldType,
                     Question = s.Question,
                     Required = s.Required
                 }) : null,
-                UpdatedQuestions = args.UpdatedQuestions is not null ? args.UpdatedQuestions.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.CustomQuestion {
+                UpdatedQuestions = args.UpdatedQuestions is not null ? args.UpdatedQuestions.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.CustomQuestion
+                {
                     FieldType = s.FieldType,
                     Question = s.Question,
                     Required = s.Required,
                     Id = s.Id
                 }) : null,
                 DeletedQuestions = args.DeletedQuestions
-            }); 
+            });
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -2849,10 +2864,11 @@ public class ActivityController : ControllerBase
 
             return new JsonResult(new UpdateOteResult
             {
-               IsSuccess = result.Succeeded,
-               Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO {
-                ActivityId = result.Result.Id
-               }
+                IsSuccess = result.Succeeded,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO
+                {
+                    ActivityId = result.Result.Id
+                }
             });
         }
         catch (Exception ex)
@@ -3062,20 +3078,21 @@ public class ActivityController : ControllerBase
                 IsSuccess = true,
                 Result = result.Result.OtePerDays.Select(e => {
                     return new CoreDto.Activity.OtePerDayDTO {
-                        ActivityId = e.ActivityId,
-                        CityName = e.CityName,
-                        Date = e.Date,
-                        DateEnd = e.DateEnd,
-                        DateId = e.DateId,
-                        DateStart = e.DateStart,
-                        Description = e.Description,
-                        EventImage = e.EventImage,
+                        ActivityId       = e.ActivityId,
+                        CityName         = e.CityName,
+                        Date             = e.Date,
+                        DateEnd          = e.DateEnd,
+                        DateId           = e.DateId,
+                        DateStart        = e.DateStart,
+                        Description      = e.Description,
+                        EventImage       = e.EventImage,
                         ExperienceTypeId = e.ExperienceTypeId,
-                        Handler = e.Handler,
-                        PinnedLocation = e.PinnedLocation,
-                        RegionName = e.RegionName,
-                        Title = e.Title,
-                        ForceDisable = e.ForceDisable
+                        Handler          = e.Handler,
+                        PinnedLocation   = e.PinnedLocation,
+                        RegionName       = e.RegionName,
+                        Title            = e.Title,
+                        ForceDisable     = e.ForceDisable,
+                        ReserveSeat      = e.ReserveSeat
                     };
                 })
             });

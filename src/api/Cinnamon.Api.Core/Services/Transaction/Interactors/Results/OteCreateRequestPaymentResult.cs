@@ -1,3 +1,5 @@
+using System.Security.Policy;
+
 namespace Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 
 public class OteCreateRequestPaymentResult 
@@ -13,5 +15,9 @@ public class OteCreateRequestPaymentResult
     {
         public int TicketId {get; set;}
         public int TicketCount {get; set;}
+        public string SeatNumber { get; set; }
+        public string CategoryUUID { get; set; }
+        public string RowUUID { get; set; }
+        public string SeatUUID { get; set; }
     }
 }

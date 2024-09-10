@@ -27,5 +27,6 @@ public class OteCustomerPayedNotificationArgs : IInteractor
         public string TicketName {get; set;}
         public int TicketCount {get; set;}
         public decimal TicketPrice {get; set;}
+        public string TicketSeatNumber { get; set; }
     }
 }

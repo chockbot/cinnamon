@@ -13,4 +13,6 @@ public interface ISeatPlanApiHandler
     Task<AppResult<GetTemplateResult>> GetTemplate(int templateId, string token);
 
     Task<AppResult<ChangeSeatPlanStatusResult>> ChangeSeatPlanStatus(int id, ChangeSeatPlanStatusArgs status, string token);
+
+    Task<AppResult<UpdateSeatStatusResult>> UpdateSeatStatus(UpdateSeatStatusArgs args, string token);
 } 

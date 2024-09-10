@@ -54,7 +54,8 @@ public class OteCustomerPayedNotificationHandler : IOteCustomerPayedNotification
                     return new OtePurchaseVerification.TicketDetails {
                         TicketCount = t.TicketCount,
                         TicketName = t.TicketName,
-                        TicketPrice = t.TicketPrice
+                        TicketPrice = t.TicketPrice,
+                        TicketSeatNumber = t.TicketSeatNumber
                     };
                 }),
                 TotalAmount = args.TotalAmount,
