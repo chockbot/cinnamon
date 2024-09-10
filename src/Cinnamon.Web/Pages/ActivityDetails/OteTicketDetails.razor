@@ -95,6 +95,14 @@
                                                 <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-ticket-icon.png" alt="ticket">
                                                 <p class="font-14 color-grey-100 mb-0 m-font-12">@item.Name</p>
                                             </div>
+                                            @if (!string.IsNullOrEmpty(item.SeatNumber))
+                                            {
+                                                <div class="d-flex mb-1 mb-md-3 align-items-center">
+                                                    <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-seatnumbern.png" alt="ticket">
+                                                    <p class="font-14 color-grey-100 mb-0 m-font-12">@item.SeatNumber</p>
+                                                </div>
+                                            }
+                                            
                                             <div class="text-center">
                                                 <img class="img-qrcode" src="@item.QRCodeData" alt="qrcode">
                                                 <p>@FormattedId(item.Id)</p>
