@@ -957,10 +957,7 @@
     private void HandleSeatSelection(Category.SelectedSeat selectedSeat)
     {
         var selectedTicket = activity.Pricings.FirstOrDefault(a => a.ReserveSeatUuid == selectedSeat.CategoryUUID);
-        
-        if (selectedTicket is null)
-            return;
-    
+       
         var ticketToUpdate = selectedTickets.FirstOrDefault(t => t.Value.Id == selectedTicket.Id);
     
         // If the seat is already selected, update the ticket info

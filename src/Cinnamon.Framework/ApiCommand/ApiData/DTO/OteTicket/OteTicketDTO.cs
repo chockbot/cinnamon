@@ -16,6 +16,6 @@ public class OteTicketDTO
     public string QRImageData {get; set;}
     public string Status {get; set;}
     public int OteDateId {get; set;}
-
+    public string SeatNumber { get; set; }
     public CustomerDTO Customer {get; set;}
 }

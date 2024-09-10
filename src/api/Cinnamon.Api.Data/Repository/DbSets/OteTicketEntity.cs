@@ -105,6 +105,7 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
                     QRCode               = t.QRCode,
                     Status               = t.Status,
                     Title                = t.Title,
+                    SeatNumber           = t.SeatNumber,
                     Customer             = t.Customer,
                 });
             }
