@@ -68,24 +68,131 @@
                         }
                     </div>
                     @*Event Ticekts*@
-                    <div class="ticket-event-section">
-                        <p class="ticket-section">Select seat for your tickets</p>
-                        <div class="ticket-box">
-                            <Cinnamon.Web.Components.Common.SeatPlan.Container Payload="@selectedPayload" OnSeatSelected="HandleSeatSelection"/>
+                    @if (IsOnWaitlist)
+                    {
+                        @*Body*@
+                        <div class="waitlist-section">
+                            <div class="ticket-waitlist">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <g clip-path="url(#clip0_473_881)">
+                                        <path d="M10.0007 0.833374C8.18766 0.833374 6.41538 1.37099 4.90793 2.37824C3.40048 3.38548 2.22556 4.81712 1.53176 6.49211C0.837956 8.1671 0.656426 10.0102 1.01012 11.7884C1.36382 13.5665 2.23686 15.1999 3.51884 16.4819C4.80082 17.7638 6.43417 18.6369 8.21233 18.9906C9.99049 19.3443 11.8336 19.1627 13.5086 18.4689C15.1836 17.7751 16.6152 16.6002 17.6225 15.0928C18.6297 13.5853 19.1673 11.813 19.1673 10C19.1645 7.56977 18.1978 5.23986 16.4793 3.5214C14.7608 1.80293 12.4309 0.836241 10.0007 0.833374ZM13.0898 13.0892C12.9335 13.2454 12.7216 13.3332 12.5007 13.3332C12.2797 13.3332 12.0678 13.2454 11.9115 13.0892L9.41149 10.5892C9.2552 10.433 9.16737 10.221 9.16732 10V5.00004C9.16732 4.77903 9.25512 4.56707 9.4114 4.41079C9.56768 4.2545 9.77964 4.16671 10.0007 4.16671C10.2217 4.16671 10.4336 4.2545 10.5899 4.41079C10.7462 4.56707 10.834 4.77903 10.834 5.00004V9.65504L13.0898 11.9109C13.246 12.0671 13.3338 12.2791 13.3338 12.5C13.3338 12.721 13.246 12.9329 13.0898 13.0892Z" fill="#343D4C" />
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clip0_473_881">
+                                            <rect width="20" height="20" fill="white" />
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                                <p class="close-text">You're on the Waitlist</p>
+                            </div>
+                            <p class="waitlist-sub-text">A confirmation email has been sent to <span><a class="user-email">@currentLogin.Email</a></span>. We will let you know if you are admitted.</p>
+                            <p class="waitlist-sub-leave">If you can no longer join,  <span><a class="user-leave" @onclick="() => confirmDialogRef.Open()">you can leave the waitlist</a></span>.</p>
                         </div>
-                        <div class="ticket-options">
-                            <div class="ticket-names">    
-                                @foreach (var item in AvailablePriceList)
+                    }
+                    else if (IsApprovedWaitlist)
+                    {
+                        @*Body*@
+                        <div class="waitlist-section">
+                            <div class="ticket-waitlist">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <g clip-path="url(#clip0_578_514)">
+                                        <path d="M10.0007 19.6666C15.3394 19.6666 19.6673 15.3387 19.6673 9.99992C19.6673 4.66117 15.3394 0.333252 10.0007 0.333252C4.6619 0.333252 0.333984 4.66117 0.333984 9.99992C0.333984 15.3387 4.6619 19.6666 10.0007 19.6666Z" fill="#4BB749" />
+                                        <path d="M8.08762 14.0234L5.82095 11.8094C5.77193 11.7617 5.73295 11.7047 5.70634 11.6417C5.67973 11.5787 5.66602 11.5111 5.66602 11.4427C5.66602 11.3743 5.67973 11.3066 5.70634 11.2437C5.73295 11.1807 5.77193 11.1237 5.82095 11.076L6.57262 10.3427C6.67342 10.245 6.80827 10.1904 6.94862 10.1904C7.08897 10.1904 7.22382 10.245 7.32462 10.3427L8.67395 11.6617L12.4583 5.90836C12.5364 5.79226 12.6565 5.71108 12.7934 5.68196C12.9302 5.65285 13.073 5.6781 13.1916 5.75236L14.0863 6.31436C14.1447 6.35029 14.1953 6.39759 14.2352 6.45345C14.275 6.50932 14.3032 6.57261 14.318 6.63957C14.3329 6.70653 14.3342 6.7758 14.3218 6.84328C14.3095 6.91075 14.2837 6.97505 14.246 7.03236L9.76495 13.847C9.67516 13.9804 9.55722 14.0925 9.41943 14.1754C9.28164 14.2583 9.12736 14.3099 8.96745 14.3267C8.80754 14.3435 8.64588 14.3251 8.49387 14.2727C8.34186 14.2203 8.20319 14.1352 8.08762 14.0234Z" fill="#F3F6FC" />
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clip0_578_514">
+                                            <rect width="20" height="20" fill="white" />
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                                <p class="close-text">Your request has been approved</p>
+                            </div>
+                            <p class="waitlist-sub-text">An approval email has been sent to <span><a class="user-email">@currentLogin.Email</a></span>. Check your email to proceed purchasing your tickets.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        //Not on waitlist
+                        @if(activity.Schedule.IsOpen)
+                        {
+                            if (selectedTickets.Count != 0)
+                            {
+                                if (activity.Schedule.IsCapacity && activity.IsEventSoldOut && selectedTickets.Count <= capacityLimit && !selectedTickets.First().Value.IsUnlimited)
                                 {
-                                    <div class="ticket-info">
-                                        <div class="ticket-color" style="width: 20px;height: 20px;background-color:@item.TicketColor;border-radius: 50%;"></div>
-                                        <div class="ticket-name">@item.Name</div>
+                                    <div class="ticket-event-section">
+                                        <p class="ticket-section">Select seat for your tickets</p>
+                                        <div class="ticket-box">
+                                            <Cinnamon.Web.Components.Common.SeatPlan.Container Payload="@selectedPayload" OnSeatSelected="HandleSeatSelection"/>
+                                        </div>
+                                        <div class="ticket-options">
+                                            <div class="ticket-names">    
+                                                @foreach (var item in AvailablePriceList)
+                                                {
+                                                    <div class="ticket-info">
+                                                        <div class="ticket-color" style="width: 20px;height: 20px;background-color:@item.TicketColor;border-radius: 50%;"></div>
+                                                        <div class="ticket-name">@item.Name</div>
+                                                    </div>
+                                                }
+                                             </div>
+                                             <button class="btn-confirm" @onclick=JoinWaitlist>Join Waitlist</button>
+                                        </div>
                                     </div>
                                 }
-                             </div>
-                             <button class="btn-confirm" @onclick=ProceedToPayment>Confirm Seats</button>
-                        </div>
-                    </div>
+                                else
+                                {
+                                     <div class="ticket-event-section">
+                                     <p class="ticket-section">Select seat for your tickets</p>
+                                     <div class="ticket-box">
+                                         <Cinnamon.Web.Components.Common.SeatPlan.Container Payload="@selectedPayload" OnSeatSelected="HandleSeatSelection"/>
+                                     </div>
+                                     <div class="ticket-options">
+                                         <div class="ticket-names">    
+                                             @foreach (var item in AvailablePriceList)
+                                             {
+                                                 <div class="ticket-info">
+                                                     <div class="ticket-color" style="width: 20px;height: 20px;background-color:@item.TicketColor;border-radius: 50%;"></div>
+                                                     <div class="ticket-name">@item.Name</div>
+                                                 </div>
+                                             }
+                                          </div>
+                                          <button class="btn-confirm" @onclick=ProceedToPayment>Confirm Seats</button>
+                                         </div>
+                                     </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="ticket-event-section">
+                                <p class="ticket-section">Select seat for your tickets</p>
+                                <div class="ticket-box">
+                                    <Cinnamon.Web.Components.Common.SeatPlan.Container Payload="@selectedPayload" OnSeatSelected="HandleSeatSelection"/>
+                                </div>
+                                <div class="ticket-options">
+                                    <div class="ticket-names">    
+                                        @foreach (var item in AvailablePriceList)
+                                        {
+                                            <div class="ticket-info">
+                                                <div class="ticket-color" style="width: 20px;height: 20px;background-color:@item.TicketColor;border-radius: 50%;"></div>
+                                                <div class="ticket-name">@item.Name</div>
+                                            </div>
+                                        }
+                                     </div>
+                                     <button class="btn-confirm" @onclick=ProceedToPayment>Confirm Seats</button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="waitlist-section">
+                                <div class="ticket-close">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 23c6.075 0 11-4.925 11-11S18.075 1 12 1 1 5.925 1 12s4.925 11 11 11M7 10a2 2 0 1 0 0 4h10a2 2 0 1 0 0-4z"></path></svg>
+                                    <p class="close-text">Ticket Sales Closed</p>
+                                </div>
+                                <p class="close-sub-text">This event is not currently selling tickets. You may contact the host to receive updates.</p>
+                            </div>
+                        }
+                    }
                     @*Event Seat Plan*@
                     @if (!string.IsNullOrEmpty(SetPlanImage))
                     {
@@ -563,6 +670,10 @@
             await LoadOteDetails();
             await LoadProvider();
             await LoadProfile();
+            if (activity.Schedule.IsCapacity)
+            {
+                await LoadWaitlist();
+            }
             SelectedDate = DateTime.Parse(Date);
             //Set Seat Plan
             await GetUpdatedSeatPayload();
@@ -892,6 +1003,7 @@
                         Name             = selectedTicket.Name,
                         Price            = selectedTicket.Price,
                         RequiredApproval = selectedTicket.RequiredApproval,
+                        IsUnlimited      = selectedTicket.IsUnlimited,
                         Seat             = $"{selectedSeat.RowNumber}-{selectedSeat.Seat.SeatNumber}",
                         CategoryUUID     = selectedSeat.CategoryUUID,
                         RowUUID          = selectedSeat.RowUUID,

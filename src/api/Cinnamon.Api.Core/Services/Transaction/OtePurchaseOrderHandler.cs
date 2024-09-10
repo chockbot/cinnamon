@@ -370,7 +370,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
 
             var successUrl = applicationConfig.FrontendUrl
                 .AppendPathSegment(oteActivity.Schedule.ReserveSeat
-                                   ? "purchase/order/ote/reserved"
+                                   ? $"purchase/order/ote/reserved/{oteActivity.Handler}"
                                    : "purchase/order/ote")
                 .AppendPathSegment(result.Result.Result.Id);
 

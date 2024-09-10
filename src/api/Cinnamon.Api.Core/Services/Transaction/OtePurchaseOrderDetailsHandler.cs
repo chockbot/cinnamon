@@ -153,7 +153,7 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
                 SubTotal      = purchaseOrder.Total,
                 Discount      = purchaseOrder.CouponAmount,
                 Tickets       = tickets.Select(t => {
-                    var matchingTicketPayload = Ticketspayload.FirstOrDefault(tp => tp.Id == t.Id && tp.Code == t.QRCode);
+                    var matchingTicketPayload = Ticketspayload.FirstOrDefault(tp => tp.Code == t.QRCode);
                     return new OtePurchaseOrderDetailsResult.Ticket
                     {
                         Code       = t.QRCode,

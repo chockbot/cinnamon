@@ -1,4 +1,4 @@
-﻿@page "/purchase/order/ote/reserved/{OrderId:int}"
+﻿@page "/purchase/order/ote/reserved/{Handler}/{OrderId:int}"
 @using System.Security.Claims;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject ITransactionApiHandler transactionApiHandler;
@@ -35,7 +35,7 @@
                             {
                                 <div class="ticket-column">
                                     <p class="header-name">@item.Name</p>
-                                    <p class="header-name">@item.Price</p>
+                                    <p class="header-name">₱@item.Price</p>
                                     <p class="header-name"> @item.Count</p>
                                     @if(item.SeatNumber != string.Empty)
                                     {
@@ -111,6 +111,9 @@
 {
     [Parameter]
     public int OrderId { get; set; }
+
+    [Parameter]
+    public string Handler { get; set; }
 
     private string token;
     private Framework.ApiCommand.ApiCore.DTO.PurchaseOrder.OtePurchaseOrderDTO? purchaseOrder;
