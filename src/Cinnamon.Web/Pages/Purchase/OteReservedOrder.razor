@@ -167,15 +167,17 @@
                     if (tickets.ContainsKey(item.Id))
                     {
                         tickets[item.Id].Count++;
+                        tickets[item.Id].SeatNumber += $",{item.SeatNumber}";
                     }
                     else
                     {
                         tickets.Add(item.Id, new TicketSummary
                             {
-                                Count = 1,
-                                Id = item.Id,
-                                Name = item.Name,
-                                Price = item.Price
+                                Count      = 1,
+                                Id         = item.Id,
+                                Name       = item.Name,
+                                Price      = item.Price,
+                                SeatNumber = item.SeatNumber
                             });
                     }
                 }

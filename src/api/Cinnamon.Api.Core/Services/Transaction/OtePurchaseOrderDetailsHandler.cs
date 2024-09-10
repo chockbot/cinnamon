@@ -137,32 +137,35 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
             }
             var tickets = ticketsRes.Result.Result;
 
-            //Deserialize Payload to get seatnumber
+            //Get seatnumber from PO payload
+            var Ticketspayload = deserializedPayload.Tickets.ToList();
 
 
             var result = new OtePurchaseOrderDetailsResult
             {
-                EventDate = oteDate.DateStart,
+                EventDate     = oteDate.DateStart,
                 EventLocation = location,
-                EventName = oteActivity.EventName,
-                HandlingFee = deserializedPayload.Fees.PaymentProviderFee,
+                EventName     = oteActivity.EventName,
+                HandlingFee   = deserializedPayload.Fees.PaymentProviderFee,
                 PaymentMethod = deserializedPayload.PaymentChannel,
-                ServiceFee = deserializedPayload.Fees.ServiceFee,
+                ServiceFee    = deserializedPayload.Fees.ServiceFee,
                 TotalPurchase = purchaseOrder.OverallTotal,
-                SubTotal = purchaseOrder.Total,
-                Discount = purchaseOrder.CouponAmount,
-                Tickets = tickets.Select(t => {
+                SubTotal      = purchaseOrder.Total,
+                Discount      = purchaseOrder.CouponAmount,
+                Tickets       = tickets.Select(t => {
+                    var matchingTicketPayload = Ticketspayload.FirstOrDefault(tp => tp.Id == t.Id && tp.Code == t.QRCode);
                     return new OtePurchaseOrderDetailsResult.Ticket
                     {
-                        Code = t.QRCode,
-                        Id = t.Id,
-                        ImageData = t.QRImageData,
-                        Name = t.Title,
-                        Price = t.Amount,
+                        Code       = t.QRCode,
+                        Id         = t.Id,
+                        ImageData  = t.QRImageData,
+                        Name       = t.Title,
+                        Price      = t.Amount,
+                        SeatNumber = matchingTicketPayload != null ? matchingTicketPayload.SeatNumber : string.Empty
                     };
                 }),
                 PurchasedDate = purchaseOrder.PurchaseDate,
-                TicketUrl = url
+                TicketUrl     = url
             };
 
             return AppResult<OtePurchaseOrderDetailsResult>.CreateSucceeded(result, "Ote purchase order details successfully get.");
@@ -193,6 +196,7 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
         public string Code {get; set;}
         public string ImageData {get; set;}
         public int OteDateId {get; set;}
+        public string SeatNumber { get; set; }
     }
 
     class Fees {
