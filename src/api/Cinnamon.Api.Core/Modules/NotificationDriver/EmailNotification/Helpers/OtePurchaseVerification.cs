@@ -20,6 +20,7 @@ public class OtePurchaseVerification
 
         foreach(var item in args.Tickets)
         {
+            string tickeSeatNo = !string.IsNullOrEmpty(item.TicketSeatNumber) ? item.TicketSeatNumber : string.Empty;
             ticketsTemplate += $@"
                 <div style='display: flex; width: 100%; justify-content: space-between'>
                     <p
@@ -32,6 +33,16 @@ public class OtePurchaseVerification
                         '
                     >
                         <span style='text-transform: capitalize;'>{item.TicketName}</span> x {item.TicketCount}
+                    </p>
+                    <p
+                        style='
+                        color: #717171;
+                        font-size: 16px;
+                        margin-top: 0;
+                        margin-bottom: 10px;
+                        '
+                    >
+                        P {tickeSeatNo}
                     </p>
                     <p
                         style='
@@ -332,5 +343,6 @@ public class OtePurchaseVerification
         public string TicketName {get; set;}
         public int TicketCount {get; set;}
         public decimal TicketPrice {get; set;}
+        public string TicketSeatNumber { get; set; }
     }
 }

@@ -1,0 +1,981 @@
+﻿body {
+    font-family: "Montserrat", sans-serif;
+    font-family: "Poppins", sans-serif;
+}
+
+.ticket-close {
+    display: flex;
+    gap: 10px;
+    margin-top: 1rem;
+}
+
+.asterisk-symbol {
+    color: darkred;
+    font-size: 20px;
+}
+
+.close-text {
+    font-family: Nunito;
+    font-size: 20px;
+    font-weight: 900;
+    margin-bottom: 0;
+    line-height: 25px;
+}
+
+.close-sub-text {
+    color: #717171;
+    font-family: Nunito;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+    margin-top: 1rem;
+}
+
+.img-seat-plan {
+    width: 330px;
+    height: auto;
+    cursor: pointer;
+    border-radius: 20px;
+}
+
+.cover-photo-img {
+    width: 100%;
+    height: auto;
+    border-radius: 17.512px;
+}
+
+#mapframe {
+    border-radius: 20px;
+}
+
+.address {
+    color: #343d4c;
+    font-family: Nunito;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    text-transform: capitalize;
+}
+
+a {
+    text-decoration: none;
+}
+
+::deep button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+::deep button {
+    transition: transform 0.25s;
+}
+
+    ::deep button:active {
+        transform: scale(0.94);
+    }
+
+.details-page-section {
+    padding-top: 112px;
+}
+
+.seat-plan-section {
+    margin-bottom: 5rem;
+}
+
+.event-title {
+    color: #343d4c;
+    font-family: Nunito-extrabold;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 900;
+}
+
+.event-description {
+    color: #717171;
+    text-align: justify;
+    font-family: Nunito;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-top: 26px;
+}
+
+.event-schedule {
+    color: #343d4c;
+    font-family: Nunito;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.schedule-section {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 16px;
+    border-bottom-left-radius: 16px;
+    border: 1px solid #e8e8e8;
+    background: #fff;
+}
+
+.schedule-header {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    padding: 24px;
+    color: white;
+    background: #343d4c;
+}
+
+.schedule-location {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    padding: 24px;
+}
+
+.schedule-header-title {
+    color: #fff;
+    font-family: Nunito;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+::deep .check-availability-button {
+    width: 210px;
+    height: 50px;
+    border-radius: 12px;
+    background: #34a853;
+    color: #fff;
+    font-family: Nunito;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+    ::deep .check-availability-button span {
+        cursor: pointer;
+        display: inline-block;
+        position: relative;
+        transition: 0.5s;
+    }
+
+        ::deep .check-availability-button span:after {
+            content: "\00bb";
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            transition: 0.5s;
+        }
+
+    ::deep .check-availability-button:hover span {
+        padding-right: 20px;
+    }
+
+        ::deep .check-availability-button:hover span:after {
+            opacity: 1;
+            right: 0;
+        }
+
+    ::deep .check-availability-button:active {
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
+    }
+
+.btn-join-waitlist {
+    border-radius: 12px;
+    background: #279be1;
+    width: 90%;
+    padding: 14px;
+    color: #fff;
+    font-family: Nunito;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    border: none;
+}
+
+.prices-title {
+    margin-top: 23px;
+    color: #343d4c;
+    font-family: Nunito;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.ticket-details {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding-right: 24px;
+    padding-left: 24px;
+    align-items: center;
+}
+
+.ticket-details-header {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding-right: 24px;
+    padding-left: 24px;
+    border-top: 1px solid #d9d9d9;
+    border-bottom: 1px solid #d9d9d9;
+}
+
+.ticket-name {
+    color: #717171;
+    font-family: Nunito;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.ticket-price {
+    color: #34a853;
+    font-family: Nunito;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.ticket-waitlist-status {
+    border-radius: 4px;
+    background: #279be1;
+    padding: 5px;
+    color: #ffffff;
+    text-align: center;
+    font-family: Nunito;
+    font-size: 10px;
+    font-weight: 700;
+    vertical-align: central;
+    text-transform: uppercase;
+}
+
+.ticket-unli {
+    border-radius: 4px;
+    background: #34a853;
+    padding: 5px;
+    color: #ffffff;
+    text-align: center;
+    font-family: Nunito;
+    font-size: 10px;
+    font-weight: 700;
+    vertical-align: central;
+    text-transform: uppercase;
+}
+
+.ticket-sold-out {
+    border-radius: 4px;
+    background: #f35252;
+    padding: 5px;
+    color: #ffffff;
+    text-align: center;
+    font-family: Nunito;
+    font-size: 10px;
+    font-weight: 700;
+    vertical-align: central;
+    text-transform: uppercase;
+}
+
+.tickets-left {
+    border-radius: 4px;
+    background: #34a853;
+    padding: 5px;
+    color: #fff;
+    text-align: center;
+    font-family: Nunito;
+    font-size: 10px;
+    font-weight: 700;
+    vertical-align: central;
+}
+
+.schedule-footer {
+    display: flex;
+    justify-content: center;
+    padding-right: 20px;
+    padding-left: 20px;
+    padding-bottom: 20px;
+}
+
+.btn-buy-ticket {
+    border-radius: 12px;
+    background: #ffa942;
+    width: 90%;
+    padding: 14px;
+    color: #fff;
+    font-family: Nunito;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    border: none;
+}
+    /*Transition*/
+    .btn-buy-ticket span {
+        cursor: pointer;
+        display: inline-block;
+        position: relative;
+        transition: 0.5s;
+    }
+
+        .btn-buy-ticket span:after {
+            content: "\00bb";
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            transition: 0.5s;
+        }
+
+    .btn-buy-ticket:hover span {
+        padding-right: 20px;
+    }
+
+        .btn-buy-ticket:hover span:after {
+            opacity: 1;
+            right: 0;
+        }
+
+    .btn-buy-ticket:active {
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
+    }
+
+.btn-join-waitlist {
+    border-radius: 12px;
+    background: #279be1;
+    width: 90%;
+    padding: 14px;
+    color: #fff;
+    font-family: Nunito;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    border: none;
+}
+    /*Transition*/
+    .btn-join-waitlist span {
+        cursor: pointer;
+        display: inline-block;
+        position: relative;
+        transition: 0.5s;
+    }
+
+        .btn-join-waitlist span:after {
+            content: "\00bb";
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            transition: 0.5s;
+        }
+
+    .btn-join-waitlist:hover span {
+        padding-right: 20px;
+    }
+
+        .btn-join-waitlist:hover span:after {
+            opacity: 1;
+            right: 0;
+        }
+
+    .btn-join-waitlist:active {
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
+    }
+
+.btn-close-ticket {
+    border-radius: 12px;
+    width: 90%;
+    padding: 14px;
+    color: #ffffff;
+    font-family: Nunito;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    border: none;
+    transition: none !important;
+    background-color: #d9d9d9;
+}
+
+    .btn-close-ticket:active {
+        transform: none !important;
+    }
+
+.provider-about-me {
+    font-family: Nunito;
+    font-size: 18px;
+    font-weight: 400;
+    color: #717171;
+    text-align: justify;
+}
+
+svg {
+    width: 20px;
+    height: 24px;
+}
+
+.ticket-waitlist {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 10px;
+}
+
+.waitlist-sub-text {
+    color: #717171;
+    font-family: Nunito;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+}
+
+.waitlist-sub-leave {
+    color: #d13636;
+    font-family: Nunito;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+    margin-bottom: 2rem;
+}
+
+.waitlist-section {
+    padding-top: 10px;
+    padding-left: 24px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    background-color: #f3f6fc;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+}
+
+.user-leave {
+    text-decoration: underline;
+    color: #d13636;
+    cursor: pointer;
+}
+
+.read-more,
+.read-less {
+    color: #343d4c; /* You can customize the color */
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+    font-size: 18px;
+    text-decoration: underline;
+    font-family: Nunito;
+    font-weight: 400;
+}
+
+    .read-more:hover,
+    .read-less:hover {
+        color: #343d4c; /* You can customize the hover color */
+    }
+
+::deep .message-me-button {
+    width: 156px;
+    height: 48px;
+    border-radius: 8px;
+    border: 1px solid #343d4c;
+    background: #fff;
+}
+
+    ::deep .message-me-button span {
+        cursor: pointer;
+        display: inline-block;
+        position: relative;
+        transition: 0.5s;
+    }
+
+        ::deep .message-me-button span:after {
+            content: "\00bb";
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            transition: 0.5s;
+        }
+
+    ::deep .message-me-button:hover span {
+        padding-right: 20px;
+    }
+
+        ::deep .message-me-button:hover span:after {
+            opacity: 1;
+            right: 0;
+        }
+
+    ::deep .message-me-button:active {
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
+    }
+
+.details-text {
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 400;
+    color: #717171;
+}
+
+.provider-details {
+    gap: 20px;
+    font-size: 18px;
+    font-family: Nunito;
+    color: #717171;
+}
+
+.star-icon {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 5px;
+}
+
+.verified-icon {
+    width: 25px;
+    height: 25px;
+    margin-bottom: 5px;
+}
+
+.student-icon {
+    margin-bottom: 5px;
+}
+
+#typeFormBtn {
+    all: unset;
+    font-family: Nunito;
+    display: inline-block;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-color: #ffa942;
+    color: #ffffff;
+    font-size: 18px;
+    border-radius: 10px;
+    padding: 0 31px;
+    font-weight: 700;
+    height: 47.5px;
+    cursor: pointer;
+    line-height: 47.5px;
+    text-align: center;
+    margin: 0;
+    text-decoration: none;
+    margin-top: 1rem;
+}
+
+.view-profile {
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    text-decoration-line: underline;
+    color: #4285f4;
+}
+
+.ote-schedule {
+    color: #fff;
+    font-family: Nunito;
+    font-size: 18px;
+    font-style: normal;
+    line-height: normal;
+}
+
+.ote-schedule-details {
+    color: #fff;
+    font-family: Nunito;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px; /* 133.333% */
+}
+
+.xp-type-img {
+    width: 32px;
+    height: auto;
+}
+
+.contact-me {
+    all: unset;
+    font-family: Helvetica, Arial, sans-serif;
+    display: inline-block;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-color: #ffaa37;
+    color: #000;
+    font-size: 19px;
+    border-radius: 14px;
+    padding: 0 31px;
+    font-weight: bold;
+    height: 47.5px;
+    cursor: pointer;
+    line-height: 47.5px;
+    text-align: center;
+    margin: 0;
+    text-decoration: none;
+}
+
+.grid-gallery {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    grid-template-rows: 239px 239px;
+    width: 100%;
+    gap: 3px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+    .grid-gallery .grid-gallery-item figure {
+        width: 100%;
+        height: 100%;
+    }
+
+    .grid-gallery .grid-gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .grid-gallery .grid-gallery-item-1 {
+        grid-row: 1 / 3;
+    }
+
+.provider-avatar {
+    width: 72px;
+    height: 72px;
+}
+
+.select-calendar-container {
+    width: 75%;
+}
+
+.item-counter-container {
+    width: 120px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+    .item-counter-container[data-disabled=""] {
+        background-color: #f3f6fc;
+    }
+
+    .item-counter-container .counter-item {
+        width: 33.33%;
+        cursor: pointer;
+    }
+
+    .item-counter-container[data-disabled=""] .counter-item {
+        cursor: not-allowed;
+    }
+
+    .item-counter-container:not([data-disabled=""]) .counter-item .item-action {
+        color: var(--primary);
+    }
+
+.landing-header {
+    font-family: "Backline";
+}
+
+.calculator-wrapper-container {
+    top: 100px;
+    box-shadow: 0px 3px 16px 0px rgba(243, 246, 252, 0.87);
+}
+
+    .calculator-wrapper-container .l-width-90 {
+        width: 90%;
+    }
+
+    .calculator-wrapper-container .l-width-5 {
+        width: 5%;
+    }
+
+.mobile-calculator-wrapper-container {
+    bottom: 0;
+    z-index: 999;
+    box-shadow: 0px 3px 16px 0px rgba(243, 246, 252, 0.87);
+}
+
+    .mobile-calculator-wrapper-container .l-width-90 {
+        width: 90%;
+    }
+
+    .mobile-calculator-wrapper-container .l-width-5 {
+        width: 5%;
+    }
+
+.calculator-backdrop {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.mobile-calculator-wrapper .calculator-inner-content {
+    transition: transform 0.3s;
+}
+
+.mobile-calculator-wrapper.deactive .calculator-backdrop {
+    display: none;
+}
+
+.mobile-calculator-wrapper.deactive .calculator-inner-content {
+    position: absolute;
+    transform: translate(0, 400px);
+}
+
+.mobile-calculator-wrapper {
+    display: none;
+}
+
+.gallery {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(1, 100%);
+    grid-gap: 15px;
+}
+
+.gallery__img {
+    width: 100%;
+    height: 100% !important;
+    object-fit: cover;
+}
+
+.gallery__item--1 {
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.gallery__item--2 {
+    grid-column-start: 2;
+    grid-column-end: 3;
+}
+
+.gallery__item--3 {
+    grid-column-start: 3;
+    grid-column-end: 4;
+}
+
+.coming-soon-announcement {
+    margin-top: 20px;
+}
+
+@media only screen and (max-width: 766px) {
+    .cover-photo {
+        display: flex;
+        justify-content: center;
+    }
+
+    ::deep .message-me-button {
+        width: 100% !important;
+    }
+
+    .calendar-section {
+        display: block;
+        margin-top: 1rem;
+    }
+
+    .event-schedule-time {
+        padding-bottom: 10px 5px 5px 5px;
+    }
+
+    .event-schedule-place {
+        padding-bottom: 10px 5px 5px 5px;
+    }
+
+    .event-title {
+        margin-top: 1rem;
+    }
+
+    .ticket-details-header {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+        .ticket-details-header .prices-title:nth-child(3) {
+            display: none;
+        }
+
+        .ticket-details-header .prices-title:nth-child(4) {
+            display: none;
+        }
+
+    .ticket-details {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .calculator-wrapper-container {
+        display: none;
+    }
+
+    .mobile-calculator-wrapper {
+        display: block;
+    }
+
+    .coming-soon-announcement {
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+
+    .item-counter-container {
+        margin-left: 0;
+    }
+
+    .provider-avatar {
+        width: 60px;
+        height: 60px;
+    }
+
+    .provider-badge {
+        width: 38px;
+        height: auto;
+    }
+}
+
+@media only screen and (max-width: 991px) {
+    .select-calendar-container {
+        width: 100%;
+    }
+
+    ::deep .message-me-button {
+        width: 100% !important;
+    }
+}
+
+@media (min-width: 0px) and (max-width: 767px) {
+    ::deep .cover-photo-img {
+        width: 100%;
+    }
+
+    .details-page-section {
+        padding-top: 52px;
+    }
+
+    .img-seat-plan {
+        width: 100%;
+    }
+
+    svg {
+        width: 20px;
+        height: 24px;
+    }
+
+    .close-text {
+        line-height: 25px;
+    }
+
+    .schedule-location {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 20px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        padding-left: 16px;
+        padding-right: 0;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .schedule-location {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 20px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        padding-left: 16px;
+        padding-right: 0;
+    }
+
+    ::deep .cover-photo-img {
+        width: 100%;
+        height: auto;
+    }
+
+    ::deep .check-availability-button {
+        width: 33%;
+        font-size: 14px;
+    }
+
+    .ote-schedule {
+        font-size: 18px;
+    }
+
+    .ote-schedule-details {
+        font-size: 16px;
+    }
+
+    .event-schedule-time {
+        padding: 5px 0px 0px 5px;
+    }
+
+    .event-schedule-place {
+        padding: 0px 0px 0px 5px;
+    }
+
+    .ticket-name {
+        font-size: 16px;
+    }
+
+    .tickets-left {
+        font-size: 6px;
+    }
+
+    .details-page-section {
+        padding-top: 52px;
+    }
+
+    .img-seat-plan {
+        width: 100%;
+    }
+
+    svg {
+        width: 20px;
+        height: 24px;
+    }
+
+    .close-text {
+        line-height: 25px;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1200px) {
+    ::deep .cover-photo-img {
+        width: 100%;
+        height: auto;
+    }
+
+    .details-page-section {
+        padding-top: 52px;
+    }
+
+    .img-seat-plan {
+        width: 100%;
+    }
+}
+
+.booked-avatar {
+    width: 30px;
+    height: auto;
+    border-radius: 50%;
+    border: 1px solid #343d4c;
+}
+
+.booked-avatar-wrapper:not(:first-child) {
+    margin-left: -15px;
+}

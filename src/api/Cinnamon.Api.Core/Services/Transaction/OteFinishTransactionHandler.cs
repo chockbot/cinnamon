@@ -166,7 +166,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                         QRImageData = t.ImageData,
                         Status = "UNVERIFIED",
                         Title = t.Name,
-                        OteDateId = t.OteDateId
+                        OteDateId = t.OteDateId,
                     };
                 })
             });
@@ -272,15 +272,17 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                 if(!tickets.ContainsKey(item.Id))
                 {
                     tickets.Add(item.Id, new TicketSummary {
-                        Name = item.Name,
-                        Price = item.Price,
-                        Id = item.Id,
-                        Count = 1
+                        Name       = item.Name,
+                        Price      = item.Price,
+                        Id         = item.Id,
+                        Count      = 1,
+                        SeatNumber = item.SeatNumber
                     });
                 }
                 else
                 {
                     tickets[item.Id].Count++;
+                    tickets[item.Id].SeatNumber += $",{item.SeatNumber}";
                 }
             }
 
@@ -316,7 +318,8 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                     return new Modules.NotificationDriver.Interactors.OteCustomerPayedNotificationArgs.TicketDetails {
                         TicketCount = t.Value.Count,
                         TicketName = t.Value.Name,
-                        TicketPrice = t.Value.Price
+                        TicketPrice = t.Value.Price,
+                        TicketSeatNumber = t.Value.SeatNumber
                     };
                 }),
                 TotalAmount = purchaseOrder.OverallTotal,
@@ -422,6 +425,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         public string Code {get; set;}
         public string ImageData {get; set;}
         public bool RequiredApproval {get; set;}
+        public string SeatNumber { get; set; }
     }
 
     private class TicketSummary 
@@ -430,6 +434,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         public decimal Price {get; set;}
         public string Name {get; set;}
         public int Count {get; set;}
+        public string SeatNumber { get; set; }
     }
 
     class Fees {

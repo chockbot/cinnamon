@@ -16,4 +16,10 @@ public class OtePricing
     public int OteSchedulePricingsId { get; set; }
     public bool RequiredApproval { get; set; }
     public bool IsUnlimited { get; set; }
+    public string ReserveSeatUuid { get; set; }
+    public string TicketColor { get; set; }
+    public string SeatNumber { get; set; }
+    public string CategoryUUID { get; set; }
+    public string RowUUID { get; set; }
+    public string SeatUUID { get; set; }
 }

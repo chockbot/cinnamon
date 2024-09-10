@@ -8,7 +8,7 @@
         {
             @foreach (var seat in row.Value.Seats)
             {
-                <Seat @key="seat" RowSeat="seat.Value" RowNumber="@row.Value.RowNumber" 
+                <Seat @key="seat" RowSeat="seat.Value" RowNumber="@row.Value.RowNumber" Occupied="seat.Value.Occupied"
                     CategoryColor="@SeatCategory.Color" OnSeatSelected="(seat) => OnSeatSelectedHandler(seat, row.Value)"
                     ViewOnly="ViewOnly" />
             }
@@ -34,8 +34,9 @@
             await OnSeatSelected.InvokeAsync(new SelectedSeat
             {
                 CategoryUUID = SeatCategory.Uuid,
-                RowUUID = row.Uuid,
-                Seat = seat
+                RowUUID      = row.Uuid,
+                RowNumber    = row.RowNumber,
+                Seat         = seat
             });
         }
     }
@@ -45,6 +46,8 @@
         public string CategoryUUID { get; set; }
 
         public string RowUUID { get; set; }
+
+        public string RowNumber { get; set; }
 
         public SeatPlanModels.Seat Seat { get; set; }
     }

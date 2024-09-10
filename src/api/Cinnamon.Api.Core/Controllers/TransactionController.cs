@@ -310,7 +310,8 @@ public class TransactionController : ControllerBase
                 Tickets = args.Tickets.Select(t => {
                     return new Services.TransactionService.Interactors.OtePurchaseOrderArgs.Ticket {
                         Count = t.Count,
-                        Id = t.Id
+                        Id = t.Id,
+                        SeatNumber = t.SeatNumber
                     };
                 }),
                 Questions = args.Questions is not null ? args.Questions.Select(q => new Services.TransactionService.Interactors.OtePurchaseOrderArgs.ActivityQuestion {
@@ -347,6 +348,7 @@ public class TransactionController : ControllerBase
     [Route("GetOtePurchaseOrder/{id}")]
     [HttpGet]
     [ProducesResponseType(typeof(OteGetPurchaseOrderResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
     public async Task<IActionResult> GetOtePurchaseOrder(int id)
     {
         try
@@ -411,38 +413,45 @@ public class TransactionController : ControllerBase
     {
         try
         {
-            var result = await oteRequestPaymentHandler.ExecuteAsync(new Services.TransactionService.Interactors.OteRequestPaymentArgs {
+            var result = await oteRequestPaymentHandler.ExecuteAsync(new Services.TransactionService.Interactors.OteRequestPaymentArgs
+            {
                 ActivityId = args.ActivityId,
                 Guid = args.Guid,
                 SelectedDate = args.SelectedDate,
                 Token = args.Token,
-                SelectedTickets = args.SelectedTickets.Select(t => new Services.TransactionService.Interactors.OteRequestPaymentArgs.RequestPaymentTicket {
+                SelectedTickets = args.SelectedTickets.Select(t => new Services.TransactionService.Interactors.OteRequestPaymentArgs.RequestPaymentTicket
+                {
                     TicketCount = t.TicketCount,
-                    TicketId = t.TicketId
+                    TicketId = t.TicketId,
+                    SeatNumber = t.SeatNumber,
+                    CategoryUUID = t.CategoryUUID,
+                    RowUUID = t.RowUUID,
+                    SeatUUID = t.SeatUUID
                 }),
-                Questions = args.Questions?.Select(q => new Services.TransactionService.Interactors.OteRequestPaymentArgs.ProviderQuestion {
+                Questions = args.Questions?.Select(q => new Services.TransactionService.Interactors.OteRequestPaymentArgs.ProviderQuestion
+                {
                     Answer = q.Answer,
                     Id = q.Id,
                     Question = q.Question
                 })
             });
 
-            if(!result.Succeeded || result.Result == null)
+            if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new PaymentRequestResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             var dto = mapper.Map<PaymentRequestDTO>(result.Result);
 
-            return new JsonResult(new PaymentRequestResult 
+            return new JsonResult(new PaymentRequestResult
             {
-                IsSuccess = true, 
+                IsSuccess = true,
                 Result = dto
             });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new PaymentRequestResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+            return new JsonResult(new PaymentRequestResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -453,27 +462,28 @@ public class TransactionController : ControllerBase
     {
         try
         {
-            var result = await getOteRequestPayment.ExecuteAsync(new Services.TransactionService.Interactors.OteGetRequestPaymentArgs {
+            var result = await getOteRequestPayment.ExecuteAsync(new Services.TransactionService.Interactors.OteGetRequestPaymentArgs
+            {
                 Guid = args.Guid,
                 Token = args.Token
             });
 
-            if(!result.Succeeded || result.Result == null)
+            if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetRequestPaymentResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             var dto = mapper.Map<PaymentRequestDTO>(result.Result);
 
-            return new JsonResult(new GetRequestPaymentResult 
+            return new JsonResult(new GetRequestPaymentResult
             {
-                IsSuccess = true, 
+                IsSuccess = true,
                 Result = dto
             });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetRequestPaymentResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+            return new JsonResult(new GetRequestPaymentResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

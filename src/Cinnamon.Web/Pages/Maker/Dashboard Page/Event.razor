@@ -285,9 +285,19 @@
                                         </Tooltip>
                                     }
                                     <Tooltip Text="Go to details page">
-                                        <a button class="update-button" href="/explore/ote/@item.Handler">
-                                            <img class="action-btn" src="images/Dashboard/view.png" />
-                                        </a>
+                                        @if(!item.ReserveSeat)
+                                        {
+                                            <a button class="update-button" href="/explore/ote/@item.Handler">
+                                                <img class="action-btn" src="images/Dashboard/view.png" />
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a button class="update-button" href="/explore/ote/reserved/@item.Handler">
+                                                <img class="action-btn" src="images/Dashboard/view.png" />
+                                            </a>
+                                        }
+                                        
                                     </Tooltip>
                                 </div>
                             </div>
@@ -751,6 +761,7 @@ else
                 ScheduleTo       = a.DateEnd,
                 OteDateId        = a.DateId,
                 ForceDisable     = a.ForceDisable,
+                ReserveSeat      = a.ReserveSeat,
                 IsMultiple       = false
             }).ToList();
             //Add To OTEActivities
@@ -776,6 +787,7 @@ else
                     ScheduleTo       = group.Max(a => a.DateEnd), // Use the latest end date
                     OteDateId        = firstActivity.DateId,
                     ForceDisable     = firstActivity.ForceDisable,
+                    ReserveSeat      = firstActivity.ReserveSeat,
                     IsMultiple       = true
                 };
             }).ToList();
@@ -788,22 +800,23 @@ else
             {
                 return new OteActivity
                 {
-                        Id               = s.ActivityId,
-                        ExperienceTypeId = s.ExperienceTypeId,
-                        EventName        = s.Title,
-                        Description      = s.Description,
-                        Handler          = s.Handler,
-                        CityName         = s.CityName,
-                        RegionName       = s.RegionName,
-                        PinnedLocation   = s.PinnedLocation,
-                        EventImage       = s.EventImage,
-                        ScheduleFrom     = s.DateStart,
-                        ScheduleTo       = s.DateEnd,
-                        OteDateId        = s.DateId,
-                        ForceDisable     = s.ForceDisable
+                    Id = s.ActivityId,
+                    ExperienceTypeId = s.ExperienceTypeId,
+                    EventName = s.Title,
+                    Description = s.Description,
+                    Handler = s.Handler,
+                    CityName = s.CityName,
+                    RegionName = s.RegionName,
+                    PinnedLocation = s.PinnedLocation,
+                    EventImage = s.EventImage,
+                    ScheduleFrom = s.DateStart,
+                    ScheduleTo = s.DateEnd,
+                    OteDateId = s.DateId,
+                    ForceDisable = s.ForceDisable,
+                    ReserveSeat = s.ReserveSeat
                 };
             }).ToList();
-
+             
             if (CalendarActivities.Count != 0)
             {
                 await SelectSchedule(CalendarActivities[0]);

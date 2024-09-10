@@ -6,6 +6,7 @@ using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Response;
 using Dto = Cinnamon.Framework.ApiCommand.ApiData.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -112,6 +113,7 @@ public class OteTicketController : ControllerBase
     [Route("by-purchase-order/{purchaseOrderId}")]
     [HttpGet]
     [ProducesResponseType(typeof(GetByPurchaseOrderIdResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
     public async Task<IActionResult> GetByPurchaseOrderId(int purchaseOrderId, [FromQuery] GetByPurchaseOrderIdArgs args)
     {
         try

@@ -2,7 +2,7 @@
 @using SeatPlanModels = Cinnamon.Framework.Models.SeatPlan;
 
 <div class="seat-plan-seat m-1">
-    <Button Style="@GetSeatStyle" class="@GetSeatClass" Clicked="OnClick">
+    <Button Style="@GetSeatStyle" class="@GetSeatClass" Clicked="OnClick" Disabled="@Occupied">
         <span class="color-white-100 font-10">
             @RowNumber - @RowSeat.SeatNumber
         </span>
@@ -25,6 +25,9 @@
 
     [Parameter]
     public bool ViewOnly { get; set; }
+
+    [Parameter]
+    public bool Occupied { get; set; }
 
     private bool selected = false;
 
