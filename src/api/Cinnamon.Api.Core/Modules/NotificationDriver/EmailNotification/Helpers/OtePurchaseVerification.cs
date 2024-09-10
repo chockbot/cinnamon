@@ -42,7 +42,7 @@ public class OtePurchaseVerification
                         margin-bottom: 10px;
                         '
                     >
-                        P {tickeSeatNo}
+                       {tickeSeatNo}
                     </p>
                     <p
                         style='

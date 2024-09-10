@@ -1277,9 +1277,6 @@
                 {
                     NavigationManager.NavigateTo($"/purchase/order/reserved/?purchaseid={submit.Result.Result.Id}");
                 }
-                //Dequeue user after purchase
-                string activeQueueName = $"{Handler}-active-queue";
-                await QueueServices.RemoveUserFromActiveQueueAsync(currentLogin.Handler, activeQueueName);
             }
         }
         catch (System.Exception ex)
