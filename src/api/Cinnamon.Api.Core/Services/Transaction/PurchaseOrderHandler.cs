@@ -302,7 +302,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 ActivityId = result.Result.Result.ActivityId,
                 TransactionId = result.Result.Result.Id,
                 ScheduleId = args.ScheduleId,
-                Url = successUrl,
+                Url = successUrl.ToString(),
             };
 
             var tokenSerializedPayload = jsonSerializationProvider.Serialize(payload);

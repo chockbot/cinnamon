@@ -374,14 +374,6 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                                    : "purchase/order/ote")
                 .AppendPathSegment(result.Result.Result.Id);
 
-            // if reserve seat is enabled
-            if(oteActivity.Schedule.ReserveSeat)
-            {
-                successUrl = applicationConfig.FrontendUrl
-                            .AppendPathSegment("purchase/order/ote/reserved")
-                            .AppendPathSegment(result.Result.Result.Id);
-            }
-
             var failedUrl = applicationConfig.FrontendUrl
                 .AppendPathSegment($"payment/ote/{oteActivity.Handler}")
                 .SetQueryParam("Ticket", ticketQueryString)
@@ -448,7 +440,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 return AppResult<OtePurchaseOrderResult>.CreateSucceeded(new OtePurchaseOrderResult {
                     Action = 1,
                     Id = result.Result.Result.Id,
-                    Url = successUrl
+                    Url = successUrl.ToString()
                 }, "Successfully request purchase order details.");
             }
 
@@ -459,7 +451,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 ActivityId = result.Result.Result.ActivityId,
                 TransactionId = result.Result.Result.Id,
                 OteQuery = ticketQueryString,
-                Url = successUrl
+                Url = successUrl.ToString()
             };
 
             var tokenSerializedPayload = jsonSerializationProvider.Serialize(payload);
