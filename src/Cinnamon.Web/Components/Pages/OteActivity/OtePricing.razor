@@ -913,6 +913,7 @@
 
     public Task SetState(ModelData data)
     {
+        isReservedSeats = data.ReserveSeat;
         foreach (var item in data.ItemPrices)
         {
             modelPricingList.Pricings.Add(new Pricing
@@ -996,6 +997,7 @@
         public bool IsOpen { get; set; }
         public bool IsCapacity { get; set; }
         public int CapacityCount { get; set; }
+        public bool ReserveSeat {get; set;}
 
         public string CustomPendingBody { get; set; }
         public string CustomAcceptedBody { get; set; }

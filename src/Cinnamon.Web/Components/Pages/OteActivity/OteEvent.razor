@@ -291,6 +291,7 @@
     public string errorMessage = string.Empty;
     public IList<int> deletedIds = new List<int>();
     public bool isNextClick = false;
+    private bool isUpdate = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -688,6 +689,7 @@
 
     public async Task SetState(ModelData data)
     {
+        isUpdate = true;
         ModelState.HouseNo        = data.HouseNo;
         ModelState.PinnedLocation = data.PinnedLocation;
         ModelState.PostaCode      = data.PostalCode;
@@ -697,6 +699,8 @@
         ModelState.IsPublic       = data.IsPublic;
         ModelState.IsPrivate      = data.IsPrivate;
         ModelState.IsComingSoon   = data.IsComingSoon;
+        ModelState.TemplateSelected.ImageSrc = data.SeatPlanImageSrc;
+        ModelState.TemplateSelected.Payload = data.SeatPlanPayload;
 
         await LoadRegions();
         await SelectedRegionChanged(data.RegionCode);
@@ -791,6 +795,8 @@
         public bool IsPublic => IsPublish && !ComingSoon;
         public bool IsPrivate => !IsPublish && !ComingSoon;
         public bool IsComingSoon => IsPublish && ComingSoon;
+        public string SeatPlanImageSrc { get; set; }
+        public string SeatPlanPayload { get; set; }
     }
 
     public class FormModel
@@ -1043,6 +1049,8 @@
 
     private async Task OnSelectTemplateClicked()
     {
+        if(isUpdate) return;
+        
         if (OnSelectTemplateClick.HasDelegate)
         {
             await OnSelectTemplateClick.InvokeAsync();

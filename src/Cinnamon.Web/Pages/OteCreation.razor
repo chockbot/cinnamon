@@ -1148,6 +1148,19 @@
         }
         var ote = oteRes.Result.Result;
 
+        // seat plan details
+        string seatPlanImageSrc = string.Empty;
+        string seatPlanPayload = string.Empty;
+        if(ote.OteSchedule.ReserveSeat)
+        {
+            var seatPlanResUpdate = await seatPlanApiHandler.GetTemplate(ote.OteSchedule.SeatPlanTemplateId, token);
+            if(seatPlanResUpdate.Succeeded && seatPlanResUpdate.Result is not null && seatPlanResUpdate.Result.IsSuccess)
+            {
+                seatPlanImageSrc = seatPlanResUpdate.Result.Result.ImageSrc;
+                seatPlanPayload = seatPlanResUpdate.Result.Result.Payload;
+            }
+        }
+
         // set event details
         oteId                        = ote.Id;
         eventModel.SelectedCategory  = ote.CategoryId;
@@ -1178,6 +1191,8 @@
             IsPublish      = ote.IsPublished,
             ComingSoon     = ote.IsComingSoon,
             ExperienceType = ote.ExperienceTypeId,
+            SeatPlanImageSrc = seatPlanImageSrc,
+            SeatPlanPayload = seatPlanPayload,
             images         = ote.Images.Select(a =>
             {
                 return new OteEvent.ImageItem
@@ -1218,7 +1233,8 @@
             CustomAcceptedBody = acceptedBody,
             CustomDeclinedBody = declinedBody,
             CustomPendingBody = pendingBody,
-            UpdatedQuestions = providerQuestions
+            UpdatedQuestions = providerQuestions,
+            ReserveSeat = ote.OteSchedule.ReserveSeat,
         });
 
         //Schedule
