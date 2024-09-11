@@ -700,7 +700,7 @@
     </ModalContent>
     </Modal>
 
-    <Modal @ref="modalPurchaseWithoutConfirmation">
+<Modal @ref="modalPurchaseWithoutConfirmation">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center">
             <div>
@@ -1264,7 +1264,8 @@
                     Tickets = selectedTickets.Select(t => new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs.OTeTicket
                     {
                         Count = t.Value.Count,
-                        Id = t.Value.Id
+                        Id = t.Value.Id,
+                        SeatNumber = string.Empty
                     }),
                     Questions = questions.Select(q => new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs.ActivityQuestion
                     {

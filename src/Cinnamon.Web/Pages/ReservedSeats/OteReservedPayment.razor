@@ -639,8 +639,16 @@
                     }
                     else
                     {
-                        // Processing time has finished, display timeout page
-                        OnTimeout();
+                        var activeQueueUserInfo1 = await QueueServices.GetUserInActiveQueueAsync(activeQueueName, currentLogin.Handler);
+                        if (activeQueueUserInfo1.HasValue)
+                        {
+                            await QueueServices.RemoveUserFromActiveQueueAsync(currentLogin.Handler, activeQueueName);
+                            NavigateToOteReserved();
+                        }
+                        else
+                        {
+                            await OnTimeout();
+                        }
                     }
                 }
             }
@@ -711,11 +719,13 @@
         }
     }
 
-    public async void OnTimeout()
+    public async Task OnTimeout()
     {
         // Handle user timeout logic
         _isProcessing = false;
         await modaltime.Show();
+        Task.Delay(5000);
+        NavigateToOteReserved();
     }
 
     private async Task LoadProfile()
@@ -1202,7 +1212,7 @@
                                 selectedTickets.Remove(ticket); // Remove the ticket from the list.
                             }
                         }
-                    }
+                    }  
                     if (!string.IsNullOrEmpty(unavailableSeats))
                     {
                         string unavailableSeats = string.Join(", ", unavailableSeatsList);
