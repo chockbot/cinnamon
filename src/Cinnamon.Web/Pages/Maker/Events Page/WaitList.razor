@@ -123,8 +123,8 @@
             </div>
         </div>
         <div class="registration">
-            <p class="name">Registration Time</p>
-            <p class="reg-time">@DateTime.Now.ToString("MMM dd, hh:mm tt")</p>
+            <p class="name">Event Date</p>
+            <p class="reg-time">@WaitlistDetails.EventDate.ToString("MMM dd, hh:mm tt")</p>
             <p class="name">Order Details:</p>
             <div class="details-box">
                     <div class="ticket-purchase-details">
@@ -331,6 +331,7 @@
         WaitlistDetails = waitlist;
         //Deserialize Payload Ticket Details
         var deserializedPayload = JsonConvert.DeserializeObject<Payload>(waitlist.Payload);
+        WaitlistDetails.EventDate = deserializedPayload.Tickets.FirstOrDefault().Date;
         if (deserializedPayload != null)
         {
             foreach (var ticket in deserializedPayload.Tickets)
