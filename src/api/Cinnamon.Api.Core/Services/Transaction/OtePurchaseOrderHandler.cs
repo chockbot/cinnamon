@@ -423,7 +423,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                         Payload      = waitlistSerializedPayload,
                         ProviderId   = provider?.Id ?? 0,
                         Status       = 1,
-                        Type         = "Free"
+                        Type         = "Free",
+                        OteDateId    = oteDate.Id,
                     });
                     if(!createWaitlistRes.Succeeded || createWaitlistRes.Result is null)
                     {
