@@ -166,7 +166,7 @@
         }
         //Dequeue user to the active queue
         string activeQueueName = $"{Handler}-active-queue";
-        await QueueServices.RemoveUserFromActiveQueueAsync(currentLogin.Handler, activeQueueName);
+        await QueueServices.RemoveSpecificUserInActiveQueueAsyn(currentLogin.Handler, activeQueueName);
         purchaseOrder = orderSummaryRes.Result.Result;
     }
 

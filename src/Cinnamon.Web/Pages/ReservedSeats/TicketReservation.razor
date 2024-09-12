@@ -346,7 +346,7 @@
                 </div>
         </div>
     }
-    <Modal @ref="modalRef">
+<Modal @ref="modalRef">
         <ModalContent Centered>
             <ModalBody>
                 <div class="queue-up d-flex">
@@ -364,21 +364,7 @@
             </ModalBody>
         </ModalContent>
     </Modal>
-    <Modal @ref="modaltime">
-        <ModalContent Centered>
-            <ModalBody>
-                <div class="queue-up d-flex">
-                    <img class="img-logo" src="images/ote/timeout.svg" />
-                    <div class="queue-up-text">
-                        <p class="expired-text">Your reservation has expired!</p>
-                    </div>
-                </div>
-                <p class="congratulations-text">Unfortunately, you've lost your chance to purchase tickets. Please start a new reservation.</p>
-                <button class="btn-try" @onclick="NavigateToOteReserved">Try Again</button>
-            </ModalBody>
-        </ModalContent>
-    </Modal>
-    <Modal @ref="modalQuestions">
+<Modal @ref="modalQuestions">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center pb-0">
             <div>
@@ -507,9 +493,9 @@
         </ModalFooter>
     </ModalContent>
 </Modal>
-    <ImageViewer @ref="imageViewer" Image="@SetPlanImage" />
-    <ModalLogin @ref="loginModal" ReturnUrl="@signInReturnUrl" />
-    <ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
+<ImageViewer @ref="imageViewer" Image="@SetPlanImage" />
+<ModalLogin @ref="loginModal" ReturnUrl="@signInReturnUrl" />
+<ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
                    OnConfirmationChanged="ConfirmDeleteChanged">
         <HeaderContent>
             <p class="m-0">Leave Waitlist</p>
@@ -518,7 +504,7 @@
             <p class="m-0">Are you sure you want to leave the waitlist?</p>
         </BodyContent>
     </ConfirmDialog>
-    <Modal @ref="modalQuestions">
+<Modal @ref="modalQuestions">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center pb-0">
             <div>
@@ -647,7 +633,6 @@
         </ModalFooter>
     </ModalContent>
 </Modal>
-
 <Modal @ref="modalPurchaseWithConfirmation">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center">
@@ -671,32 +656,31 @@
         </ModalFooter>
     </ModalContent>
     </Modal>
+<Modal @ref="modalPurchaseWithoutConfirmation">
+    <ModalContent Centered class="border-radius-15">
+        <ModalHeader class="justify-content-center">
+            <div>
+                <p class="font-20 font-weight-700 color-black-100 mb-0 text-center">Registration Success</p>
+            </div>
+        </ModalHeader>
 
-    <Modal @ref="modalPurchaseWithoutConfirmation">
-        <ModalContent Centered class="border-radius-15">
-            <ModalHeader class="justify-content-center">
-                <div>
-                    <p class="font-20 font-weight-700 color-black-100 mb-0 text-center">Registration Success</p>
-                </div>
-            </ModalHeader>
-    
-            <ModalBody class="px-4">
-                <p class="font-16 font-weight-700 color-black-100 mb-0">
-                    You have successfully registered for the event.
-                    We have sent you an email containing your tickets and additional event details.
-                    Please check your inbox for further information.
-                    If you do not see the email, make sure to check your spam or junk folder. We look forward to seeing you at the event!
-                </p>
-            </ModalBody>
-    
-            <ModalFooter class="justify-content-center">
-                <Button class="bg-white-200 color-grey-100"
-                        Clicked="() => modalPurchaseWithoutConfirmation.Close(CloseReason.UserClosing)">
-                    Close
-                </Button>
-            </ModalFooter>
-        </ModalContent>
-    </Modal>
+        <ModalBody class="px-4">
+            <p class="font-16 font-weight-700 color-black-100 mb-0">
+                You have successfully registered for the event.
+                We have sent you an email containing your tickets and additional event details.
+                Please check your inbox for further information.
+                If you do not see the email, make sure to check your spam or junk folder. We look forward to seeing you at the event!
+            </p>
+        </ModalBody>
+
+        <ModalFooter class="justify-content-center">
+            <Button class="bg-white-200 color-grey-100"
+                    Clicked="() => modalPurchaseWithoutConfirmation.Close(CloseReason.UserClosing)">
+                Close
+            </Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
 }
 @code {
     [Parameter]
@@ -768,6 +752,8 @@
 
     public TimeSpan RemainingTime { get; set; }
 
+    public bool IsExpired { get; set; } = false;
+
     private QueueInfo queueInfo = new QueueInfo();
 
     private double progressPercentage;
@@ -834,6 +820,9 @@
                 string activeQueueName = $"{Handler}-active-queue";
                 string reservedQueueName = $"{Handler}-reserved-queue";
 
+                //Remove all user in active queue w/ negative time
+                await QueueServices.RemoveExpiredUsersFromActiveQueueAsync(activeQueueName);
+
                 //Check user if is in the reserved-queue
                 if (await QueueServices.IsUserInQueueAsync(reservedQueueName, currentLogin.Handler))
                 {
@@ -858,16 +847,7 @@
                     }
                     else
                     {
-                        var activeQueueUserInfo1 = await QueueServices.GetUserInActiveQueueAsync(activeQueueName, currentLogin.Handler);
-                        if (activeQueueUserInfo1.HasValue)
-                        {
-                            await QueueServices.RemoveUserFromActiveQueueAsync(currentLogin.Handler, activeQueueName);
-                            NavigateToOteReserved();
-                        }
-                        else
-                        {
-                            await OnTimeout();
-                        }
+                        await OnTimeout();
                     }
                 }
                 if (!_isInActive && !_isInReserved)
@@ -896,6 +876,9 @@
         {
             while (true)
             {
+                //Remove all user in active queue w/ negative time
+                await QueueServices.RemoveExpiredUsersFromActiveQueueAsync($"{Handler}-active-queue");
+                //Update Seat Payload 
                 await GetUpdatedSeatPayload();
                 // Fetch the user's reserved queue info
                 var reservedQueueInfo = await QueueServices.GetReservedQueueUserInfoAsync(
@@ -903,7 +886,7 @@
                     $"{Handler}-active-queue",
                     userId
                 );
-                if (reservedQueueInfo.numberAhead == -1) // Assume -1 indicates the user is in the active queue
+                if (reservedQueueInfo.numberAhead == -1)
                 {
                     _isProcessing = true;
                     StartCountdownTimer(time);
@@ -955,6 +938,10 @@
     }
     private async void StartCountdownTimer(TimeSpan span)
     {
+        if (_countdownTimer != null)
+        {
+            _countdownTimer.Dispose(); // Dispose of any existing timer to avoid multiple timers
+        }
         // Set the countdown timer to 10 minutes
         RemainingTime = span;
         _countdownTimer = new Timer(TimerCallback, null, 0, 1000); // Update every second
@@ -979,8 +966,6 @@
     {
         // Handle user timeout logic
         _isProcessing = false;
-        await modaltime.Show();
-        Task.Delay(5000);
         NavigateToOteReserved();
     }
     private async Task LoadProfile()
@@ -1028,7 +1013,8 @@
     }
     private void NavigateToOteReserved()
     {
-        NavigationManager.NavigateTo($"/explore/ote/reserved/{Handler}");
+        IsExpired = true;
+        NavigationManager.NavigateTo($"/explore/ote/reserved/{Handler}/{IsExpired}");
     }
     private async Task LoadOteDetails()
     {
@@ -1129,7 +1115,7 @@
             if (ticketToUpdate.Value.Count > 1)
             {
                 ticketToUpdate.Value.Count -= 1;
-    
+
                 // Update the seat information by removing the specific seat
                 var seatList = ticketToUpdate.Value.Seat.Split(",").ToList();
                 seatList.Remove(selectedSeat.Seat.SeatNumber);
@@ -1354,7 +1340,7 @@
     }
     private Task ProceedToPayment()
     {
-         if (currentLogin is null)
+        if (currentLogin is null)
         {
             string oteDetailsUrl = $"/explore/ote/{Handler}";
             signInReturnUrl = oteDetailsUrl;
@@ -1853,7 +1839,7 @@
         }
     }
 
-     private Task ClearAnswers()
+    private Task ClearAnswers()
     {  
         predefinedQuestion.NameAnswer = string.Empty;
         predefinedQuestion.EmailAnswer = string.Empty;
@@ -1981,16 +1967,17 @@
     }
     private async Task GetUpdatedSeatPayload()
     {
-         //Set Seat Plan
-         if (activity != null && activity.OteDates != null)
-         {
-             var selectedOteDate = activity.OteDates.FirstOrDefault(a => a.Date == SelectedDate.Date);
-             if (selectedOteDate != null)
-             {
-                 selectedPayload = selectedOteDate.SeatPlanPayload;
-             }
-             await ViewAvailableDates();
-         }
+        //Set Seat Plan
+        if (activity != null && activity.OteDates != null)
+        {
+            var selectedOteDate = activity.OteDates.FirstOrDefault(a => a.Date == SelectedDate.Date);
+            if (selectedOteDate != null)
+            {
+                selectedPayload = selectedOteDate.SeatPlanPayload;
+            }
+            await ViewAvailableDates();
+            InvokeAsync(StateHasChanged);
+        }
     }
     private class CouponDetails
     {

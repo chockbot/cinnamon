@@ -582,6 +582,7 @@
     private Timer _countdownTimer;
     private bool _isProcessing;
     private string unavailableSeats { get; set; }
+    public bool IsExpired { get; set; } = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -624,6 +625,8 @@
                 await LoadProfile();
                 //Check if user is in queue
                 string activeQueueName = $"{Handler}-active-queue";
+                //Remove all user in active queue w/ negative time
+                await QueueServices.RemoveExpiredUsersFromActiveQueueAsync(activeQueueName);
                 //Check user if is in the active-queue
                 var activeQueueUserInfo = await QueueServices.GetUserInActiveQueueAsync(activeQueueName, currentLogin.Handler);
                 if (activeQueueUserInfo.HasValue)
@@ -639,16 +642,7 @@
                     }
                     else
                     {
-                        var activeQueueUserInfo1 = await QueueServices.GetUserInActiveQueueAsync(activeQueueName, currentLogin.Handler);
-                        if (activeQueueUserInfo1.HasValue)
-                        {
-                            await QueueServices.RemoveUserFromActiveQueueAsync(currentLogin.Handler, activeQueueName);
-                            NavigateToOteReserved();
-                        }
-                        else
-                        {
-                            await OnTimeout();
-                        }
+                        await OnTimeout();
                     }
                 }
             }
@@ -723,8 +717,6 @@
     {
         // Handle user timeout logic
         _isProcessing = false;
-        await modaltime.Show();
-        Task.Delay(5000);
         NavigateToOteReserved();
     }
 
@@ -864,7 +856,8 @@
     }
     private void NavigateToOteReserved()
     {
-        NavigationManager.NavigateTo($"/explore/ote/reserved/{Handler}");
+        IsExpired = true;
+        NavigationManager.NavigateTo($"/explore/ote/reserved/{Handler}/{IsExpired}");
     }
     private void NavigateToTicketReservation()
     {

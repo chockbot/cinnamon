@@ -45,6 +45,8 @@ namespace Cinnamon.Web.Modules.Services
             var queueClient = _queueServiceClient.GetQueueClient(queueName);
             var messages = await queueClient.PeekMessagesAsync(maxMessages: 32); // Adjust maxMessages as needed
 
+            if (messages?.Value == null) return false; // Null check for safety
+
             foreach (var message in messages.Value)
             {
                 if (Encoding.UTF8.GetString(Convert.FromBase64String(message.MessageText)) == userId)
@@ -87,16 +89,32 @@ namespace Cinnamon.Web.Modules.Services
         public async Task<int> GetQueueLengthAsync(string queueName)
         {
             var queueClient = _queueServiceClient.GetQueueClient(queueName);
-            var properties = await queueClient.GetPropertiesAsync();
-            return properties.Value.ApproximateMessagesCount;
+            try
+            {
+                var properties = await queueClient.GetPropertiesAsync();
+                return properties.Value.ApproximateMessagesCount;
+            }
+            catch (RequestFailedException ex)
+            {
+                Console.WriteLine($"Failed to get queue length for {queueName}: {ex.Message}");
+                return 0; // Return 0 if the queue doesn't exist or can't be accessed
+            }
         }
 
         private async Task StartUserTimerAsync(string userId, string activeQueueName)
         {
             Timer timer = new Timer(async (state) =>
             {
-                await RemoveUserFromActiveQueueAsync(userId, activeQueueName);
-            }, null, TimeSpan.FromMinutes(10), Timeout.InfiniteTimeSpan);
+                try
+                {
+                    await RemoveUserFromActiveQueueAsync(userId, activeQueueName);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error in timer callback for user {userId}: {ex.Message}");
+                }
+            }, null, ProcessingTime, Timeout.InfiniteTimeSpan);
+
             // Store the timer reference to prevent it from being garbage collected
             _activeQueueTimers[userId] = timer;
         }
@@ -127,11 +145,47 @@ namespace Cinnamon.Web.Modules.Services
                 }
             }
         }
+
+        public async Task RemoveSpecificUserInActiveQueueAsyn(string userId, string activeQueueName)
+        {
+            var queueClient = _queueServiceClient.GetQueueClient(activeQueueName);
+
+            // Receive messages without setting a visibility timeout
+            var receivedMessages = await queueClient.ReceiveMessagesAsync(maxMessages: 32, visibilityTimeout: TimeSpan.FromSeconds(1));
+
+            if (receivedMessages.Value.Length > 0)
+            {
+                foreach (var receivedMessage in receivedMessages.Value)
+                {
+                    var messageText = Encoding.UTF8.GetString(Convert.FromBase64String(receivedMessage.MessageText));
+                    if (messageText == userId)
+                    {
+                        // Delete the message using its Message ID and Pop Receipt
+                        await queueClient.DeleteMessageAsync(receivedMessage.MessageId, receivedMessage.PopReceipt);
+                        // Move next user from reserved queue to active queue
+                        string reservedQueueName = $"{activeQueueName.Replace("-active-queue", "-reserved-queue")}";
+                        string activeQueueHandler = reservedQueueName.Replace("-reserved-queue", "");
+                        // Check if there are users in the reserved queue
+                        if (await GetQueueLengthAsync(reservedQueueName) > 0)
+                        {
+                            var nextUser = await DequeueUserAsync(reservedQueueName);
+                            if (nextUser != null)
+                            {
+                                await EnqueueUserAsync(activeQueueHandler, nextUser);
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
         public async Task<(DateTime insertionTime, TimeSpan remainingTime)?> GetUserInActiveQueueAsync(string queueName, string userId)
         {
             await EnsureQueueExistsAsync(queueName);
             var queueClient = _queueServiceClient.GetQueueClient(queueName);
             var messages = await queueClient.PeekMessagesAsync(maxMessages: 32); // Adjust maxMessages as needed
+
+            if (messages?.Value == null) return null; // Null check for safety
 
             foreach (var message in messages.Value)
             {
@@ -156,8 +210,12 @@ namespace Cinnamon.Web.Modules.Services
             TimeSpan processingTimeElapsed;
             TimeSpan estimatedWaitingTime;
             DateTime expectedTimeOfArrival;
-
-            var queueLength = await GetQueueLengthAsync(activeQueueName);
+            int queueLength = await GetQueueLengthAsync(activeQueueName);
+            if (queueLength == 0)
+            {
+                // No messages in the queue, so no need to proceed
+                return null;
+            }
             var message = await GetPositionInQueueAsync(reservedQueueName, userId);
 
             if (message.numberAhead >= 0)
@@ -228,6 +286,48 @@ namespace Cinnamon.Web.Modules.Services
                 numberAhead = position,
                 QueueId = queueId,
             };
+        }
+
+        public async Task RemoveExpiredUsersFromActiveQueueAsync(string activeQueueName)
+        {
+            //Check if queue exist
+            await EnsureQueueExistsAsync(activeQueueName);
+            // Get the queue client
+            var queueClient = _queueServiceClient.GetQueueClient(activeQueueName);
+
+            // Check if there are messages in the queue
+            int queueLength = await GetQueueLengthAsync(activeQueueName);
+            if (queueLength == 0)
+            {
+                // No messages in the queue, so no need to proceed
+                return;
+            }
+
+            // Peek all messages in the queue
+            var messages = await queueClient.PeekMessagesAsync(maxMessages: 32); // Adjust maxMessages as needed
+
+            // Get the current time
+            DateTime now = DateTime.Now;
+
+            foreach (var message in messages.Value)
+            {
+                // Extract user ID from the message
+                string userId = Encoding.UTF8.GetString(Convert.FromBase64String(message.MessageText));
+
+                // Calculate remaining processing time for the user
+                var userInfo = await GetUserInActiveQueueAsync(activeQueueName, userId);
+
+                if (userInfo.HasValue)
+                {
+                    TimeSpan remainingTime = userInfo.Value.remainingTime;
+
+                    if (remainingTime < TimeSpan.Zero)
+                    {
+                        // Remove the user if processing time is negative
+                        await RemoveUserFromActiveQueueAsync(userId, activeQueueName);
+                    }
+                }
+            }
         }
         public class ReservedQueuingInfo
         {
