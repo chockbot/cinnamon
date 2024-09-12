@@ -251,16 +251,18 @@
                                     @if (activity.IsOpen)
                                     {
                                         <div class="schedule-footer">
-                                            <Button Disabled="submitting" Loading="submitting" style="width: 90%;"
-                                                    class="border-radius-10 bg-orange-100 color-white-100 font-20 font-weight-700"
-                                                Clicked="ProceedToPayment">
-                                                <LoadingTemplate>
-                                                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
-                                                </LoadingTemplate>
-                                                <ChildContent>
-                                                    Buy Ticket
-                                                </ChildContent>
-                                            </Button>
+                                            <button class="btn border-radius-10 bg-orange-100 color-white-100 font-20 font-weight-700" style="width: 90%" @onclick="ProceedToPayment" disabled="@isLoading">
+                                                @if (isLoading)
+                                                {
+                                                    <div class="spinner-border spinner-border-sm" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <span>Buy Tickets</span>
+                                                }
+                                            </button>
                                         </div>
                                     }
                                 </div>
@@ -433,6 +435,7 @@
     private bool IsLimit { get; set; }
     private CoreDto.Activity.TopBookedCustomersDTO topBookedCustomers = new();
     private bool submitting = false;
+    private bool isLoading = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -876,19 +879,30 @@
         string paymentUrl = $"/reservation/{Handler}/?date={selectedDate}&token={token}";
         NavigationManager.NavigateTo(paymentUrl);
     }
-    private Task ProceedToPayment()
+    private async Task ProceedToPayment()
     {
+        isLoading = true;
+        StateHasChanged();
+
+        await Task.Delay(2000);
+
         submitting = true;
+
         if (currentLogin is null)
         {
             string oteDetailsUrl = $"/explore/ote/reserved/{Handler}";
             signInReturnUrl = oteDetailsUrl;
 
-            return loginModal.Show();
+            loginModal.Show();
         }
         string paymentUrl = $"/reservation/{Handler}/?date={selectedDate}&token={token}";
+
+        await Task.Delay(2000);
+
+        isLoading = false;
+        StateHasChanged();
         NavigationManager.NavigateTo(paymentUrl);
+        
         submitting = false;
-        return Task.CompletedTask;
     }
 }
