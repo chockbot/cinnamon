@@ -4,6 +4,10 @@
     font-weight: bold;
     font-style: italic;
 }
+
+.top-row.mobile {
+    display: none;
+}
 .ticket-box {
     background-color: #F1F1F1;
     border-radius: 8px 8px 0px 0px;
@@ -269,10 +273,9 @@
 .secured-section{
     display:flex;
     gap: 12px;
+    align-items: center;
 }
-.secured-section svg{
-    margin-top: 10px;
-}
+
 .secure-text {
     color: #343D4C;
     font-family: Nunito;
@@ -280,7 +283,8 @@
     font-style: normal;
     font-weight: 900;
     line-height: normal;
-    margin-top: 7px;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
 .top-row ::deep a {
     white-space: nowrap;
@@ -554,4 +558,40 @@ svg {
 
 @media screen and (min-width: 579px) and (max-width: 767px) {
   
+}
+
+@media screen and (min-width: 0px) and (max-width: 579px) {
+
+    .secured-section {
+        align-items: center;
+    }
+    .secure-text {
+        margin-top: 0px;
+        margin-bottom: 0px;
+        font-size: 12px;
+    }
+
+    .secured-section svg{
+        margin-top: 0px;
+        height: 12px;
+        width: 12px;
+    }
+
+    .row-holder {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 21px;
+    }
+    .app-name {
+        font-size: 20px;
+    }
+
+    .top-row.desktop {
+        display: none;
+    }
+
+    .top-row.mobile {
+        display: block;
+    }
 }

@@ -23,11 +23,17 @@
 @inject Cinnamon.Framework.Providers.IJsonSerializationProvider jsonSerializationProvider
 
 <PageTitle>Checkout Payment | CinnamonPH</PageTitle>
-<SeoMeta Title="Checkout Payment" Subject="Checkout Payment" />
+<SeoMeta Title="Checkout Payment" Subject="Checkout Payment">
+    <ExtraMeta>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    </ExtraMeta>
+</SeoMeta>
 
 @if(activity is not null && !string.IsNullOrEmpty(token))
 {
-    <div class="top-row">
+    <div class="top-row desktop">
         <!--App Name-->
         <div class="app-name">
             <a href="/explore" class="app-name">@Resources.App.appName</a>
@@ -42,6 +48,25 @@
                 <path d="M15.0055 8.53979C14.7668 8.30113 14.4772 8.18189 14.1361 8.18189H13.7273V5.72721C13.7273 4.15905 13.1649 2.81258 12.0399 1.68758C10.9149 0.562525 9.56857 0 8.00019 0C6.43185 0 5.08525 0.562525 3.96038 1.68753C2.83533 2.81258 2.27298 4.15901 2.27298 5.72721V8.18189H1.86395C1.52316 8.18189 1.23332 8.30113 0.994661 8.53979C0.756003 8.77827 0.636719 9.0681 0.636719 9.40921V16.7728C0.636719 17.1136 0.756048 17.4035 0.994661 17.6422C1.23332 17.8806 1.52316 18 1.86395 18H14.1364C14.4775 18 14.7671 17.8808 15.0059 17.6422C15.2443 17.4035 15.3638 17.1136 15.3638 16.7728V9.40908C15.364 9.06824 15.2443 8.77845 15.0055 8.53979ZM11.2728 8.18189H4.72753V5.72721C4.72753 4.82384 5.04719 4.05248 5.68637 3.41339C6.32564 2.77421 7.09687 2.45468 8.00032 2.45468C8.90386 2.45468 9.67491 2.77416 10.3142 3.41339C10.9532 4.05244 11.2728 4.82384 11.2728 5.72721V8.18189Z" fill="#343D4C" />
             </svg>
             <p class="secure-text">Secure Checkout</p>
+        </div>
+    </div>
+    <div class="top-row mobile">
+        <div class="row-holder">
+            <!--App Name-->
+            <div class="app-name">
+                <a href="/explore" class="app-name">@Resources.App.appName</a>
+            </div>
+            <div class="secured-section">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="18" viewBox="0 0 16 18" fill="none">
+                    <path d="M15.0055 8.53979C14.7668 8.30113 14.4772 8.18189 14.1361 8.18189H13.7273V5.72721C13.7273 4.15905 13.1649 2.81258 12.0399 1.68758C10.9149 0.562525 9.56857 0 8.00019 0C6.43185 0 5.08525 0.562525 3.96038 1.68753C2.83533 2.81258 2.27298 4.15901 2.27298 5.72721V8.18189H1.86395C1.52316 8.18189 1.23332 8.30113 0.994661 8.53979C0.756003 8.77827 0.636719 9.0681 0.636719 9.40921V16.7728C0.636719 17.1136 0.756048 17.4035 0.994661 17.6422C1.23332 17.8806 1.52316 18 1.86395 18H14.1364C14.4775 18 14.7671 17.8808 15.0059 17.6422C15.2443 17.4035 15.3638 17.1136 15.3638 16.7728V9.40908C15.364 9.06824 15.2443 8.77845 15.0055 8.53979ZM11.2728 8.18189H4.72753V5.72721C4.72753 4.82384 5.04719 4.05248 5.68637 3.41339C6.32564 2.77421 7.09687 2.45468 8.00032 2.45468C8.90386 2.45468 9.67491 2.77416 10.3142 3.41339C10.9532 4.05244 11.2728 4.82384 11.2728 5.72721V8.18189Z" fill="#343D4C" />
+                </svg>
+                <p class="secure-text">Secure Checkout</p>
+            </div>
+        </div>
+        <!--Timer-->
+        <div class="timer-section">
+            <p class="ticket-text">Tickets Reserved in Cart for</p>
+            <p class="timer-value">@RemainingTime</p>
         </div>
     </div>
     <div class="xp-ote-payment-wrapper pb-5">
