@@ -15,6 +15,7 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
 }
+
 .ticket-info {
     display: flex;
     gap:20px;
@@ -516,6 +517,15 @@ svg {
         height: 70%;
         margin-top: 50px;
     }
+    .ticket-names {
+        max-height: fit-content;
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    .btn-confirm {
+        display: none;
+    }
     .booking-total-container > .shadow {
         box-shadow: none !important;
     }
@@ -551,7 +561,7 @@ svg {
 }
 /* For Mobile Portrait View */
 @media screen and (max-width: 767px) and (orientation: portrait) {
- 
+
 }
 
 /* Small devices (landscape phones, 588px and up) */
@@ -561,4 +571,11 @@ svg {
 
 @media screen and (min-width: 579px) and (max-width: 767px) {
   
+}
+
+@media screen and (min-width: 0px) and (max-width: 340px) {
+    .btn-confirm-text {
+        font-size: 12px;
+    }
+
 }
