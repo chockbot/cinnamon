@@ -14,7 +14,22 @@
 }
 
 .categories-container {
-  transform-origin: center center; /* Set transform origin to center */
+  transform-origin: center center;
   position: absolute;
   width: 60%;
+  overflow: auto;
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
+.categories-container::-webkit-scrollbar {
+  display: none;
+}
+
+.categories-container {
+  scrollbar-width: none;
+}
+
+.categories-container {
+  overflow: -moz-scrollbars-none;
 }

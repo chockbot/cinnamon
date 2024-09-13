@@ -127,8 +127,10 @@
                                     @foreach (var item in AvailablePriceList)
                                     {
                                         <div class="ticket-info">
-                                            <div class="ticket-color" style="width: 20px;height: 20px;background-color:@item.TicketColor;border-radius: 50%;"></div>
-                                            <div class="ticket-name">@item.Name</div>
+                                            <a href="#@item.Name.Replace(" ", "-")">
+                                                <div class="ticket-color" style="width: 20px;height: 20px;background-color:@item.TicketColor;border-radius: 50%;"></div>
+                                                <div class="ticket-name">@item.Name</div>
+                                            </a>
                                         </div>
                                     }
                                 </div>
