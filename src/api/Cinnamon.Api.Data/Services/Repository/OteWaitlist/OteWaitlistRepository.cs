@@ -55,14 +55,16 @@ public class OteWaitlistRepository : IOteWaitlistRepository
             return AppResult<OteWaitlistDTO>.CreateFailed(ex, "An error occured when creating ote waitlist");
         }
     }
-    public async Task<AppResult<IEnumerable<OteWaitlistDTO>>> GetWaitlistByProvider(int? providerId, int? activityId, IEnumerable<int>? status = null)
+    public async Task<AppResult<IEnumerable<OteWaitlistDTO>>> GetWaitlistByProvider(int? providerId, int? activityId, 
+        IEnumerable<int>? status = null, int? oteDateId = null)
     {
         try
         {
             Expression<Func<Entities.OteWaitlist, bool>> filter = 
                 a => (providerId.HasValue ? a.ProviderId == providerId.Value: true)&&
                      (activityId.HasValue ? a.ActivityId == activityId.Value: true) &&
-                     (status != null ? status.Contains(a.Status) : true);
+                     (status != null ? status.Contains(a.Status) : true) &&
+                     (oteDateId.HasValue ? a.OteDateId == oteDateId.Value : true);
 
             var result = await dataStore.OteWaitlist.FindAsync(filter);
 

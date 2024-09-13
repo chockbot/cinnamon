@@ -3487,7 +3487,8 @@ public class ActivityController : ControllerBase
             {
                 ProviderId = args.ProviderId,
                 ActivityId = args.ActivityId,
-                Status     = args.Status
+                Status     = args.Status,
+                OteDateId  = args.OteDateId
             });
 
             if (!result.Succeeded || result.Result is null)

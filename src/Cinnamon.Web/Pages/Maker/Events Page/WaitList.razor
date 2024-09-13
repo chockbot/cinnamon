@@ -219,7 +219,8 @@
     </Offcanvas>
 }
 
-@code {
+@code 
+{
     [Parameter]
     public IEnumerable<OteSchedule> OteTickets { get; set; }
 
@@ -234,6 +235,9 @@
 
     [Parameter]
     public string EventName { get; set; }
+
+    [Parameter]
+    public int DateId { get; set; }
 
     public List<OteWaitlist> OteWaitlist = new List<OteWaitlist>();
 
@@ -395,7 +399,8 @@
         {
             ProviderId = ProviderId,
             ActivityId = ActivityId,
-            Status = new[] {1,2,3}
+            Status = new[] {1,2,3},
+            OteDateId = DateId
         }, Token);
         if (waitlists.Succeeded && waitlists.Result is not null && waitlists.Result.IsSuccess)
         {

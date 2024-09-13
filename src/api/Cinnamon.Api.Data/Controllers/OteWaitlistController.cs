@@ -89,7 +89,7 @@ public class OteWaitlistController : ControllerBase
     {
         try
         {
-            var result = await oteWaitlistRepository.GetWaitlistByProvider(args.ProviderId, args.ActivityId, args.Status);
+            var result = await oteWaitlistRepository.GetWaitlistByProvider(args.ProviderId, args.ActivityId, args.Status, args.OteDateId);
             if (!result.Succeeded || result.Result is null)
             {
                 return new JsonResult(new GetOteWaitlistByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
