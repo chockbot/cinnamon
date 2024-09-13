@@ -37,7 +37,8 @@ public class GetOteWaitlistByProviderHandler : IGetOteWaitlistByProviderHandler
             {
                 ProviderId = args.ProviderId,
                 ActivityId = args.ActivityId,
-                Status     = args.Status
+                Status     = args.Status,
+                OteDateId  = args.OteDateId
             });
             if (!oteWaitlist.Succeeded || oteWaitlist.Result is null || !oteWaitlist.Result.IsSuccess)
             {

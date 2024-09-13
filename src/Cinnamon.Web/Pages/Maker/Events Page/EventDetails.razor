@@ -102,13 +102,13 @@
                 </Items>
                 <Content>
                     <TabPanel Name="overview">
-                        <Overview Activity="activity" Tickets="ticketList"/>
+                        <Overview SelectedDate="selectedDate" Activity="activity" Tickets="ticketList"/>
                     </TabPanel>
                     <TabPanel Name="guest-list">
                         <GuestList activity="activity" Token=@Token dateId="dateId"/>
                     </TabPanel>
                     <TabPanel Name="wait-list">
-                        <WaitList OteTickets="ticketList" Token=@Token ProviderId="ProviderId" ActivityId="activity.Id" EventName="@activity.EventName"/>
+                        <WaitList DateId="dateId" OteTickets="ticketList" Token=@Token ProviderId="ProviderId" ActivityId="activity.Id" EventName="@activity.EventName"/>
                     </TabPanel>
                     <TabPanel Name="tickets">
                         <Tickets TicketList="ticketList" OteActivity="activity" Token=@Token></Tickets>
@@ -210,6 +210,7 @@
 
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
     private int dateId = 0;
+    private DateTime selectedDate = DateTime.Now;
 
     protected override async Task OnInitializedAsync()
     {
@@ -246,6 +247,7 @@
         if(!string.IsNullOrEmpty(Date) && int.TryParse(Date, out int parsedDate))
         {
             dateId = parsedDate;
+            selectedDate = act.OteDates.FirstOrDefault(d => d.Id == dateId)?.Date ?? DateTime.Now;
         }
 
         //Get Ticket List

@@ -11,7 +11,7 @@
             <p class="event-title">When & Where</p>
             <div class="event-schedule-details">
                 <img class="event-img" src="images/ote/calendar.svg" />
-                <p class="event-schedule">@Activity.ScheduleFrom.ToString("MMMM dd, yyyy") | @Activity.ScheduleFrom.DayOfWeek</p>
+                <p class="event-schedule">@SelectedDate.ToString("MMMM dd, yyyy") | @SelectedDate.DayOfWeek</p>
             </div>
             <div class="event-schedule-details">
                 <img class="event-img" src="images/ote/event-clock.svg" />
@@ -49,6 +49,7 @@
     </div>
 </div>
 
+
 @code 
 {
     [Parameter]
@@ -56,6 +57,9 @@
 
     [Parameter]
     public IEnumerable<OteSchedule> Tickets { get; set; }
+
+    [Parameter]
+    public DateTime SelectedDate { get; set; }
 
     public int TotalSlots = 0;
 
