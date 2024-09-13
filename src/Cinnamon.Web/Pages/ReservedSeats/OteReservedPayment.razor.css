@@ -1,3 +1,21 @@
+
+@font-face {
+  font-family: 'Sansita One';
+  src: url('/fonts/sansita-cufonfonts/SansitaOne.ttf') format('opentype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Nunito Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: normal;
+  font-style: normal;
+  font-variation-settings:
+	"wdth" 100,
+	"YTLC" 500;
+}
+
 ::deep button:focus {
     outline: none !important;
     box-shadow: none !important;
@@ -8,6 +26,12 @@
     ::deep button:active {
         transform: scale(.94);
     }
+
+
+.top-row.mobile {
+  display: none;
+}
+
 .top-row {
     background-color: white;
     border-bottom: 1px solid #d9d9d9;
@@ -63,14 +87,14 @@
 }
 
 .timer-value {
-    color: #579AFF;
-    text-align: center;
-    font-family: "Nunito Sans";
-    font-size: 28px;
-    font-style: normal;
-    font-weight: 900;
-    line-height: 10.24px; /* 36.571% */
-    letter-spacing: 0.64px;
+  color: #579AFF;
+  text-align: center;
+  font-family: "Nunito Sans";
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 10.24px; /* 36.571% */
+  letter-spacing: 0.64px;
 }
 .guarantees-text {
     color: #343D4C;
@@ -83,11 +107,9 @@
 .secured-section {
     display: flex;
     gap: 12px;
+    align-items: center;
 }
 
-    .secured-section svg {
-        margin-top: 10px;
-    }
 
 .secure-text {
     color: #343D4C;
@@ -96,7 +118,8 @@
     font-style: normal;
     font-weight: 900;
     line-height: normal;
-    margin-top: 7px;
+    margin-bottom: 0px;
+    margin-top: 0px;
 }
 
 .top-row ::deep a {
@@ -114,18 +137,14 @@
     font-size: 32px;
     text-decoration: none;
 }
+
 .apply-credits {
     transition: transform .25s;
 }
     .apply-credits:active {
         transform: scale(.94);
     }
-.app-name {
-    color: var(--primary);
-    font-family: "Backline";
-    font-size: 1.3rem;
-    margin-left: 3px;
-}
+
 .queue-up {
     margin-bottom: 32px;
     gap: 20px;
@@ -292,5 +311,41 @@
 
   .mobile-calculator-wrapper {
     display: block;
+  }
+}
+
+@media screen and (min-width: 0px) and (max-width: 579px) {
+
+  .secured-section {
+      align-items: center;
+  }
+  .secure-text {
+      margin-top: 0px;
+      margin-bottom: 0px;
+      font-size: 12px;
+  }
+
+  .secured-section svg{
+      margin-top: 0px;
+      height: 12px;
+      width: 12px;
+  }
+
+  .row-holder {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 21px;
+  }
+  .app-name {
+      font-size: 20px;
+  }
+
+  .top-row.desktop {
+      display: none;
+  }
+
+  .top-row.mobile {
+      display: block;
   }
 }
