@@ -104,14 +104,20 @@
         <!--Menu-->
         <div class="col-lg-4 d-flex justify-content-end col-md-2 d-flex justify-content-end col-sm-2 d-flex justify-content-end col-1 d-flex justify-content-end navbar-selection dropdown-section">
             <!-- Desktop -->
-            <form class="search-bar" @onsubmit=Search>
+            <form class="search-bar" @onsubmit="Search">
                 <div class="input-group p-1">
-                    <input type="text" placeholder="Search Experience" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
-                        <div class="input-group-append border-0">
-                            <button type="button" @onclick="Search" class="search-button btn btn-link text-success">
-                                <img src="images/explore-page-images/search-icon-explore.svg" alt="search-icon" />
-                            </button>
-                        </div>
+                    <input type="text" placeholder="Search Experience" id="19d13aa1-90c0-4232-a7bc-62a772baa223"
+                           autocomplete="new-password"
+                           @bind-value="searchValue"
+                           @oninput="SearchOnInput"
+                           aria-describedby="btn-search"
+                           class="form-control bg-none border-0"
+                           style="outline: none;box-shadow: none;">
+                    <div class="input-group-append border-0">
+                        <button type="button" @onclick="Search" class="search-button btn btn-link text-success">
+                            <img src="images/explore-page-images/search-icon-explore.svg" alt="search-icon" />
+                        </button>
+                    </div>
                 </div>
             </form>
 
@@ -2716,6 +2722,12 @@
         pageIndex = 0;
         itemsPerPage = 21;
         await FetchActivities(false);
+    }
+
+    private async Task SearchOnInput(ChangeEventArgs e)
+    {
+        searchValue = e.Value.ToString();
+        await Search();
     }
 
     private void NavigateToDashboard()
