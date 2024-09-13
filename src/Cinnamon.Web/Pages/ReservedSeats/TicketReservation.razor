@@ -119,7 +119,7 @@
                         <div class="ticket-event-section">
                             <p class="ticket-section">Select seat for your tickets</p>
                             <div class="ticket-box">
-                                <Cinnamon.Web.Components.Common.SeatPlan.Container Payload="@selectedPayload" OnSeatSelected="HandleSeatSelection" />
+                                <Cinnamon.Web.Components.Common.SeatPlan.Container Payload="@selectedPayload" OnSeatSelected="HandleSeatSelection" ViewOnly="viewOnly"/>
                             </div>
                     
                             <div class="ticket-options">
@@ -779,6 +779,7 @@
     private PredefinedQuestion predefinedQuestion = new();
     private Validations? predefinedQuestionValidation;
     private List<ActivityQuestion> filteredQuestions = new();
+    public bool viewOnly { get; set; } = false;
 
 
     protected override async Task OnInitializedAsync()
@@ -1102,32 +1103,34 @@
     private void HandleSeatSelection(Category.SelectedSeat selectedSeat)
     {
         var selectedTicket = activity.Pricings.FirstOrDefault(a => a.ReserveSeatUuid == selectedSeat.CategoryUUID);
-        var ticketToUpdate = selectedTickets.FirstOrDefault(t => t.Value.Id == selectedTicket.Id);
-
-        if (IsLimit && selectedTickets.Sum(t => t.Value.Count) >= activity.Schedule.EventTicketLimit)
-        {
-            NotificationService.Error("You've already reached the maximum limit for ticket purchases.", "Oops!");
-            return;
-        }
+        var ticketToUpdate = selectedTickets.FirstOrDefault(t => t.Value.Id == selectedTicket?.Id);
+    
         // If the seat is already selected, update the ticket info
         if (ticketToUpdate.Value?.SeatUUID.Split(",").Contains(selectedSeat.Seat.Uuid) == true)
         {
             if (ticketToUpdate.Value.Count > 1)
             {
+                // Decrease the ticket count
                 ticketToUpdate.Value.Count -= 1;
-
+    
                 // Update the seat information by removing the specific seat
                 var seatList = ticketToUpdate.Value.Seat.Split(",").ToList();
-                seatList.Remove(selectedSeat.Seat.SeatNumber);
+                seatList.Remove($"{selectedSeat.RowNumber}-{selectedSeat.Seat.SeatNumber}"); // Ensure correct format
                 ticketToUpdate.Value.Seat = string.Join(",", seatList);
+    
+                var seatUUIDList = ticketToUpdate.Value.SeatUUID.Split(",").ToList();
+                seatUUIDList.Remove(selectedSeat.Seat.Uuid); // Ensure UUID is removed
+                ticketToUpdate.Value.SeatUUID = string.Join(",", seatUUIDList);
             }
             else
             {
-                selectedTickets.Remove(ticketToUpdate);
+                // Remove the ticket entirely if only one seat remains
+                selectedTickets.Remove(ticketToUpdate.Key);
             }
         }
         else
         {
+            // Add or update the ticket with the new seat
             if (ticketToUpdate.Value != null)
             {
                 ticketToUpdate.Value.Count += 1;
@@ -1151,8 +1154,13 @@
                 });
             }
         }
+    
+        // Enforce ticket limit
+        if (IsLimit && selectedTickets.Sum(t => t.Value.Count) > activity.Schedule.EventTicketLimit)
+        {
+            NotificationService.Info($"You can only purchase maximum of {activity.Schedule.EventTicketLimit} ticket/s in this event.", "Notification");
+        }
     }
-
     private decimal GetAppliedCoupon
     {
         get
@@ -1351,6 +1359,11 @@
         if (selectedTickets.Count <= 0)
         {
             return NotificationService.Error("Select a ticket to proceed.", "Oops!");
+        }
+
+        if (IsLimit && selectedTickets.Sum(t => t.Value.Count) > activity.Schedule.EventTicketLimit)
+        {
+             return NotificationService.Error($"You can only purchase maximum of {activity.Schedule.EventTicketLimit} ticket/s in this event.", "Opps!");
         }
 
         bool havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.IsFree) && selectedTickets.Any(t => !t.Value.IsFree);
