@@ -1,4 +1,5 @@
 ﻿@page "/explore/ote/reserved/{Handler}"
+@page "/explore/ote/reserved/{Handler}/{IsExpired:bool}"
 @using System.Security.Claims;
 @using Cinnamon.Web.Components.Pages;
 @using AutoMapper;
@@ -375,12 +376,27 @@
     <br />
     <Footer></Footer>
 }
-
+<Modal @ref="modaltime">
+    <ModalContent Centered>
+        <ModalBody>
+            <div class="queue-up d-flex">
+                <img class="img-logo" src="images/ote/timeout.svg" />
+                <div class="queue-up-text">
+                    <p class="expired-text">Your reservation has expired!</p>
+                </div>
+            </div>
+            <p class="congratulations-text">Unfortunately, you've lost your chance to purchase tickets. Please start a new reservation.</p>
+            <button class="btn-try" @onclick="NavigateToReservation">Try Again</button>
+        </ModalBody>
+    </ModalContent>
+</Modal>
 <ModalLogin @ref="loginModal" ReturnUrl="@signInReturnUrl" />
 <ImageViewer @ref="imageViewer" Image="@SetPlanImage" />
 @code {
     [Parameter]
     public string Handler { get; set; } = string.Empty;
+    [Parameter]
+    public bool IsExpired { get; set; } = false;
     private OteActivity? activity;
     private CustomerProfile? provider;
     private IJSObjectReference jsClipboard;
@@ -388,6 +404,7 @@
     private CustomerProfile? currentLogin { get; set; }
     private string token { get; set; } = string.Empty;
     private string signInReturnUrl = string.Empty;
+    private Modal modaltime { get; set; }
     private ModalLogin? loginModal;
     private ImageViewer imageViewer;
     private ConfirmDialog confirmDialogRef { get; set; }
@@ -417,7 +434,6 @@
     private CoreDto.Activity.TopBookedCustomersDTO topBookedCustomers = new();
     private bool submitting = false;
 
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -440,6 +456,10 @@
             {
                 NavigationManager.NavigateTo("page-not-found");
                 return;
+            }
+            if (IsExpired)
+            {
+                await modaltime.Show();
             }
         }
         catch (Exception ex)
@@ -850,6 +870,11 @@
         {
             NavigationManager.NavigateTo(url);
         }
+    }
+    private void NavigateToReservation()
+    {
+        string paymentUrl = $"/reservation/{Handler}/?date={selectedDate}&token={token}";
+        NavigationManager.NavigateTo(paymentUrl);
     }
     private Task ProceedToPayment()
     {

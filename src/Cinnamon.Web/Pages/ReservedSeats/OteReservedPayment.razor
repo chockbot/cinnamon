@@ -582,6 +582,7 @@
     private Timer _countdownTimer;
     private bool _isProcessing;
     private string unavailableSeats { get; set; }
+    public bool IsExpired { get; set; } = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -624,6 +625,8 @@
                 await LoadProfile();
                 //Check if user is in queue
                 string activeQueueName = $"{Handler}-active-queue";
+                //Remove all user in active queue w/ negative time
+                await QueueServices.RemoveExpiredUsersFromActiveQueueAsync(activeQueueName);
                 //Check user if is in the active-queue
                 var activeQueueUserInfo = await QueueServices.GetUserInActiveQueueAsync(activeQueueName, currentLogin.Handler);
                 if (activeQueueUserInfo.HasValue)
@@ -639,8 +642,7 @@
                     }
                     else
                     {
-                        // Processing time has finished, display timeout page
-                        OnTimeout();
+                        await OnTimeout();
                     }
                 }
             }
@@ -711,11 +713,11 @@
         }
     }
 
-    public async void OnTimeout()
+    public async Task OnTimeout()
     {
         // Handle user timeout logic
         _isProcessing = false;
-        await modaltime.Show();
+        NavigateToOteReserved();
     }
 
     private async Task LoadProfile()
@@ -854,7 +856,8 @@
     }
     private void NavigateToOteReserved()
     {
-        NavigationManager.NavigateTo($"/explore/ote/reserved/{Handler}");
+        IsExpired = true;
+        NavigationManager.NavigateTo($"/explore/ote/reserved/{Handler}/{IsExpired}");
     }
     private void NavigateToTicketReservation()
     {
@@ -1202,7 +1205,7 @@
                                 selectedTickets.Remove(ticket); // Remove the ticket from the list.
                             }
                         }
-                    }
+                    }  
                     if (!string.IsNullOrEmpty(unavailableSeats))
                     {
                         string unavailableSeats = string.Join(", ", unavailableSeatsList);
