@@ -74,7 +74,8 @@ public class CreateOteWaitlistHandler : ICreateOteWaitlistHandler
                 ProviderId   = args.ProviderId,
                 ScheduleId   = args.ScheduleId,
                 Status       = args.Status,
-                Type         = args.Type
+                Type         = args.Type,
+                OteDateId    = args.OteDateId
             });
             if (!oteWaitlist.Succeeded || oteWaitlist.Result is null || !oteWaitlist.Result.IsSuccess)
             {
