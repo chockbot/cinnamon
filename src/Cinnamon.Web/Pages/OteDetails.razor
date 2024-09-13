@@ -1737,6 +1737,13 @@
         submitting = true;
         StateHasChanged();
 
+        var oteDate = activity.OteDates.FirstOrDefault(d => d.Date.Date == selectedDate.Date);
+        if(oteDate is null)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+            return;
+        }
+
         //Add to Waitlist
         var waitlist = await activityHandler.CreateOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteWaitlistArgs
         {
@@ -1747,7 +1754,8 @@
             ProviderId   = provider.Id,
             Status       = 1,
             Type         = "Paid",
-            Payload      = serializedPayload
+            Payload      = serializedPayload,
+            OteDateId    = oteDate.Id
         },token);
 
         if (waitlist.Succeeded && waitlist.Result is not null && waitlist.Result.IsSuccess)

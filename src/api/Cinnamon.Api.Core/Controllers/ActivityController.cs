@@ -3450,7 +3450,8 @@ public class ActivityController : ControllerBase
                 ProviderId   = args.ProviderId,
                 ScheduleId   = args.ScheduleId,
                 Status       = args.Status,
-                Type         = args.Type
+                Type         = args.Type,
+                OteDateId    = args.OteDateId,
             });
             if (!result.Succeeded || result.Result is null)
             {
@@ -3519,7 +3520,8 @@ public class ActivityController : ControllerBase
             {
                 ProviderId = args.ProviderId,
                 ActivityId = args.ActivityId,
-                Status     = args.Status
+                Status     = args.Status,
+                OteDateId  = args.OteDateId
             });
 
             if (!result.Succeeded || result.Result is null)

@@ -12,4 +12,5 @@ public class CreateOteWaitlistResult : IInteractor
     public int ScheduleId { get; set; }
     public string Payload { get; set; }
     public int Status { get; set; }
+    public int OteDateId {get; set;}
 }
