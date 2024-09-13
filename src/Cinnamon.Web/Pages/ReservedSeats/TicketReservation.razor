@@ -122,6 +122,7 @@
                                 <Cinnamon.Web.Components.Common.SeatPlan.Container Payload="@selectedPayload" OnSeatSelected="HandleSeatSelection" ViewOnly="viewOnly"/>
                             </div>
                     
+
                             <div class="ticket-options">
                                 <div class="ticket-names">
                                     @foreach (var item in AvailablePriceList)
@@ -132,21 +133,54 @@
                                         </div>
                                     }
                                 </div>
-                    
+
                                 @if (selectedTickets.Count != 0)
                                 {
                                     @if (activity.Schedule.IsCapacity && activity.IsEventSoldOut && selectedTickets.Count <= capacityLimit && !selectedTickets.First().Value.IsUnlimited)
                                     {
-                                        <button class="btn-confirm" @onclick=JoinWaitlist>Join Waitlist</button>
+                                        <button class="btn-confirm" @onclick=JoinWaitlist disabled="@isLoading">
+                                            @if (isLoading)
+                                            {
+                                                <div class="spinner-border spinner-border-sm" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span>Join Waitlist</span>
+                                            }
+                                        </button>
                                     }
                                     else
                                     {
-                                        <button class="btn-confirm" @onclick=ProceedToPayment>Confirm Seats</button>
+                                        <button class="btn-confirm" @onclick=ProceedToPayment disabled="@isLoading">
+                                            @if (isLoading)
+                                            {
+                                                <div class="spinner-border spinner-border-sm" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span>Confirm Seats</span>
+                                            }
+                                        </button>
                                     }
                                 }
                                 else
                                 {
-                                    <button class="btn-confirm" @onclick=ProceedToPayment>Confirm Seats</button>
+                                    <button class="btn-confirm" @onclick=ProceedToPayment disabled="@isLoading">
+                                        @if (isLoading)
+                                        {
+                                            <div class="spinner-border spinner-border-sm" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span>Confirm Seats</span>
+                                        }
+                                    </button>
                                 }
                             </div>
                         </div>
@@ -1346,12 +1380,18 @@
         ClearCouponDetails();
         StateHasChanged();
     }
+    
     private Task ProceedToPayment()
     {
+        isLoading = true;
+        StateHasChanged();
         if (currentLogin is null)
         {
             string oteDetailsUrl = $"/explore/ote/{Handler}";
             signInReturnUrl = oteDetailsUrl;
+
+            isLoading = false;
+            StateHasChanged();
 
             return loginModal.Show();
         }
@@ -1359,6 +1399,9 @@
         if (selectedTickets.Count <= 0)
         {
             return NotificationService.Error("Select a ticket to proceed.", "Oops!");
+
+            isLoading = false;
+            StateHasChanged();
         }
 
         if (IsLimit && selectedTickets.Sum(t => t.Value.Count) > activity.Schedule.EventTicketLimit)
@@ -1370,6 +1413,9 @@
         if(havePaidAndFreeTicket)
         {
             return NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
+
+            isLoading = false;
+            StateHasChanged();
         }
 
         bool freeWithApproval = selectedTickets.Any(t => t.Value.IsFree && t.Value.RequiredApproval);
@@ -1378,6 +1424,9 @@
         if(freeWithApproval && isFreeWithoutApproval)
         {
             return NotificationService.Error("Combining free tickets with and without approval is not permitted.", "Invalid");
+
+            isLoading = false;
+            StateHasChanged();
         }
 
         bool paidWithApproval = selectedTickets.Any(t => !t.Value.IsFree && t.Value.RequiredApproval);
@@ -1386,6 +1435,9 @@
         if(paidWithApproval && isPaidWithoutApproval)
         {
             return NotificationService.Error("Combining paid tickets with and without approval is not permitted.", "Invalid");
+
+            isLoading = false;
+            StateHasChanged();
         }
 
         bool haveQuestions = activityQuestions.Count > 0;
@@ -1395,6 +1447,10 @@
         if (isFreeWithoutApproval || freeWithApproval) return ProceedToFreePurchase();
 
         if(paidWithApproval) return ProceedToJoinWaitlist();
+
+
+        isLoading = false;
+        StateHasChanged();
 
         return ProceedToPaymentOption();
     }
@@ -1734,6 +1790,8 @@
 
     private async Task ProceedToPaymentOption()
     {
+        isLoading = true;
+        StateHasChanged();
         submitting = true;
         StateHasChanged();
 
@@ -1759,7 +1817,10 @@
         StateHasChanged();
 
         string paymentUrl = $"/payment/ote/reserved/{Handler}/?guid={createTracker.Guid}&token={createTracker.Token}";
+        await Task.Delay(2000);
 
+        isLoading = false;
+        StateHasChanged();
         NavigationManager.NavigateTo(paymentUrl);
     }
 
