@@ -1,6 +1,7 @@
 import cookieManager from "./cookieManager.js";
 import excelWriter from "./excelWriter.js";
 import experienceExcelWriter from "./experienceExcelWriter.js";
+import scrollEffect from "./scrollEffect.js";
 import hoverEffect from "./hoverEffect.js";
 import { scrollToTop, scrollToView } from "./scrollToView.js";
 import { countWords } from "./wordsCount.js";
@@ -13,6 +14,7 @@ export default {
   cookieManager,
   excelWriter,
   experienceExcelWriter,
+  scrollEffect,
   hoverEffect,
   scrollToView,
   scrollToTop,
