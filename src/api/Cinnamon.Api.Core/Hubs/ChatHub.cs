@@ -429,5 +429,10 @@ namespace Cinnamon.Api.Core.Hubs
 
             await base.OnDisconnectedAsync(exception);
         }
+
+        public async Task BookedSeat(string payload) 
+        {
+            await Clients.All.SendAsync("BookedSeat", payload);
+        }
     }
 }

@@ -10,6 +10,7 @@
 @using Cinnamon.Web.Utils;
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Modules.Services
+@using Microsoft.AspNetCore.SignalR.Client;
 @inject QueueServices QueueServices
 @inject IAccountApiHandler accountApiHandler;
 @inject NavigationManager NavigationManager;
@@ -215,7 +216,7 @@
                         </div>
                     </section>
                     <p class="font-12 color-grey-100 mt-3">By selecting the button below, I agree to the Cinnamon Maker’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</p>
-                    <Button Loading="submitting" Disabled="DisableProceed || submitting" Clicked="ProceedToPayment"
+                    <Button Loading="submitting" Disabled="DisableProceed || submitting || someoneAlreadyBooked" Clicked="ProceedToPayment"
                         class="btn-primary border-radius-10 m-d-none" Border="Border.Is0" >
                         <LoadingTemplate>
                             <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
@@ -538,7 +539,7 @@
 </Modal>
 
 @code
-    {
+{
     [Parameter]
     public string Handler {get; set;} = string.Empty;
 
@@ -584,6 +585,10 @@
     private string unavailableSeats { get; set; }
     public bool IsExpired { get; set; } = false;
 
+    [Inject] HubConnection hubConnection { get; set; }
+    private int userId { get; set; }
+    private bool someoneAlreadyBooked = false;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(firstRender)
@@ -591,6 +596,11 @@
             if(!string.IsNullOrEmpty(Status) && Status.ToLower() == "failed" && failedModal is not null)
             {
                 await failedModal.Show();   
+            }
+
+            if(!string.IsNullOrEmpty(token))
+            {
+                StartConnection();
             }
         }
     }
@@ -623,6 +633,32 @@
             {
                 //Load Profile
                 await LoadProfile();
+
+                hubConnection.Closed += async (error) =>
+                {
+                    StartConnection();
+                };
+
+                hubConnection.On<string>("BookedSeat", payload =>
+                {
+                    // format: userId|activityId|seatUuidItems
+                    var splitted = payload.Split('|');
+                    int userId = Convert.ToInt32(splitted[0]);
+                    int activityId = Convert.ToInt32(splitted[1]);
+                    var seatUuidItems = splitted[2].Split(',');
+
+                    bool sameSeatBooked = false;
+                    for(int i = 0; i < seatUuidItems.Length; i++)
+                    {
+                        sameSeatBooked = selectedTickets.Any(t => t.Value.SeatUUID == seatUuidItems[i]);
+                        if(sameSeatBooked)
+                        {
+                            break;
+                        }
+                    }
+                    someoneAlreadyBooked = sameSeatBooked && userId != this.userId;
+                });
+
                 //Check if user is in queue
                 string activeQueueName = $"{Handler}-active-queue";
                 //Remove all user in active queue w/ negative time
@@ -725,8 +761,9 @@
         if (!string.IsNullOrEmpty(Token))
         {
             var profileResult = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
-            if (profileResult.Succeeded || profileResult.Result is not null && profileResult.Result.IsSuccess)
+            if (profileResult.Succeeded && profileResult.Result is not null && profileResult.Result.IsSuccess)
             {
+                userId = profileResult.Result.Result.Id;
                 currentLogin = mapper.Map<CustomerProfile>(profileResult.Result.Result);
             }
         }
@@ -1171,6 +1208,8 @@
             return;
         }
 
+        await hubConnection.SendAsync("BookedSeat", $"{userId}|{activity.Id}|{string.Join(",", selectedTickets.Select(t => t.Value.SeatUUID))}");
+
         await SubmitTransaction();
     }
 
@@ -1181,6 +1220,12 @@
             submitting = true;
 
             StateHasChanged();
+
+            if(someoneAlreadyBooked)
+            {
+                await modalUnAvailable.Show();
+                return;
+            }
 
             //Check if seat are not occupied
             await LoadOteDetails();
@@ -1334,5 +1379,22 @@
         public string CategotyUUID { get; set; }
         public string RowUUID { get; set; }
         public string SeatUUID { get; set; }
+    }
+
+    private async Task StartConnection()
+    {
+        try
+        {
+            if(hubConnection.State == HubConnectionState.Disconnected)
+            {
+                await hubConnection.StartAsync();
+                var status = hubConnection.State;
+            }
+        }
+        catch (System.Exception)
+        {
+            await Task.Delay(500);
+            StartConnection();
+        }
     }
 }
