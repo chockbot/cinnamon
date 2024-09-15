@@ -317,7 +317,9 @@
                     <div class="calendar-events">
                         <div class="@WrapperClass">
                             <div class="calendar-header d-flex align-items-center justify-content-between">
-                                <div class="text-center font-18 font-weight-700 color-black-100 text-capitalize">@activeDate.ToString("MMMM yyyy")</div>
+                                <div class="text-center font-18 font-weight-700 color-black-100 text-capitalize">
+                                    @activeDate.ToString("MMMM yyyy")
+                                </div>
                                 <div class="button-calendar">
                                     <Button Clicked="PrevMonthClick">
                                         <img class="img-navigation cursor-pointer" src="images/back-icon.png" alt="prev">
@@ -340,18 +342,17 @@
                                     <div class="grid-item" @key="item">
                                         @if (!item.Empty)
                                         {
-                                            <span class="@DayClass(item.Selected, item.Date)">
-                                                @NumberString(item.Date.Day)
-                                            </span>
-                                            @if (item.Selected)
-                                            {
-                                                @foreach (var name in item.Title)
+                                            <div class="@DayClass(item.Selected, item.Date)">
+                                                <span>@NumberString(item.Date.Day)</span>
+                                                @if (item.Title.Any())
                                                 {
-                                                    <Tooltip Text="@name.EventName">
-                                                        <button class="event-title" @onclick="@(() => SelectSchedule(name))">@name.EventName</button>
-                                                    </Tooltip>
+                                                    <div class="event-dot-container">
+                                                        <Tooltip Text="@string.Join(Environment.NewLine, item.Title.Select(t => t.EventName))">
+                                                            <span class="event-dot"></span>
+                                                        </Tooltip>
+                                                    </div>
                                                 }
-                                            }
+                                            </div>
                                         }
                                     </div>
                                 }
