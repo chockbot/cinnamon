@@ -1157,20 +1157,19 @@
     {
         var selectedTicket = activity.Pricings.FirstOrDefault(a => a.ReserveSeatUuid == selectedSeat.CategoryUUID);
         var ticketToUpdate = selectedTickets.FirstOrDefault(t => t.Value.Id == selectedTicket?.Id);
-    
-        // If the seat is already selected, update the ticket info
+        //Remove Ticket
         if (ticketToUpdate.Value?.SeatUUID.Split(",").Contains(selectedSeat.Seat.Uuid) == true)
         {
             if (ticketToUpdate.Value.Count > 1)
             {
                 // Decrease the ticket count
                 ticketToUpdate.Value.Count -= 1;
-    
+
                 // Update the seat information by removing the specific seat
                 var seatList = ticketToUpdate.Value.Seat.Split(",").ToList();
                 seatList.Remove($"{selectedSeat.RowNumber}-{selectedSeat.Seat.SeatNumber}"); // Ensure correct format
                 ticketToUpdate.Value.Seat = string.Join(",", seatList);
-    
+
                 var seatUUIDList = ticketToUpdate.Value.SeatUUID.Split(",").ToList();
                 seatUUIDList.Remove(selectedSeat.Seat.Uuid); // Ensure UUID is removed
                 ticketToUpdate.Value.SeatUUID = string.Join(",", seatUUIDList);
@@ -1207,11 +1206,24 @@
                 });
             }
         }
-    
-        // Enforce ticket limit
-        if (IsLimit && selectedTickets.Sum(t => t.Value.Count) > activity.Schedule.EventTicketLimit)
+
+        if(IsLimit && selectedTickets.Sum(a => a.Value.Count) >= activity.Schedule.EventTicketLimit)
         {
-            NotificationService.Info($"You can only purchase maximum of {activity.Schedule.EventTicketLimit} ticket/s in this event.", "Notification");
+            if (ticketCount != 0)
+            {
+                if (ticketCount == activity.Schedule.EventTicketLimit)
+                {
+                    NotificationService.Info($"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.", "Reminder!");
+                }
+                else
+                {
+                    NotificationService.Info($"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.", "Reminder!");
+                }
+            }
+            else
+            {
+                NotificationService.Info($"You've already reached the maximum limit for ticket purchases.", "Reminder!");
+            }
         }
     }
     private decimal GetAppliedCoupon
@@ -1423,9 +1435,16 @@
             StateHasChanged();
         }
 
-        if (IsLimit && selectedTickets.Sum(t => t.Value.Count) > activity.Schedule.EventTicketLimit)
+        if(IsLimit && selectedTickets.Sum(a => a.Value.Count) > activity.Schedule.EventTicketLimit)
         {
-             return NotificationService.Error($"You can only purchase maximum of {activity.Schedule.EventTicketLimit} ticket/s in this event.", "Opps!");
+            if (ticketCount != 0)
+            {
+                return NotificationService.Error($"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.", "Opps!");
+            }
+            else
+            {
+                return NotificationService.Error($"You've already reached the maximum limit for ticket purchases.", "Opps!");
+            }
         }
 
         bool havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.IsFree) && selectedTickets.Any(t => !t.Value.IsFree);
