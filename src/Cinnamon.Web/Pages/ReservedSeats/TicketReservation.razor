@@ -28,6 +28,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject Cinnamon.Framework.Providers.IJsonSerializationProvider jsonSerializationProvider
 @inject ILocalStorage localStorage;
+@implements IAsyncDisposable;
 
 @if (activity is not null)
 {
@@ -147,8 +148,10 @@
                                     @foreach (var item in AvailablePriceList)
                                     {
                                         <div class="ticket-info">
-                                            <div class="ticket-color" style="width: 20px;height: 20px;background-color:@item.TicketColor;border-radius: 50%;"></div>
-                                            <div class="ticket-name">@item.Name</div>
+                                             <span @onclick="() => HandleClick(FormatId(item.Name))" style="cursor: pointer;">
+                                                <div class="ticket-color" style="width: 20px;height: 20px;background-color:@item.TicketColor;border-radius: 50%;"></div>
+                                                <div class="ticket-name">@item.Name</div>
+                                            </span>
                                         </div>
                                     }
                                 </div>
@@ -833,6 +836,7 @@
     private Validations? predefinedQuestionValidation;
     private List<ActivityQuestion> filteredQuestions = new();
     public bool viewOnly { get; set; } = false;
+    IJSObjectReference scrollEffectModule;
 
 
     protected override async Task OnInitializedAsync()
@@ -852,6 +856,15 @@
             await NotificationService.Error("An error occured. Please try again later.", "Error");
         }
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+        }
+    }
+
     protected override async Task OnParametersSetAsync()
     {
         try
@@ -923,6 +936,19 @@
         {
             await NotificationService.Error("An error occured. Please try again later.", "Error");
         }
+    }
+    private async Task HandleClick(string sectionId)
+    {
+        await ScrollToSection(sectionId);
+    }
+    private async Task ScrollToSection(string sectionId)
+    {
+        await JSRuntime.InvokeVoidAsync("MyLib.Utils.scrollEffect.scrollToElement", sectionId);
+    }
+
+    private string FormatId(string name)
+    {
+        return name.Replace(" ", "-");
     }
     private async Task MonitorQueue(string userId, TimeSpan time)
     {
@@ -2089,6 +2115,14 @@
             }
             await ViewAvailableDates();
             InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (scrollEffectModule != null)
+        {
+            await scrollEffectModule.DisposeAsync();
         }
     }
     private class CouponDetails

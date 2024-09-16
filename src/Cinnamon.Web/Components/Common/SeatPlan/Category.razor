@@ -1,7 +1,7 @@
 @namespace Cinnamon.Web.Components.Common.SeatPlan
 @using SeatPlanModels = Cinnamon.Framework.Models.SeatPlan;
 
-<div class="seat-plan-category text-center mt-3">
+<div id="@SeatCategory.Name.Replace(" ", "-")" class="seat-plan-category text-center mt-3">
     <label>@SeatCategory.Name</label>
     <div class="category-row d-flex flex-wrap justify-content-center">
         @foreach (var row in SeatCategory.Rows)
