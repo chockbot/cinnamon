@@ -868,6 +868,7 @@
             }
         }
     }
+
     private Task AddSelectedTicket(OtePricing pricing)
     {
         if(selectedTickets.ContainsKey(pricing.Id))
@@ -891,16 +892,19 @@
         }
         return Task.CompletedTask;
     }
+
     private void NavigateToOteReserved()
     {
         IsExpired = true;
         NavigationManager.NavigateTo($"/explore/ote/reserved/{Handler}/{IsExpired}");
     }
+
     private void NavigateToTicketReservation()
     {
         string paymentUrl = $"/reservation/{Handler}/?date={selectedDate}&token={token}";
         NavigationManager.NavigateTo(paymentUrl);
     }
+
     private async Task LoadProvideDetails()
     {
         try
