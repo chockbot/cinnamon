@@ -99,6 +99,32 @@
     width: 100%;
 }
 
+.event-dot-container {
+    position: relative;
+}
+
+.event-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: #0085FF;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-bottom: 20px;
+    margin-left: -3px;
+}
+
+::deep .tool-tip-content {
+    white-space: pre-wrap; /* Ensure text wraps and respects line breaks */
+    max-width: 200px; /* Optional: limit the width */
+    overflow-wrap: break-word; /* Ensure long words break correctly */
+}
+
+
+.event-dot-container:hover .tooltip {
+    display: block;
+}
+
     .calendar-wrapper.flat {
         box-shadow: none;
     }
@@ -121,6 +147,7 @@
     border: 1px solid #E8E8E8;
     text-align: left;
 }
+
 .event-title {
     color: #0085FF;
     font-family: Nunito;
