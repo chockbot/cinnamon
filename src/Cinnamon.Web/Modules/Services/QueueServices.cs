@@ -19,7 +19,6 @@ namespace Cinnamon.Web.Modules.Services
             var connectionString = _configuration["AppConfig:Authentication:AzureQueue:ConnectionString"];
             _queueServiceClient = new QueueServiceClient(connectionString);
         }
-
         public async Task EnqueueUserAsync(string handler, string userId)
         {
             string activeQueueName = $"{handler}-active-queue";
@@ -57,7 +56,7 @@ namespace Cinnamon.Web.Modules.Services
 
             return false; // User is not in the queue
         }
-        private async Task EnsureQueueExistsAsync(string queueName)
+        public async Task EnsureQueueExistsAsync(string queueName)
         {
             var queueClient = _queueServiceClient.GetQueueClient(queueName);
             try
@@ -328,6 +327,13 @@ namespace Cinnamon.Web.Modules.Services
                     }
                 }
             }
+        }
+
+        public async Task EnqueueUserInPaymentAsync(string queueName, string seatUUID)
+        {
+            await EnsureQueueExistsAsync(queueName);
+            var queueClient = _queueServiceClient.GetQueueClient(queueName);
+            await queueClient.SendMessageAsync(Convert.ToBase64String(Encoding.UTF8.GetBytes(seatUUID)));
         }
         public class ReservedQueuingInfo
         {
