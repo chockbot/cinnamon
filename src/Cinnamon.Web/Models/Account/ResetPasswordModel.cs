@@ -23,11 +23,11 @@ public class ResetPasswordModel
 
     public class ResetModel 
     {
-        [Required]
+        [Required(ErrorMessage = "New Password field is required.")]
         [StringLength(255, ErrorMessage = "Minimum of six characters", MinimumLength = 6)]
         [DataType(DataType.Password)]
         public string NewPassword {get; set;}
-        [Required]
+        [Required(ErrorMessage = "Confirm Password field is required.")]
         [DataType(DataType.Password)]
         [Compare("NewPassword", ErrorMessage = "Must equal to New Password")]
         public string ConfirmPassword {get; set;}
