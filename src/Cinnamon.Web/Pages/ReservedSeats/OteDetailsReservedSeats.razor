@@ -885,7 +885,7 @@
             signInReturnUrl = oteDetailsUrl;
 
             loginModal.Show();
-            return;
+            return Task.CompletedTask;
         }
         string paymentUrl = $"/reservation/{Handler}/?date={selectedDate}&token={token}";
         NavigationManager.NavigateTo(paymentUrl);

@@ -532,7 +532,7 @@
                     <p class="expired-text">Seats Unavailable</p>
                 </div>
             </div>
-            <p class="congratulations-text">Unfortunately, the seats(@unavailableSeats) you selected have already been purchased by another customer. Please choose different seats to continue with your booking.</p>
+            <p class="congratulations-text">Unfortunately, the seats (@unavailableSeats) you selected have already been purchased by another customer. Please choose different seats to continue with your booking.</p>
             <button class="btn-try" @onclick="NavigateToTicketReservation">Select other ticket</button>
         </ModalBody>
     </ModalContent>
@@ -864,7 +864,7 @@
 
     private void NavigateToTicketReservation()
     {
-        string paymentUrl = $"/reservation/{Handler}/?date={selectedDate}&token={token}";
+        string paymentUrl = $"/reservation/{Handler}/?date={SelectedDate}&token={token}";
         NavigationManager.NavigateTo(paymentUrl);
     }
 
@@ -1183,20 +1183,25 @@
         }))
         .ToList();
 
-        //Check if is in queue
-        unavailableSeats = string.Empty;
+        // Initialize the list for unavailable seats
+        var unavailableSeatsList = new List<string>();
+        AvailableSeats.Clear();
+
         foreach (var ticket in selectedSeats)
         {
             var isUserInQueue = await QueueServices.IsUserInQueueAsync(paymentQueueName, ticket.SeatUUID);
             if (isUserInQueue)
             {
-                unavailableSeats += $",ticket.SeatNumber";
+                 // Add to the unavailable seats list
+                unavailableSeatsList.Add(ticket.SeatNumber);
             }
             else
             {
                 AvailableSeats.Add(ticket.SeatUUID);
             }
         }
+
+        unavailableSeats = string.Join(", ", unavailableSeatsList);
 
         if (!string.IsNullOrEmpty(unavailableSeats))
         {
