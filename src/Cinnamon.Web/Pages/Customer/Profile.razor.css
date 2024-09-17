@@ -37,11 +37,12 @@
     padding-left: 0;
     margin-bottom: 0;
     list-style: none;
-    justify-content: space-around;
+    justify-content: start;
 }
 ::deep .nav-tabs{
-    border-bottom: none;
+    border-bottom: 1px solid #dee2e6;
 }
+
 ::deep .card-image-full {
   height: 150px;
   aspect-ratio: auto 150 / 150;
@@ -137,7 +138,10 @@
 }
 .personal-tab-swiper .swiper-slide {
     width: auto !important;
-    
+}
+
+::deep .personal-tab-swiper {
+    border-bottom: 1px solid #dee2e6;
 }
 
     .personal-tab-swiper .swiper-slide .tab-item {
@@ -211,6 +215,18 @@
     width: 25px;
     height: 25px;
 }
+
+.btn-copy {
+    margin-left: 85%;
+}
+
+@media (min-width:1200px) {
+    ::deep .nav {
+        gap: 50px !important;
+    }
+}
+
+
 @media screen and (max-width: 767px) {
     .personal-tab-swiper .swiper-slide .tab-item.active {
         background-color: none;
@@ -708,7 +724,21 @@
     }
 }
 
+@media (min-width: 577px) and (max-width: 768px) {
+    ::deep .nav-tabs {
+        display: none !important;
+    }
+}
+
 @media screen and (min-width: 768px) and (max-width: 1023px) {
+    ::deep .nav-tabs {
+        display: none !important;
+    }
+
+    ::deep .personal-tab-swiper {
+        display: block !important;
+    }
+
     ::deep .card {
         width: 320px;
         height: auto;

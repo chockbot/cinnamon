@@ -3,8 +3,8 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 
 <div class="maker-swiper-slide">
-    <Div ElementId="#b-animate">
-        <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
+    <Div ElementId="b-animate">
+        <Animate Anchor="b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
             <div class="card">
                 @if (Activity.Status == Enums.ActivityStatus.InProgress)
                 {
@@ -48,10 +48,6 @@
                                 <span class="average-rating">@Activity.AverageRating</span>
                                 <span class="number-of-reviews">(@Activity.NumberOfReviews)</span>
                             }
-                            else if (Activity.IsNew)
-                            {
-                                <span class="new-experience-label">New Experience</span>
-                            }
                             else
                             {
                             }
@@ -63,21 +59,38 @@
                         <div class="title-section">
                             <div>
                                 <h4 class="card-title1 mb-0">@Activity.Title</h4>
-                                @if (@Activity.ExperienceTypeId == 1)
+
+                                @if (Activity.ExperienceTypeId == 1)
                                 {
-                                    string address = string.IsNullOrEmpty(Activity.PinnedLocation) ? $"{Activity.CityName + ", " + Activity.RegionName}" : Activity.PinnedLocation;
-                                    <p class="card-title2 mb-0 in-person text-capitalize">@address</p>
+                                    var address = string.IsNullOrEmpty(Activity.PinnedLocation) ? $"{Activity.CityName + ", " + Activity.RegionName}" : Activity.PinnedLocation;
+                                    <div class="address-holder">
+                                        <img src="images/explore-page-images/location-explore.svg" class="location-icon" />
+                                        <p class="card-title2 mb-0 in-person text-capitalize">@address</p>
+                                    </div>
                                 }
                                 else
                                 {
+                                    <div class="address-holder">
+                                    <img src="images/explore-page-images/location-explore.svg" class="location-icon" />
                                     <p class="card-title2 mb-0 online">@(Activity.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                                    </div>
                                 }
                             </div>
-                        </div>
-                    </div>
-                    <div class="row price-badge-section">
-                        <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(Activity)</p></div>
-                        <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
+                            @{
+                               string formattedDate = @Activity.Schedule?.From.ToString("MMM dd, yyyy ● h:mm tt");
+                            }
+                                @if ((int)Activity.ExperienceCreationType == 3)
+                                {
+                                    <div class="address-holder">
+                                        <img src="images/explore-page-images/date-explore.svg" class="location-icon" />
+                                        <p class="card-title2 mb-0 in-person text-capitalize">@formattedDate</p>
+                                    </div>
+                                } else {
+                                    <div class="address-holder">
+                                        <img src="images/explore-page-images/tag-explore.svg" class="location-icon" />
+                                        <p class="card-title2 mb-0 in-person text-capitalize">@GetPriceLabel(Activity)</p>
+                                    </div>
+                                }
                         </div>
                     </div>
                 </div>

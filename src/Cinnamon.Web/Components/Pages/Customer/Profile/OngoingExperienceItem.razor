@@ -61,18 +61,26 @@ else
         <div class="experience-box">
             <div class="top-content">
                 <div class="experience-content">
-                    <a class="button" href="/explore/@item.ActivityId" style="text-decoration:none;">
-                        <label class="xp-title">@item.Title</label>
-                    </a>
-
-                    <div class="xp-body-item">
-                        <p class="secondary-caption">@item.Name</p>
+                    <div class="experience-title">
+                        <a class="button" href="/explore/@item.ActivityId" style="text-decoration:none;">
+                            <img class="image-header" src="@GetImage(item.ActivityId)" />
+                        </a>
+                        <div class="experience-information">
+                            <a class="button" href="/explore/@item.ActivityId" style="text-decoration:none;">
+                                <label class="xp-title">@item.Title</label>
+                                <p class="secondary-caption">@item.Name</p>
+                            </a>
+                        </div>
                     </div>
-
+                </div>
+                <div class="progress-content">
                     <div class="xp-body-item">
-                        <p class="secondary-caption">@item.SessionsAttended/@item.NumberOfSessions</p>
-                        <div class="progress">
-                            <div class="progress-bar bg-success" aria-valuemin="0" aria-valuemax="100" style="width:@(GetPercentage(item.SessionsAttended,item.NumberOfSessions))%;min-width:5px"></div>
+                        @*<p class="secondary-caption">@item.SessionsAttended/@item.NumberOfSessions</p>*@
+                        <div class="progress-wrapper">
+                            <div class="progress">
+                                <div class="progress-bar bg-success" aria-valuemin="0" aria-valuemax="100" style="width:@(GetPercentage(item.SessionsAttended,item.NumberOfSessions))%;"></div>
+                            </div>
+                            <div class="progress-label" style="left: @(GetPercentage(item.SessionsAttended, item.NumberOfSessions))%;">@item.SessionsAttended/@item.NumberOfSessions</div>
                         </div>
                     </div>
                     @if (ActivityItemType == ItemType.Ongoing)
@@ -89,9 +97,8 @@ else
                             else
                             {
                                 <div class="xp-body-item">
-                                    <p class="secondary-caption">
-
-                                        Valid until - @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
+                                    <p class="secondary-caption expiration-text">
+                                        Expires on - @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
                                     </p>
                                 </div>
                             }
@@ -163,32 +170,32 @@ else
                         </div>
                     }
                 </div>
-                <div class="experience-header">
+                @*<div class="experience-header">
                     <a class="button" href="/explore/@item.ActivityId" style="text-decoration:none;">
                         <img class="image-header" src="@GetImage(item.ActivityId)" />
                     </a>
-                </div>
+                </div>*@
             </div>
             @if (ActivityItemType == ItemType.Ongoing)
             {
                 <div class="view-button">
-                    <Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>CreateCalendar(item)" style="width:100%">
-                        View Attendance
+                    <Button Color="Color.Primary" Class="view-exp-btn" Border="Border.Is0" Clicked="() =>CreateCalendar(item)" style="width:100%">
+                        View Experience
                     </Button>
                 </div>
             }
             else if (ActivityItemType == ItemType.Completed && item.HasReview == true)
             {
                 <div class="view-button">
-                    <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => CreateCalendar(item)" style="width:100%">
-                        View Attendance
+                    <Button Color="Color.Primary" Class="view-exp-btn" Border="Border.Is0" Clicked="() => CreateCalendar(item)" style="width:100%">
+                        View Experience
                     </Button>
                 </div>
             }
             else if (ActivityItemType == ItemType.Completed && item.HasReview == false)
             {
                 <div class="view-button">
-                    <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => OpenReviewModal(item)" style="width:100%">
+                    <Button Color="Color.Primary" Class="view-exp-btn" Border="Border.Is0" Clicked="() => OpenReviewModal(item)" style="width:100%">
                         Write a Review
                     </Button>
                 </div>
@@ -196,15 +203,15 @@ else
             else if (ActivityItemType == ItemType.Expired && item.HasReview == true)
             {
                 <div class="view-button">
-                    <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => CreateCalendar(item)" style="width:100%">
-                        View Attendance
+                    <Button Color="Color.Primary" Class="view-exp-btn" Border="Border.Is0" Clicked="() => CreateCalendar(item)" style="width:100%">
+                        View Experience
                     </Button>
                 </div>
             }
             else if (ActivityItemType == ItemType.Expired && item.HasReview == false)
             {
                 <div class="view-button">
-                    <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => OpenReviewModal(item)" style="width:100%">
+                    <Button Color="Color.Primary" Class="view-exp-btn" Border="Border.Is0" Clicked="() => OpenReviewModal(item)" style="width:100%">
                         Write a Review
                     </Button>
                 </div>
@@ -398,8 +405,11 @@ else
 
     public double GetPercentage(double session, double total)
     {
-        return Math.Round(session / total * 100);
+        double percentage = Math.Round(session / total * 100);
+
+        return Math.Min(percentage, 100);
     }
+
     public async Task CreateMonth()
     {
         if (monthsAway <= 2 && monthsAway >= -2)

@@ -53,7 +53,8 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                 IsActive           = args.IsActive,
                 IncludeCustomer    = args.IncludeCustomer,
                 IncludeStudents    = args.IncludeStudents,
-                IncludeReviews     = true
+                IncludeReviews     = true,
+                IncludeOteSchedule = true
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -136,6 +137,10 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                             Handler = a.Owner.Handler,
                             Id = a.Owner.Id,
                             IsVerified = a.Owner.IsVerified,
+                        } : null,
+                        Schedule = a.OteSchedule is not null ? new GetOwnedActivitiesResult.Activity.OteSchedule {
+                            From = a.OteSchedule.ScheduleFrom,
+                            To = a.OteSchedule.ScheduleTo
                         } : null
                     };
                 })

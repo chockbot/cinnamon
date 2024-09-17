@@ -9,6 +9,7 @@
 @inject IAccountApiHandler accountApiHandler;
 @inject ITransactionApiHandler transactionApiHandler
 @inject IAdminApiHandler adminApiHandler;
+@inject NavigationManager NavigationManager
 @inject IDashboardApiHandler dashboardApiHandler
 
 <article class="request-refund">
@@ -94,13 +95,21 @@
             *You will receive payment once a session is completed. Please allow 2 banking days for clearing. Payout schedule is Tuesday and Friday every week.
         </p>
     }
+
+         @if (Profile.IsMaker == false) {
+         <div class="direct-payout">
+             <a class="direct-payout-btn" @onclick="() => NavigateToGetVerified()">Be a direct payout Tutor!</a>
+         </div>
+        } else {
+
+        }
     
     @*Payout History*@
     @if (disbursements.Count != 0)
     {
         <div class="payout-history">
             <p class="payout-title">Payout History</p>
-            <div class="col-lg-6 col-md-10 col-sm-12 col-12">
+            <div class="col-lg-6 col-md-12 col-sm-12 col-12">
                 <div class="payout-table">
                     <div class="table-list">
                         <Table Class="payout-history-table">
@@ -196,7 +205,7 @@
     
     @*Cinnamon Credits*@
     <div class="cinnamon-credits-table">
-        <div class="col-lg-6 col-md-10 col-sm-12 col-12">
+        <div class="col-lg-6 col-md-12 col-sm-12 col-12">
             <p class="payout-title">Cinnamon credits</p>
             <p class="payout-remider">
             Cinnamon credits can be used as payment when purchasing an activity.
@@ -223,7 +232,7 @@
             </TableBody>
             <TableFooter style="border-top: 1px solid #D9D9D9;">
                 <TableRow>
-                    <TableRowCell ColumnSpan="3">Total</TableRowCell>
+                    <TableRowCell ColumnSpan="3" class="total-text">Total</TableRowCell>
                     <TableRowCell class="text-end"> @requestedRefunds.Sum(r => r.RefundAmountGiven).ToString("#,##0.00") </TableRowCell>
                 </TableRow>
             </TableFooter>
@@ -232,7 +241,7 @@
     </div>
     @*Request Refund*@
     <div class="request-refund-table">
-        <div class="col-lg-6 col-md-10 col-sm-12 col-12">
+        <div class="col-lg-6 col-md-12 col-sm-12 col-12">
             <p class="payout-title">Request for refund</p>
             <Table Borderless Class="refund-table">
             <TableHeader class="m-d-none">
@@ -253,7 +262,6 @@
                 }
             </TableBody>
         </Table>
-            <Divider class="m-d-none" />
             <Button Clicked="() => Model.ModalRef.Show()" class="btn-primary" Border="Border.Is0">Request Refund</Button>
         </div>
     </div>
@@ -267,8 +275,8 @@
             <ModalBody Padding="Padding.Is0.FromTop">
                 <Divider Margin="Margin.Is0.FromTop" />
                 <div class="d-flex align-items-center div-warning">
-                    <img src="images/small-mdi-warning-circle.png" class="me-2" alt="waning">
-                    <p class="m-0 warning">IMPORTANT: Refund process will take at least 2 weeks. Once approved, your refund request will be added to your Cinnamon credits.  </p>
+                    <img src="images/info-blue.svg" class="me-2" alt="waning">
+                    <p class="m-0 warning">IMPORTANT: Refund process will take at least 2 weeks. Once approved, your refund request will be added to your Cinnamon credits.    </p>
                 </div>
                 <br>
                 <Validations @ref="Model.ValidationsRef" Mode="ValidationMode.Manual" Model="Model.ModelForm">
@@ -298,27 +306,53 @@
                             </FieldBody>
                         </Field>
                     </Validation>
-                    <div class="text-center my-3">
-                        <Button Clicked="SubmitRequest" Padding="Padding.Is4.OnX" Size="Size.Small" 
-                            Border="Border.Is0" class="btn-primary" Loading="Model.IsSubmitting" Disabled="Model.IsSubmitting">
-                            <LoadingTemplate>
-                                <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Submitting
-                            </LoadingTemplate>
-                            <ChildContent>
-                                Submit
-                            </ChildContent>
-                        </Button>
-                    </div>
                     <Alert Color="Color.Danger" Margin="Margin.Is2.FromTop" Visible="Model.IsShowErrorMessage">
                         <AlertDescription>@Model.Message</AlertDescription>
                     </Alert>
                 </Validations>
             </ModalBody>
+            <ModalFooter>
+                <div class="text-center w-100">
+                    <Button Clicked="SubmitRequest" Padding="Padding.Is4.OnX" Size="Size.Small" 
+                        Border="Border.Is0" class="btn-primary modal-button" Loading="Model.IsSubmitting" Disabled="Model.IsSubmitting">
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Submitting
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Submit
+                        </ChildContent>
+                    </Button>
+                </div>
+            </ModalFooter>
         </ModalContent>
     </Modal>
+
+<Modal @ref="ModalReminder">
+    <ModalContent Centered Padding="Padding.Is3">
+        <ModalHeader>
+            <ModalTitle class="text-center col">Reminder</ModalTitle>
+            <Button Type="ButtonType.Button" class="btn-close" Clicked="@CloseModal"></Button>
+        </ModalHeader>
+        <ModalBody Padding="Padding.Is0.FromTop">
+            <Divider Margin="Margin.Is0.FromTop" />
+            <div class="text-center my-3">
+                <img src="images/info-blue.svg" class="mb-3" alt="warning" style="width: 50px;">
+                <p>Your payout information is not yet provided. Please provide your bank details to automatically receive payment.</p>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <div class="text-center w-100">
+                <Button Clicked="@NavigateToGetVerified" Padding="Padding.Is4.OnX" Size="Size.Small"
+                        Border="Border.Is0" class="btn-primary modal-button">
+                    Setup Account
+                </Button>
+            </div>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
 </article>
 
-                    @code{
+@code{
 
     [Parameter]
     public Models.Entities.CustomerProfile Profile { get; set; }
@@ -344,6 +378,8 @@
 
     private List<Payouts> totalReceivables = new List<Payouts>();
 
+    private Modal ModalReminder { get; set; }
+
     private decimal totalSales { get; set; } = 0;
 
     public const string PREVIOUS = "previous";
@@ -359,7 +395,7 @@
     private string Status { get; set; }
 
     protected override async Task OnInitializedAsync()
-    {
+    {  
         try
         {
             Model.EnrolledExperiences = new List<RequestRefundModel.EnrolledExperience>();
@@ -385,6 +421,11 @@
         {
             Model.Message = "An error occured. Please try again later";
         }
+
+        if (PayoutAccount == null && Profile.IsMaker == true)
+        {
+            ShowModal();
+        }
     }
     private string GetStatus(int status)
     {
@@ -393,6 +434,18 @@
         if (status == 2) return "Disapproved";
 
         return string.Empty;
+    }
+
+    private void NavigateToGetVerified()
+    {
+        if (Profile.IsMaker == true)
+        {
+            NavigationManager.NavigateTo("/customer/user-verification/?redirect=redirect_account");
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/uploadGovermentId/");
+        }
     }
     private async Task SubmitRequest()
     {
@@ -628,6 +681,16 @@
     private string MaskedString(string value, int count)
     {
         return new String('*', value.Length - count) + value.Substring(value.Length - count);
+    }
+
+    private void ShowModal()
+    {
+        ModalReminder.Show();
+    }
+
+    private void CloseModal()
+    {
+        ModalReminder.Close(CloseReason.UserClosing);
     }
     public class PayoutHistory
     {

@@ -47,10 +47,10 @@
 .experience-box {
     display: flex;
     background: none;
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 10px;
     z-index: 1;
-    border: 1px solid #717171;
+    box-shadow: 0px 0px 48px 0px rgba(217, 217, 217, 0.60);
 }
 .experience-conten .title {
     font-family: Inter;
@@ -80,6 +80,22 @@
     margin-top: 3rem;
     margin-bottom: 5rem;
 }
+
+.warning {
+    color: #343D4C;
+    text-align: justify;
+    font-family: Nunito;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.custom-select.form-control {
+    border-radius: 4px !important;
+    border: 0.5px solid #D9D9D9 !important;
+    background: #FFF !important;
+}
 ::deep .pagination{
     justify-content: end;
 }
@@ -91,6 +107,18 @@
     margin-left: 5px;
 }
 
+::deep .modal-button {
+    display: inline-flex;
+    height: 48px;
+    padding: 14.5px 40px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    border-radius: 50px;
+    background: #FFA942;
+    width: 189px;
+}
     ::deep .page-item:first-child .page-link {
         border-top-left-radius: 50px;
         border-bottom-left-radius: 50px;
@@ -120,12 +148,42 @@
     border: 1px solid #F1F1F1;
 }
 
+.direct-payout-btn {
+    cursor: pointer;
+    display: inline-flex;
+    padding: 14.5px 40px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 8px;
+    background: #F3F6FC;
+    color: #343D4C;
+    text-decoration: none;
+    transition: ease-in-out 0.3s;
+}
+
+.direct-payout-btn:hover {
+    background: #343D4C;
+    color: #F3F6FC;
+}
+
+::deep .total-text {
+    color: #000;
+    font-weight: 700;
+}
+
+::deep .text-end {
+    display: flex;
+    color: #343D4C;
+}
+
 /*TABLE COMPONENT CSS*/
 .payout-table {
     width: 100%;
 }
 ::deep .th-id {
     text-align: right;
+    border-top-left-radius: 8px;
 }
 
 ::deep .th-date {
@@ -137,6 +195,7 @@
 }
 ::deep .th-status {
     text-align: center;
+    border-top-right-radius: 8px;
 }
 ::deep .tr-id{
     text-align: right;
@@ -177,11 +236,8 @@
 ::deep .payout-table table {
     border-collapse: separate;
     border-spacing: 0;
-    outline: 1px solid #000000;
-    border-top-right-radius: 5px;
-    border-top-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
     width: 100%;
 }
 
@@ -212,11 +268,8 @@
 ::deep .cinnamon-credits-table table {
     border-collapse: separate;
     border-spacing: 0;
-    outline: 1px solid #717171;
-    border-top-right-radius: 10px;
-    border-top-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    border-bottom-left-radius: 10px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 48px 0px rgba(217, 217, 217, 0.60);
 }
 
 
@@ -248,11 +301,8 @@
 ::deep .request-refund-table table {
     border-collapse: separate;
     border-spacing: 0;
-    outline: 1px solid #717171;
-    border-top-right-radius: 10px;
-    border-top-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    border-bottom-left-radius: 10px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 48px 0px rgba(217, 217, 217, 0.60);
 }
 
 .payout-status {
@@ -297,7 +347,6 @@
     }
     ::deep .cinnamon-credits-table .b-table.table {
         border: 0 !important;
-        box-shadow: none !important;
     }
 
     ::deep .cinnamon-credits-table table thead {
@@ -306,7 +355,6 @@
 
     ::deep .cinnamon-credits-table .b-table.table {
         border: 0 !important;
-        box-shadow: none !important;
     }
 
     ::deep .cinnamon-credits-table table thead {
@@ -343,7 +391,6 @@
 
     ::deep .request-refund-table .b-table.table {
         border: 0 !important;
-        box-shadow: none !important;
     }
 
     ::deep .request-refund-table table thead {
@@ -352,7 +399,6 @@
 
     ::deep .request-refund-table .b-table.table {
         border: 0 !important;
-        box-shadow: none !important;
     }
 
     ::deep .request-refund-table table thead {

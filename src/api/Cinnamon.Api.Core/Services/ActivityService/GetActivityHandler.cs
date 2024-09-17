@@ -44,6 +44,7 @@ public class GetActivityHandler : IGetActivityHandler
                     IncludeStudents = args.IncludeStudents,
                     IncludeTickets = args.IncludeTickets,
                     IncludeAddOns = args.IncludeAddOns,
+                    IncludeOteSchedule = true
                 }
             );
 
@@ -147,6 +148,10 @@ public class GetActivityHandler : IGetActivityHandler
                     IsOG = activity.Owner.IsOG,
                     IsOfficial = activity.Owner.IsOfficial,
                     PhoneNumber = activity.Owner.PhoneNumber,
+                } : null,
+                Schedule = activity.OteSchedule is not null ? new GetActivityResult.OteSchedule {
+                    From = activity.OteSchedule.ScheduleFrom,
+                    To = activity.OteSchedule.ScheduleTo
                 } : null,
                 AddOns = activity.AddOns != null ? activity.AddOns.Select(s => {
                     return new GetActivityResult.AddOn
