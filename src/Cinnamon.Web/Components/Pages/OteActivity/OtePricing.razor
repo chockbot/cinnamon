@@ -67,7 +67,7 @@
                 </div>
                 <div class="effect hover1"></div>
             </div>
-            <div class="div-option-details email-box" id="hoverDiv" @onclick="() => capacityModal.Show()">
+            <div class="div-option-details email-box" id="hoverDiv" @onclick="WaitListCapacityClick">
                 <img class="option-img image-holder" src="images/ote/capacity.png" alt="cover-photo">
                 <div class="option-name text-box">
                     <p class="registration">Waitlist Capacity</p>
@@ -119,7 +119,7 @@
                             </Tooltip>
                         </div>
                         <div class="form-check form-switch">
-                            <Switch @bind-Checked="ticket.RequiredApproval" TValue="bool" class="form-check-input" />
+                            <Switch Disabled="isReservedSeats" @bind-Checked="ticket.RequiredApproval" TValue="bool" class="form-check-input" />
                         </div>
                     </div>
                 </div>
@@ -237,7 +237,7 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                 <div>
-                    <Dropdown Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
+                    <Dropdown Disabled="isReservedSeats" Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
                         <DropdownToggle Size="Size.Small">
                             @nameQuestion
                         </DropdownToggle>
@@ -258,7 +258,7 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                 <div>
-                    <Dropdown Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
+                    <Dropdown Disabled="isReservedSeats" Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
                         <DropdownToggle Size="Size.Small">
                             @emailQuestion
                         </DropdownToggle>
@@ -279,7 +279,7 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                 <div>
-                    <Dropdown Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
+                    <Dropdown Disabled="isReservedSeats" Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
                         <DropdownToggle Size="Size.Small">
                             @phoneQuestion
                         </DropdownToggle>
@@ -601,7 +601,7 @@
                                     <div class="unli-flag d-flex">
                                         <p class="font-16 text-capitalize color-black-100 mb-1 m-font-16">Unlimited Ticket</p>
                                         <div class="form-check form-switch">
-                                            <Switch ReadOnly="isReservedSeats" TValue="bool" @bind-Checked="modelPricing.IsUnlimited" @onchange="((e) => IsUnlimitedChanged(e))" class=" form-check-input" />
+                                            <Switch Disabled="isReservedSeats" TValue="bool" @bind-Checked="modelPricing.IsUnlimited" @onchange="((e) => IsUnlimitedChanged(e))" class=" form-check-input" />
                                         </div>
                                     </div>
                                 </FieldBody>
@@ -616,7 +616,7 @@
                             <div class="accept-reg">
                                 <p class="approval">Required Approval</p>
                                 <div class="form-check form-switch">
-                                    <Switch TValue="bool" @bind-Checked="modelPricing.RequiredApproval" class="form-check-input" />
+                                    <Switch Disabled="isReservedSeats" TValue="bool" @bind-Checked="modelPricing.RequiredApproval" class="form-check-input" />
                                 </div>
                             </div>
                             <p class="approval-text">If enabled, guests need to be manually approved before receiving their tickets.</p>
@@ -630,7 +630,7 @@
                             <div class="accept-reg">
                                 <p class="approval">Required Approval</p>
                                 <div class="form-check form-switch">
-                                    <Switch TValue="bool" @bind-Checked="modelPricing.RequiredApproval" class="form-check-input" />
+                                    <Switch Disabled="isReservedSeats" TValue="bool" @bind-Checked="modelPricing.RequiredApproval" class="form-check-input" />
                                 </div>
                             </div>
                             <p class="approval-text">If enabled, guests need to be manually approved before receiving their tickets.</p>
@@ -913,6 +913,7 @@
 
     public Task SetState(ModelData data)
     {
+        isReservedSeats = data.ReserveSeat;
         foreach (var item in data.ItemPrices)
         {
             modelPricingList.Pricings.Add(new Pricing
@@ -996,6 +997,7 @@
         public bool IsOpen { get; set; }
         public bool IsCapacity { get; set; }
         public int CapacityCount { get; set; }
+        public bool ReserveSeat {get; set;}
 
         public string CustomPendingBody { get; set; }
         public string CustomAcceptedBody { get; set; }
@@ -1368,18 +1370,33 @@
 
     public Task OnPendingEmailTemplateClick()
     {
+        if(isReservedSeats)
+        {
+            return NotificationService.Info("You cannot configure the email template because you have reserved seats.", "Information");
+        }
+
         selectedEmailTemplate = 0;
         return ShowOffcanvas();
     }
 
     public Task OnAcceptedTemplateClick()
     {
+        if(isReservedSeats)
+        {
+            return NotificationService.Info("You cannot configure the email template because you have reserved seats.", "Information");
+        }
+
         selectedEmailTemplate = 1;
         return ShowOffcanvas();
     }
 
     public Task OnDeclinedTemplateClick()
     {
+        if(isReservedSeats)
+        {
+            return NotificationService.Info("You cannot configure the email template because you have reserved seats.", "Information");
+        }
+
         selectedEmailTemplate = 2;
         return ShowOffcanvas();
     }
@@ -1452,6 +1469,11 @@
 
     private Task CreateQuestion()
     {
+        if(isReservedSeats)
+        {
+            return NotificationService.Info("You cannot add custom questions because you have reserved seats.", "Information");
+        }
+
         formQuestion = new CustomQuestion();
         questionAction = QuestionAction.Create;
         return modalCustomQuestion?.Show();
@@ -1707,5 +1729,15 @@
         }
 
         return ticketModal.Show();
+    }
+
+    private Task WaitListCapacityClick()
+    {
+        if(isReservedSeats)
+        {
+            return NotificationService.Info("You have already added reserved seats. You can't configure waitlist.", "Information");
+        }
+
+        return capacityModal.Show();
     }
 }
