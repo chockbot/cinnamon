@@ -1232,25 +1232,6 @@
                 });
             }
         }
-
-        if(IsLimit && selectedTickets.Sum(a => a.Value.Count) >= activity.Schedule.EventTicketLimit)
-        {
-            if (ticketCount != 0)
-            {
-                if (ticketCount == activity.Schedule.EventTicketLimit)
-                {
-                    NotificationService.Info($"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.", "Reminder!");
-                }
-                else
-                {
-                    NotificationService.Info($"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.", "Reminder!");
-                }
-            }
-            else
-            {
-                NotificationService.Info($"You've already reached the maximum limit for ticket purchases.", "Reminder!");
-            }
-        }
     }
     private decimal GetAppliedCoupon
     {
@@ -1461,15 +1442,19 @@
             StateHasChanged();
         }
 
-        if(IsLimit && selectedTickets.Sum(a => a.Value.Count) > activity.Schedule.EventTicketLimit)
+        if (IsLimit)
         {
-            if (ticketCount != 0)
+            if (ticketCount < selectedTickets.Sum(a => a.Value.Count) && ticketCount != 0)
             {
-                return NotificationService.Error($"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.", "Opps!");
+                string message = ticketCount == activity.Schedule.EventTicketLimit
+                    ? $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer."
+                    : $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
+
+                return NotificationService.Error(message, "Opps!");
             }
-            else
+            else if (ticketCount == 0)
             {
-                return NotificationService.Error($"You've already reached the maximum limit for ticket purchases.", "Opps!");
+                return NotificationService.Error("You've already reached the maximum limit for ticket purchases.", "Opps!");
             }
         }
 

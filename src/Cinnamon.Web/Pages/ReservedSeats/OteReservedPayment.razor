@@ -675,7 +675,12 @@
                     bool sameSeatBooked = false;
                     for(int i = 0; i < seatUuidItems.Length; i++)
                     {
-                        sameSeatBooked = selectedTickets.Any(t => t.Value.SeatUUID == seatUuidItems[i]);
+                        // Extract and flatten SeatUUIDs from selectedTickets (assuming comma-separated SeatUUIDs)
+                        var selectedSeatUUIDs = selectedTickets
+                        .SelectMany(t => t.Value.SeatUUID.Split(',')) // Split by comma and flatten
+                        .ToList();
+
+                        sameSeatBooked = selectedSeatUUIDs.Any(t => t == seatUuidItems[i]);
                         if(sameSeatBooked)
                         {
                             break;
@@ -741,7 +746,7 @@
                 }
 
                 // Wait for 10 seconds before checking again
-                await Task.Delay(5000);
+                await Task.Delay(10000);
             }
         }
         catch (Exception ex)
