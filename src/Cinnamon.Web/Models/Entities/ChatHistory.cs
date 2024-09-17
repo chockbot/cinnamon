@@ -24,11 +24,11 @@ namespace Cinnamon.Web.Models.Entities
                 if (!string.IsNullOrEmpty(_message))
                 {
                     string input = _message;
-                    string result = MaskEmail(input);
+                    /* string result = MaskEmail(input);
 
-                    result = MaskPhone(result);
+                    result = MaskPhone(result); 
 
-                    return result;
+                    return result; */
                 }
 
                 return _message;
@@ -41,6 +41,8 @@ namespace Cinnamon.Web.Models.Entities
         public string ToConnectionId { get; set; }
         public DateTime DateCreated { get; set; }
         public ChatHistoryType ChatHistoryType { get; set; }
+
+        /*
         string MaskEmail(string input)
         {
             string pattern = @"([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})|((?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\""\.,<>?«»“”‘’]))\b)";
@@ -52,5 +54,6 @@ namespace Cinnamon.Web.Models.Entities
             string pattern = @"(\(?\d{3}\)?-? *\d{3}-? *-?\d{4})";
             return Regex.Replace(input, pattern, m => new string('*', m.Length));
         }
+        */
     }
 }
