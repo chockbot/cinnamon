@@ -101,7 +101,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 		}
 	}
 
-	public async Task<AppResult<IEnumerable<Activity>>> GetRecommendedActivities(int primaryActivityId, int count)
+	public async Task<AppResult<IEnumerable<Activity>>> GetRecommendedActivities(int primaryActivityId, int count, bool? includeOteSchedule = false)
 	{
 		try
 		{
@@ -112,28 +112,40 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 			}
 
 			// based first in sub category
-			var activitiesSubs = await applicationContext.Activities.Where(a => a.Id != primaryActivityId && 
-																				a.SubCategoryId == activity.SubCategoryId && 
-																				a.Status == 1 && a.IsPublished == true)
-									.Include(a => a.Images)
-									.Include(a => a.Schedules)
-									.Include(a => a.Address)
-									.ToListAsync();
+			var activitiesSubs = applicationContext.Activities.Where(a => a.Id != primaryActivityId && 
+																	 a.SubCategoryId == activity.SubCategoryId && 
+																	 a.Status == 1 && a.IsPublished == true);
 
-			if (activitiesSubs.Count >= count)
+			activitiesSubs = activitiesSubs.Include(a => a.Images);
+			activitiesSubs = activitiesSubs.Include(a => a.Schedules);
+			activitiesSubs = activitiesSubs.Include(a => a.Address);
+
+			if (includeOteSchedule.HasValue && includeOteSchedule.Value)
+			{
+				activitiesSubs = activitiesSubs.Include(a => a.OteSchedule);					
+			}
+
+			var recommendedActivitiesSubs = await activitiesSubs.ToListAsync();
+
+			if (recommendedActivitiesSubs.Count >= count)
 			{
 				var randomActivities = GenerateRandomActivity(activitiesSubs, count);
 				return AppResult<IEnumerable<Activity>>.CreateSucceeded(randomActivities, "Successfully get recommended activities");
 			}
 
-			// bas in experience categories
-			var activitiesCats = await applicationContext.Activities.Where(a => a.Id != primaryActivityId && 
+			// based in experience categories
+			var activitiesCats = applicationContext.Activities.Where(a => a.Id != primaryActivityId && 
 																				a.ExperienceCategoryId == activity.ExperienceCategoryId &&
-																				a.Status == 1 && a.IsPublished == true )
-									.Include(a => a.Images)
-									.Include(a => a.Schedules)
-									.Include(a => a.Address)
-									.ToListAsync();
+																				a.Status == 1 && a.IsPublished == true);
+
+			activitiesCats = activitiesCats.Include(a => a.Images);
+			activitiesCats = activitiesCats.Include(a => a.Schedules);
+			activitiesCats = activitiesCats.Include(a => a.Address);
+
+			if (includeOteSchedule.HasValue && includeOteSchedule.Value)
+			{
+				activitiesCats = activitiesCats.Include(a => a.OteSchedule);					
+			}
 
 			var activities = GenerateRandomActivity(activitiesCats, count);
 

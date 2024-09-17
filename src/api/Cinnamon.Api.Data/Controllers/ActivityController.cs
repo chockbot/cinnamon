@@ -32,7 +32,8 @@ public class ActivityController : ControllerBase
         try
         {
             var result = await activityRepository.GetByIdAsync(id, args.CustomerId, args.IncludeAddress, args.IncludeDescription,
-                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive, args.IncludeCustomer, args.IncludeStudents ?? false, args.IncludeTickets ?? false, args.IncludeAddOns ?? false);
+                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive, args.IncludeCustomer, 
+                args.IncludeStudents ?? false, args.IncludeTickets ?? false, args.IncludeAddOns ?? false, args.IncludeOteSchedule ?? false);
             if(!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
@@ -119,7 +120,8 @@ public class ActivityController : ControllerBase
                             args.IncludeAddress ?? false, args.IncludeDescription ?? false, args.IncludeSearchTags ?? false,
                             args.IncludeSchedules ?? false, args.IncludeImages ?? false, ids.Count > 0 ? ids : null, args.LikeHandler ?? null,
                             args.IncludeCustomer ?? false, args.IncludeExperienceTypes ?? false, args.IncludeExperienceCategories ?? false, 
-                            args.IncludeSubCategories ?? false, args.IncludeStudents ?? false, args.IncludeReviews ?? false, args.IncludeTickets ?? false, args.ForceDisable) :
+                            args.IncludeSubCategories ?? false, args.IncludeStudents ?? false, args.IncludeReviews ?? false,
+                            args.IncludeTickets ?? false, args.ForceDisable, args.IncludeOteSchedule ?? false) :
                     await activityRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)
@@ -344,11 +346,11 @@ public class ActivityController : ControllerBase
     [Route("RecommendedActivities/{primaryId}/{count}")]
     [HttpGet]
     [ProducesResponseType(typeof(RecommendedActivitiesResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> RecommendedActivities(int primaryId, int count)
+    public async Task<IActionResult> RecommendedActivities(int primaryId, int count, [FromQuery] GetRecommendedActivitiesArgs args)
     {
         try
         {
-            var result = await activityRepository.GetRecommendedActivities(primaryId, count);
+            var result = await activityRepository.GetRecommendedActivities(primaryId, count, args.IncludeOteSchedule);
             if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new RecommendedActivitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });

@@ -10,7 +10,9 @@ public interface IActivityRepository
 {
     Task<AppResult<ActivityDTO>> GetByIdAsync(int id, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, bool includeStudents = false, bool includeTickets = false, bool? includeAddOns = false);
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, 
+        bool includeStudents = false, bool includeTickets = false, 
+        bool? includeAddOns = false, bool? includeOteSchedule = false);
     
     Task<AppResult<ActivityDTO>> GetByHandlerAsync(string handler, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
@@ -21,7 +23,8 @@ public interface IActivityRepository
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
         bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null,
         bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, 
-        bool includeStudents = false, bool includeReviews = false, bool includeTickets = false, bool? forceDisable = false);
+        bool includeStudents = false, bool includeReviews = false, bool includeTickets = false, 
+        bool? forceDisable = false, bool? includeOteSchedule = false);
 
     Task<AppResult<IEnumerable<ActivityDTO>>> GetPopularActivitiesAsync(int? customerId, bool? isActive, int? count, int? skip, bool? isDeactivated,
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
@@ -48,7 +51,7 @@ public interface IActivityRepository
 
     Task<AppResult<bool>> RemoveActivityAsync(int activityId);
 
-    Task<AppResult<IEnumerable<ActivityDTO>>> GetRecommendedActivities(int primaryActivityId, int count);
+    Task<AppResult<IEnumerable<ActivityDTO>>> GetRecommendedActivities(int primaryActivityId, int count, bool? includeOteSchedule = false);
     Task<AppResult<IEnumerable<ActivityFeedDTO>>> PopularActivities(int? take, int? skip, int? categoryId);
     Task<AppResult<ActivityDTO>> CreateOteActivity(string eventName, string description, int experienceTypeId, int customerId, string stringPrice,
         string? houseNo, string? cityNumber, string? cityName, string? regionCode, string? regionName, string? barangayCode, string? barangayName,

@@ -77,7 +77,8 @@ public class GetEnrolledActivitiesHandler : IGetEnrolledActivitiesHandler
                 IsActive = args.IsActive,
                 IncludeSearchTags = args.IncludeActivitySearchTags,
                 IncludeCustomer = args.IncludeCustomer,
-                IncludeStudents = args.IncludeStudents
+                IncludeStudents = args.IncludeStudents,
+                IncludeOteSchedule = true
             });
 
             if(!activitiesRes.Succeeded || activitiesRes.Result == null || !activitiesRes.Result.IsSuccess)
@@ -156,7 +157,11 @@ public class GetEnrolledActivitiesHandler : IGetEnrolledActivitiesHandler
                             IsVerified = e.Owner.IsVerified,
                             IsOG = e.Owner.IsOG,
                             IsOfficial = e.Owner.IsOfficial,
-                        } : null
+                        } : null,
+                        Schedule = e.OteSchedule is not null ? new GetEnrolledActivitiesResult.OteSchedule {
+                        From = e.OteSchedule.ScheduleFrom,
+                        To = e.OteSchedule.ScheduleTo
+                        } : null,
                     };
                 })
             }, "Successfully get enrolled activities");

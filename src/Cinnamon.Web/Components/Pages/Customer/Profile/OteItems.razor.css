@@ -40,11 +40,25 @@ button:focus {
 .experience-box {
   display: flex;
   flex-direction: column;
-  background: #f3f6fc;
-  border-radius: 10px;
+  border-radius: 12px;
+  background: rgb(255, 255, 255);
+  box-shadow: rgba(217, 217, 217, 0.6) 0px 0px 48px 0px;
   padding: 14px;
   width: 380px;
   z-index: 1;
+}
+
+::deep .view-exp-btn {
+  cursor: pointer;
+  padding: 9px 16px;
+  color: #34A853 !important;
+  background: #EDFFED !important;
+  transition: ease-in-out 0.3s;
+}
+
+::deep .view-exp-btn:hover {
+  color: #EDFFED !important;
+  background: #34A853 !important;
 }
 
 .image-header {
@@ -408,6 +422,30 @@ section > div {
   margin-bottom: 8px;
 }
 
+
+@media (min-width: 0px) and (max-width: 400px) {
+  
+  .experience-box {
+    width: 300px !important;
+  }
+
+}
+@media (min-width: 1023px) and (max-width: 1200px) {
+  .experience-box {
+    width: 449px !important;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1200px) {
+
+  .event-container-item-wrapper {
+      display: grid;
+      grid-template-columns: repeat(2, 2fr) !important;
+      gap: 10PX;
+      justify-items: center;
+  }
+}
+
 /* Small devices (portrait phones, 576px and up) */
 @media screen and (max-width: 767px) and (orientation: portrait) {
   ::deep .btn-not-now {
@@ -482,9 +520,7 @@ section > div {
   }
 
   .experience-box {
-    display: block;
-    width: 100%;
-    margin: auto;
+    width: 379px;
   }
 
   .xp-title {
@@ -544,8 +580,9 @@ section > div {
     height: 145px;
   }
   .experience-box {
-    width: 380px;
+    width: 338px;
   }
+
   .xp-title {
     font-family: "Nunito";
     font-style: normal;
