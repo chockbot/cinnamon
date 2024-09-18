@@ -19,7 +19,6 @@ namespace Cinnamon.Web.Modules.Services
             var connectionString = _configuration["AppConfig:Authentication:AzureQueue:ConnectionString"];
             _queueServiceClient = new QueueServiceClient(connectionString);
         }
-
         public async Task EnqueueUserAsync(string handler, string userId)
         {
             string activeQueueName = $"{handler}-active-queue";
@@ -57,7 +56,7 @@ namespace Cinnamon.Web.Modules.Services
 
             return false; // User is not in the queue
         }
-        private async Task EnsureQueueExistsAsync(string queueName)
+        public async Task EnsureQueueExistsAsync(string queueName)
         {
             var queueClient = _queueServiceClient.GetQueueClient(queueName);
             try
@@ -178,6 +177,30 @@ namespace Cinnamon.Web.Modules.Services
                     break;
                 }
             }
+        }
+
+        public async Task RemoveSeatInPaymentQueue(string seatUUID, string queueName)
+        {
+            await EnsureQueueExistsAsync(queueName);
+            var queueClient = _queueServiceClient.GetQueueClient(queueName);
+
+            // Receive messages without setting a visibility timeout
+            var receivedMessages = await queueClient.ReceiveMessagesAsync(maxMessages: 32, visibilityTimeout: TimeSpan.FromSeconds(1));
+
+            if (receivedMessages.Value.Length > 0)
+            {
+                foreach (var receivedMessage in receivedMessages.Value)
+                {
+                    var messageText = Encoding.UTF8.GetString(Convert.FromBase64String(receivedMessage.MessageText));
+                    if (messageText == seatUUID)
+                    {
+                        // Delete the message using its Message ID and Pop Receipt
+                        await queueClient.DeleteMessageAsync(receivedMessage.MessageId, receivedMessage.PopReceipt);
+                    }
+                    break;
+                }
+            }
+
         }
         public async Task<(DateTime insertionTime, TimeSpan remainingTime)?> GetUserInActiveQueueAsync(string queueName, string userId)
         {
@@ -328,6 +351,13 @@ namespace Cinnamon.Web.Modules.Services
                     }
                 }
             }
+        }
+
+        public async Task EnqueueUserInPaymentAsync(string queueName, string seatUUID)
+        {
+            await EnsureQueueExistsAsync(queueName);
+            var queueClient = _queueServiceClient.GetQueueClient(queueName);
+            await queueClient.SendMessageAsync(Convert.ToBase64String(Encoding.UTF8.GetBytes(seatUUID)));
         }
         public class ReservedQueuingInfo
         {

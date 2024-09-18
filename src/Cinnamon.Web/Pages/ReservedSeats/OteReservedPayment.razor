@@ -74,7 +74,7 @@
         <Container>
             <div class="d-flex align-items-center mt-3">
                 <button class="button-back">
-                    <img class="cursor-pointer me-3" src="/images/payment/back-icon.png" alt="icon" @onclick="NavigateBack" />
+                    <img class="cursor-pointer me-3" src="/images/payment/back-icon.png" alt="icon" @onclick="NavigateToTicketReservation" />
                 </button>
                 <h4 class="fw-bold px-3 mb-0 color-grey-100 font-24 text-capitalize m-font-18">Confirm experience</h4>
             </div>
@@ -557,7 +557,7 @@
                     <p class="expired-text">Seats Unavailable</p>
                 </div>
             </div>
-            <p class="congratulations-text">Unfortunately, the seats(@unavailableSeats) you selected have already been purchased by another customer. Please choose different seats to continue with your booking.</p>
+            <p class="congratulations-text">Unfortunately, the seats (@unavailableSeats) you selected have already been purchased by another customer. Please choose different seats to continue with your booking.</p>
             <button class="btn-try" @onclick="NavigateToTicketReservation">Select other ticket</button>
         </ModalBody>
     </ModalContent>
@@ -605,32 +605,17 @@
     public TimeSpan RemainingTime { get; set; }
     private string? selectedPayload { get; set; }
     private const string TRACKER_ID = "checkout";
+    private const string RESERVEDSEAT_ID = "selected-seats";
     private Timer _countdownTimer;
     private bool _isProcessing;
     private string unavailableSeats { get; set; }
     public bool IsExpired { get; set; } = false;
-
+    public string paymentQueueName { get; set; }
+    public List<string> AvailableSeats = new List<string>();
     [Inject] HubConnection hubConnection { get; set; }
     private int userId { get; set; }
     private bool someoneAlreadyBooked = false;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if(firstRender)
-        {
-            if(!string.IsNullOrEmpty(Status) && Status.ToLower() == "failed" && failedModal is not null)
-            {
-                await failedModal.Show();   
-            }
-
-            if(!string.IsNullOrEmpty(token))
-            {
-                StartConnection();
-            }
-
-            await Task.Delay(1000 * 30);
-        }
-    }
     protected override async Task OnParametersSetAsync()
     {
         try
@@ -658,39 +643,11 @@
             }
             else
             {
+                //Create payment queue
+                paymentQueueName = $"{Handler}-payment-queue";
+                await QueueServices.EnsureQueueExistsAsync(paymentQueueName);
                 //Load Profile
                 await LoadProfile();
-
-                hubConnection.Closed += async (error) =>
-                {
-                    StartConnection();
-                };
-
-                hubConnection.On<string>("BookedSeat", payload =>
-                {
-                    // format: userId|activityId|seatUuidItems
-                    var splitted = payload.Split('|');
-                    int userId = Convert.ToInt32(splitted[0]);
-                    int activityId = Convert.ToInt32(splitted[1]);
-                    var seatUuidItems = splitted[2].Split(',');
-
-                    bool sameSeatBooked = false;
-                    for(int i = 0; i < seatUuidItems.Length; i++)
-                    {
-                        // Extract and flatten SeatUUIDs from selectedTickets (assuming comma-separated SeatUUIDs)
-                        var selectedSeatUUIDs = selectedTickets
-                        .SelectMany(t => t.Value.SeatUUID.Split(',')) // Split by comma and flatten
-                        .ToList();
-
-                        sameSeatBooked = selectedSeatUUIDs.Any(t => t == seatUuidItems[i]);
-                        if(sameSeatBooked)
-                        {
-                            break;
-                        }
-                    }
-                    someoneAlreadyBooked = sameSeatBooked && userId != this.userId;
-                });
-
                 //Check if user is in queue
                 string activeQueueName = $"{Handler}-active-queue";
                 //Remove all user in active queue w/ negative time
@@ -933,7 +890,7 @@
 
     private void NavigateToTicketReservation()
     {
-        string paymentUrl = $"/reservation/{Handler}/?date={selectedDate}&token={token}";
+        string paymentUrl = $"/reservation/{Handler}/?date={SelectedDate}&token={token}";
         NavigationManager.NavigateTo(paymentUrl);
     }
 
@@ -1244,9 +1201,50 @@
             return;
         }
 
-        await hubConnection.SendAsync("BookedSeat", $"{userId}|{activity.Id}|{string.Join(",", selectedTickets.Select(t => t.Value.SeatUUID))}");
+        //Add to payment queue
+        var selectedSeats = selectedTickets.SelectMany(t => t.Value.SeatUUID.Split(',').Zip(t.Value.SeatNumber.Split(','), (uuid, name) => new
+        {
+            SeatUUID = uuid,
+            SeatNumber = name
+        }))
+        .ToList();
 
-        await SubmitTransaction();
+        // Initialize the list for unavailable seats
+        var unavailableSeatsList = new List<string>();
+        AvailableSeats.Clear();
+
+        foreach (var ticket in selectedSeats)
+        {
+            var isUserInQueue = await QueueServices.IsUserInQueueAsync(paymentQueueName, ticket.SeatUUID);
+            if (isUserInQueue)
+            {
+                // Add to the unavailable seats list
+                unavailableSeatsList.Add(ticket.SeatNumber);
+            }
+            else
+            {
+                AvailableSeats.Add(ticket.SeatUUID);
+            }
+        }
+
+        unavailableSeats = string.Join(", ", unavailableSeatsList);
+
+        if (!string.IsNullOrEmpty(unavailableSeats))
+        {
+            await modalUnAvailable.Show();
+            return;
+        }
+        else
+        {
+            //Save selected ticket to the local storage
+            await localStorage.SetItem(RESERVEDSEAT_ID, AvailableSeats);
+            // Queue the available seats if any
+            foreach (var seatUUID in AvailableSeats)
+            {
+                await QueueServices.EnqueueUserInPaymentAsync(paymentQueueName, seatUUID);
+            }
+            await SubmitTransaction();
+        }
     }
 
     private async Task SubmitTransaction()
@@ -1256,45 +1254,6 @@
             submitting = true;
 
             StateHasChanged();
-
-            if(someoneAlreadyBooked)
-            {
-                await modalUnAvailable.Show();
-                return;
-            }
-
-            //Check if seat are not occupied
-            await LoadOteDetails();
-            if (activity != null && activity.OteDates != null)
-            {
-                var selectedOteDate = activity.OteDates.FirstOrDefault(a => a.Date == SelectedDate.Date);
-                if (selectedOteDate != null)
-                {
-                    List<string> unavailableSeatsList = new List<string>();
-                    selectedPayload = selectedOteDate.SeatPlanPayload;
-                    var deserializedPayload = jsonSerializationProvider.Deserialize<Cinnamon.Framework.Models.SeatPlan.Format>(selectedPayload);
-                    //check selected seat if occupied
-                    foreach (var ticket in selectedTickets)
-                    {
-                        var seatList = ticket.Value.SeatUUID.Split(",").ToList();
-                        foreach (var seat in seatList)
-                        {
-                            var seatOccupied = deserializedPayload.Categories[ticket.Value.CategotyUUID].Rows[ticket.Value.RowUUID].Seats[seat];
-                            if (seatOccupied.Occupied)
-                            {
-                                unavailableSeatsList.Add(seat); // Add unavailable seat to the list.
-                                selectedTickets.Remove(ticket); // Remove the ticket from the list.
-                            }
-                        }
-                    }  
-                    if (!string.IsNullOrEmpty(unavailableSeats))
-                    {
-                        string unavailableSeats = string.Join(", ", unavailableSeatsList);
-                        await modalUnAvailable.Show();
-                        return;
-                    }
-                }
-            }
 
             var submit = await transactionApiHandler.SubmitOtePurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs {
                 ActivityId = activity.Id,
@@ -1383,13 +1342,6 @@
             return true;
         }
     }
-
-    private Task NavigateBack()
-    {
-        NavigationManager.NavigateTo($"/explore/ote/reserved/{activity.Handler}");
-        return Task.CompletedTask;
-    }
-
     private class CouponDetails 
     {
         public string CouponCode {get; set;}
