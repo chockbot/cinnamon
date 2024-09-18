@@ -234,39 +234,6 @@
                         <div class="payment-summary-section">
                             <p class="header">Payment Summary</p>
                             <Divider />
-                            <div class="price-per-head">
-                                <div class="d-flex position-relative">
-                                    <div class="position-relative" style="width: 100%;">
-                                        <TextEdit class='@(Coupon.IsCouponApplied && !Coupon.IsValid ? "is-invalid" : "")'
-                                                  style='@(Coupon.IsCouponApplied ? "background-color: #F3F6FC; padding-right: 25px; border-bottom-left-radius:4px;border-bottom-left-radius:4px;" : "background-color: #F3F6FC;border-bottom-left-radius:4px;border-bottom-left-radius:4px;")'
-                                                  required Placeholder="Add coupon" Size="Size.Medium" @bind-Text="Coupon.CouponCode" />
-                                        @if (Coupon.IsCouponApplied && Coupon.IsValid)
-                                        {
-                                            <img @onclick="RemoveAppliedCoupon" class="remove-coupon-icon" src="images/payment/close.png" alt="remove">
-                                        }
-                                    </div>
-                                    <Button Type="ButtonType.Button" Clicked="ValidateCouponCode"
-                                            class="btn-primary font-16" Border="Border.Is0" Loading="Coupon.IsValidating" Disabled="Coupon.IsValidating"
-                                            style="border-radius: 0; padding-top: 3px; padding-bottom: 3px; margin-left: 0px;border-end-end-radius:4px;border-start-end-radius:4px; ">
-                                        <LoadingTemplate>
-                                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
-                                        </LoadingTemplate>
-                                        <ChildContent>
-                                            Apply
-                                        </ChildContent>
-                                    </Button>
-                                    @if (Coupon.IsCouponApplied && !Coupon.IsValid)
-                                    {
-                                        <div class="coupon-error-message font-14">
-                                            <b style="color: #AD0C0C;">@Coupon.ErrorTitle</b>
-                                            <br>
-                                            <span class="color-grey-100">
-                                                @Coupon.ErrorDescription
-                                            </span>
-                                        </div>
-                                    }
-                                </div>
-                            </div>
                             @*Tickets*@
                             <div class="selected-ticket-name">
                                 @if (selectedTickets.Count > 0)
@@ -283,13 +250,6 @@
                                         </div>
                                     }
                                 }
-                            </div>
-                            @*Discounts*@
-                            <div class="selected-tickets-section">
-                                <p class="ticket-name">Disount</p>
-                                <span style='@(GetAppliedCoupon > 0 ? "color: #AD0C0C" : "")'>
-                                    @(GetAppliedCoupon > 0 ? "-" : "") &#8369; @(GetAppliedCoupon.ToString("#,##0.00"))
-                                </span>
                             </div>
                             @*Service Fee*@
                             <div class="selected-tickets-section">
