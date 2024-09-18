@@ -178,6 +178,30 @@ namespace Cinnamon.Web.Modules.Services
                 }
             }
         }
+
+        public async Task RemoveSeatInPaymentQueue(string seatUUID, string queueName)
+        {
+            await EnsureQueueExistsAsync(queueName);
+            var queueClient = _queueServiceClient.GetQueueClient(queueName);
+
+            // Receive messages without setting a visibility timeout
+            var receivedMessages = await queueClient.ReceiveMessagesAsync(maxMessages: 32, visibilityTimeout: TimeSpan.FromSeconds(1));
+
+            if (receivedMessages.Value.Length > 0)
+            {
+                foreach (var receivedMessage in receivedMessages.Value)
+                {
+                    var messageText = Encoding.UTF8.GetString(Convert.FromBase64String(receivedMessage.MessageText));
+                    if (messageText == seatUUID)
+                    {
+                        // Delete the message using its Message ID and Pop Receipt
+                        await queueClient.DeleteMessageAsync(receivedMessage.MessageId, receivedMessage.PopReceipt);
+                    }
+                    break;
+                }
+            }
+
+        }
         public async Task<(DateTime insertionTime, TimeSpan remainingTime)?> GetUserInActiveQueueAsync(string queueName, string userId)
         {
             await EnsureQueueExistsAsync(queueName);

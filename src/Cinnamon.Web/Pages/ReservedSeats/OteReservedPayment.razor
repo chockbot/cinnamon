@@ -580,6 +580,7 @@
     public TimeSpan RemainingTime { get; set; }
     private string? selectedPayload { get; set; }
     private const string TRACKER_ID = "checkout";
+    private const string RESERVEDSEAT_ID = "selected-seats";
     private Timer _countdownTimer;
     private bool _isProcessing;
     private string unavailableSeats { get; set; }
@@ -1192,7 +1193,7 @@
             var isUserInQueue = await QueueServices.IsUserInQueueAsync(paymentQueueName, ticket.SeatUUID);
             if (isUserInQueue)
             {
-                 // Add to the unavailable seats list
+                // Add to the unavailable seats list
                 unavailableSeatsList.Add(ticket.SeatNumber);
             }
             else
@@ -1210,6 +1211,8 @@
         }
         else
         {
+            //Save selected ticket to the local storage
+            await localStorage.SetItem(RESERVEDSEAT_ID, AvailableSeats);
             // Queue the available seats if any
             foreach (var seatUUID in AvailableSeats)
             {
