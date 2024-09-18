@@ -5,6 +5,7 @@ export default function dragElement(parent, child) {
     let isDragging = false;
     let startX, startY, initialX, initialY;
     let scale = 1;
+    let initialDistance = 0;
 
     // Helper function to get the correct coordinates
     const getEventCoordinates = (e) => {
@@ -15,7 +16,24 @@ export default function dragElement(parent, child) {
         }
     };
 
+    const getDistanceBetweenTouches = (e) => {
+        if (e.touches.length === 2) {
+            const touch1 = e.touches[0];
+            const touch2 = e.touches[1];
+            const dx = touch2.clientX - touch1.clientX;
+            const dy = touch2.clientY - touch1.clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+        return 0;
+    };
+
     const onStartDrag = (e) => {
+        if (e.touches && e.touches.length === 2) {
+            // Pinch-to-zoom start
+            initialDistance = getDistanceBetweenTouches(e);
+            return;
+        }
+
         e.preventDefault();
         isDragging = true;
         const coords = getEventCoordinates(e);
@@ -27,6 +45,19 @@ export default function dragElement(parent, child) {
     };
 
     const onDragMove = (e) => {
+        if (e.touches && e.touches.length === 2) {
+            // Pinch-to-zoom move
+            const newDistance = getDistanceBetweenTouches(e);
+            if (initialDistance) {
+                const scaleChange = newDistance / initialDistance;
+                scale *= scaleChange;
+                scale = Math.min(Math.max(0.5, scale), 3);
+                childEl.style.transform = `scale(${scale})`;
+                initialDistance = newDistance;
+            }
+            return;
+        }
+
         if (isDragging) {
             requestAnimationFrame(() => {
                 const coords = getEventCoordinates(e);
