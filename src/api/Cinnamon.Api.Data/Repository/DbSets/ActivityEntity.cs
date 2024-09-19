@@ -877,9 +877,9 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 									"on os.\"ActivityId\" = ac.\"Id\" " +
 								"left join public.\"OteDates\" od " +
 									"on os.\"Id\" = od.\"OteScheduleId\" " +
+									"and Date(od.\"Date\") >= Date(' " + dateString + " ') " +
 								"where ac.\"IsDeactivated\" = false and ac.\"Status\" = 1 " +
 									"and ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false " +
-									"and Date(od.\"Date\") >= Date(' " + dateString + " ') " +
 									categoryClause + searchClause + starReviewClause + experienceTypeClause + creationTypeClause +
 								"order by ac.\"Guid\" " +
 								"limit " + take + " offset " + skip + " " +
