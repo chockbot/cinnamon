@@ -1220,6 +1220,28 @@
             {
                 // Add to the unavailable seats list
                 unavailableSeatsList.Add(ticket.SeatNumber);
+                //Remove seat in selectedTickets
+                var ticketToRemove = selectedTickets.FirstOrDefault(a => a.Value.SeatUUID.Contains(ticket.SeatUUID));
+                var ticketSeatUUID = ticketToRemove.Value?.SeatUUID.Split(",");
+                if (ticketSeatUUID.Length > 1)
+                {
+                    // Decrease the ticket count
+                    ticketToRemove.Value.Count -= 1;
+                    // Remove Seatnumner
+                    var seatList = ticketToRemove.Value.SeatNumber.Split(",").ToList();
+                    seatList.Remove(ticket.SeatNumber);
+                    ticketToRemove.Value.SeatNumber = string.Join(",",seatList);
+
+
+                    // Remove SeatUUID
+                    var seatUUIDList = ticketToRemove.Value.SeatUUID.Split(",").ToList();
+                    seatUUIDList.Remove(ticket.SeatUUID); // Ensure UUID is removed
+                    ticketToRemove.Value.SeatUUID = string.Join(",", seatUUIDList);
+                }
+                else
+                {
+                    selectedTickets.Remove(ticketToRemove.Key);
+                }
             }
             else
             {
