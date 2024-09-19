@@ -882,11 +882,11 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 									"and ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false " +
 									categoryClause + searchClause + starReviewClause + experienceTypeClause + creationTypeClause +
 								"order by ac.\"Guid\" " +
-								"limit " + take + " offset " + skip + " " +
 							") " +
 							"select * " +
 							"from tb " +
-							"where \"RwCnt\" = 1 ";
+							"where \"RwCnt\" = 1 " +
+							"limit " + take + " offset " + skip + " ";
 
 			IList<ActivityFeedDTO> listResult = new List<ActivityFeedDTO>();
 			using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
@@ -920,9 +920,9 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 							IsNew = Convert.ToBoolean(item["IsNew"]),
 							To = item["To"] != DBNull.Value ? Convert.ToDateTime(item["To"]) : DateTime.MinValue,
 							From = item["From"] != DBNull.Value ? Convert.ToDateTime(item["From"]) : DateTime.MinValue,
-							Date = Convert.ToDateTime(item["Date"]),
-							DateStart = Convert.ToDateTime(item["DateStart"]),
-							DateEnd = Convert.ToDateTime(item["DateEnd"]),
+							Date = item["Date"] != DBNull.Value ? Convert.ToDateTime(item["Date"]) : DateTime.MinValue,
+							DateStart = item["DateStart"] != DBNull.Value ? Convert.ToDateTime(item["DateStart"]) : DateTime.MinValue,
+							DateEnd = item["DateEnd"] != DBNull.Value ? Convert.ToDateTime(item["DateEnd"]) : DateTime.MinValue,
 							StartTime = item["StartTime"].ToString() ?? string.Empty,
 							Address = new ActivityFeedDTO.Location
 							{
