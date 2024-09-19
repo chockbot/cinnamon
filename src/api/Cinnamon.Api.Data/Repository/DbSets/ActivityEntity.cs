@@ -877,6 +877,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 								categoryClause + searchClause + starReviewClause + experienceTypeClause + creationTypeClause +
 							"order by ac.\"Guid\" " +
 							"limit " + take + " offset " + skip + " ";
+							
 
 			IList<ActivityFeedDTO> listResult = new List<ActivityFeedDTO>();
 			using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
