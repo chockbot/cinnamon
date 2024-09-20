@@ -147,11 +147,9 @@
                                 <div class="ticket-names">
                                     @foreach (var item in AvailablePriceList)
                                     {
-                                        <div class="ticket-info">
-                                             <span @onclick="() => HandleClick(FormatId(item.Name))" style="cursor: pointer;">
-                                                <div class="ticket-color" style="width: 20px;height: 20px;background-color:@item.TicketColor;border-radius: 50%;"></div>
-                                                <div class="ticket-name">@item.Name</div>
-                                            </span>
+                                        <div class="ticket-info" style="cursor: pointer;" @onclick="() => HandleClick(FormatId(item.Name))">
+                                            <div class="ticket-color" style="width: 20px;height: 20px;background-color:@item.TicketColor;border-radius: 50%;"></div>
+                                            <div class="ticket-name">@item.Name</div>
                                         </div>
                                     }
                                 </div>
