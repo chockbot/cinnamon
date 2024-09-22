@@ -861,21 +861,32 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 				searchClause = "and (ac.\"Title\" Ilike @search or su.\"Provider\" Ilike @search or su.\"Location\" Ilike @search )";
 			}
 
-			string query = "select ac.\"Id\", ac.\"Title\", ac.\"Handler\", ac.\"ExperienceTypeId\", ac.\"ExperienceCreationTypeId\", " +
-								"ad.\"CityName\", ad.\"RegionName\", ad.\"PinnedLocation\", su.\"ImageBannerSrc\", " +
-								"su.\"Ongoing\", su.\"Completed\", su.\"TotalReviews\", su.\"ReviewAccumulated\",  " +
-								"su.\"TotalParticipants\", ac.\"Price\", ac.\"IsNew\",os.\"From\", os.\"To\",TO_CHAR(os.\"To\",'HH12:MI AM') AS \"StartTime\", os.\"ReserveSeat\" " +
-							"from public.\"Activities\" ac " +
-							"left join public.\"ActivityAddress\" ad " +
-								"on ac.\"Id\" = ad.\"ActivityId\" " +
-							"left join public.\"ActivitySummaries\" su " +
-								"on ac.\"Id\" = su.\"ActivityId\" " +
-							"left join public.\"OteSchedules\" os " +
-								"on os.\"ActivityId\" = ac.\"Id\"" +
-							"where ac.\"IsDeactivated\" = false and ac.\"Status\" = 1 " +
-								"and ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false " +
-								categoryClause + searchClause + starReviewClause + experienceTypeClause + creationTypeClause +
-							"order by ac.\"Guid\" " +
+			var dateString = DateTime.Now.ToString("yyyy-MM-dd");
+			string query = "with tb as ( " +
+								"select ac.\"Id\", ac.\"Title\", ac.\"Handler\", ac.\"ExperienceTypeId\", ac.\"ExperienceCreationTypeId\", " +
+									"ad.\"CityName\", ad.\"RegionName\", ad.\"PinnedLocation\", su.\"ImageBannerSrc\", " +
+									"su.\"Ongoing\", su.\"Completed\", su.\"TotalReviews\", su.\"ReviewAccumulated\",  " +
+									"su.\"TotalParticipants\", ac.\"Price\", ac.\"IsNew\",os.\"From\", os.\"To\",TO_CHAR(os.\"To\",'HH12:MI AM') AS \"StartTime\", os.\"ReserveSeat\", " +
+									"od.\"Date\", od.\"DateStart\", od.\"DateEnd\", " +
+									"Row_Number() over (partition by ac.\"Id\" order by od.\"Id\") \"RwCnt\" " +
+								"from public.\"Activities\" ac " +
+								"left join public.\"ActivityAddress\" ad " +
+									"on ac.\"Id\" = ad.\"ActivityId\" " +
+								"left join public.\"ActivitySummaries\" su " +
+									"on ac.\"Id\" = su.\"ActivityId\" " +
+								"left join public.\"OteSchedules\" os " +
+									"on os.\"ActivityId\" = ac.\"Id\" " +
+								"left join public.\"OteDates\" od " +
+									"on os.\"Id\" = od.\"OteScheduleId\" " +
+									"and Date(od.\"Date\") >= Date(' " + dateString + " ') " +
+								"where ac.\"IsDeactivated\" = false and ac.\"Status\" = 1 " +
+									"and ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false " +
+									categoryClause + searchClause + starReviewClause + experienceTypeClause + creationTypeClause +
+								"order by ac.\"Guid\" " +
+							") " +
+							"select * " +
+							"from tb " +
+							"where \"RwCnt\" = 1 " +
 							"limit " + take + " offset " + skip + " ";
 
 			IList<ActivityFeedDTO> listResult = new List<ActivityFeedDTO>();
@@ -903,14 +914,17 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 						{
 							ActivityId               = Convert.ToInt32(item["Id"]),
 							ExperienceCreationTypeId = Convert.ToInt32(item["ExperienceCreationTypeId"]),
-							ExperienceTypeId         = Convert.ToInt32(item["ExperienceTypeId"]),
-							Handler                  = item["Handler"].ToString() ?? string.Empty,
-							Price                    = item["Price"].ToString() ?? string.Empty,
-							Title                    = item["Title"].ToString() ?? string.Empty,
-							IsNew                    = Convert.ToBoolean(item["IsNew"]),
-							To                       = item["To"] != DBNull.Value ? Convert.ToDateTime(item["To"]) : DateTime.MinValue,
-							From                     = item["From"] != DBNull.Value ? Convert.ToDateTime(item["From"]) : DateTime.MinValue,
-							StartTime                = item["StartTime"].ToString() ?? string.Empty,
+							ExperienceTypeId = Convert.ToInt32(item["ExperienceTypeId"]),
+							Handler = item["Handler"].ToString() ?? string.Empty,
+							Price = item["Price"].ToString() ?? string.Empty,
+							Title = item["Title"].ToString() ?? string.Empty,
+							IsNew = Convert.ToBoolean(item["IsNew"]),
+							To = item["To"] != DBNull.Value ? Convert.ToDateTime(item["To"]) : DateTime.MinValue,
+							From = item["From"] != DBNull.Value ? Convert.ToDateTime(item["From"]) : DateTime.MinValue,
+							Date = item["Date"] != DBNull.Value ? Convert.ToDateTime(item["Date"]) : DateTime.MinValue,
+							DateStart = item["DateStart"] != DBNull.Value ? Convert.ToDateTime(item["DateStart"]) : DateTime.MinValue,
+							DateEnd = item["DateEnd"] != DBNull.Value ? Convert.ToDateTime(item["DateEnd"]) : DateTime.MinValue,
+							StartTime = item["StartTime"].ToString() ?? string.Empty,
 							IsReservedSeating	     = Convert.ToBoolean(item["ReserveSeat"]),
 							Address = new ActivityFeedDTO.Location
 							{
