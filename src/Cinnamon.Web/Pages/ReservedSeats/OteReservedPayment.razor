@@ -76,10 +76,156 @@
                 <button class="button-back">
                     <img class="cursor-pointer me-3" src="/images/payment/back-icon.png" alt="icon" @onclick="NavigateToTicketReservation" />
                 </button>
-                <h4 class="fw-bold px-3 mb-0 color-grey-100 font-24 text-capitalize m-font-18">Confirm experience</h4>
+                <h4 class="fw-bold px-3 mb-0 color-grey-100 font-24 text-capitalize m-font-18">Pricing & Checkout</h4>
             </div>
             <Row>
-                <Column ColumnSize="ColumnSize.Is12.Is7.OnDesktop" class="left-order">
+                <Column ColumnSize="ColumnSize.Is12.OnTablet.Is12.OnWidescreen.Is5.OnFullHD" class="right-order order-first order-xl-last">
+                        <div class="booking-total-container sticky-top mb-3" style="top:80px;">
+                        <Card class="border-radius-20 overflow-hidden">
+                            <CardBody>
+                                <div class="d-flex" style="font-size:1.125rem">
+                                    <div class="activity-img me-3">
+                                        <img src="@GetActivityFirstImage" alt="Activity Image">
+                                    </div>
+                                    <div>
+                                        <p class="font-16 font-weight-700 color-black-100 mb-1 line-h-1-1">@activity.EventName</p>
+                                        <p class="font-14 color-grey-100 mb-1 line-h-1-1">@ActivityLocation</p>
+                                        @if (!string.IsNullOrEmpty(selectedDate))
+                                        {
+                                            <p class="font-14 color-grey-100 mb-1 line-h-1-1">
+                                                @selectedDate
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p class="font-14 color-grey-100 mb-1 line-h-1-1">
+                                                @activity.ScheduleFrom.ToString("dd MMMM yyyy") | @activity.ScheduleFrom.ToString("hh:mm tt").ToUpper()
+                                            </p>
+                                        }
+                                    </div>
+                                </div>
+                                <Divider />
+                                <div class="price-details">
+                                    <span class="font-16 font-weight-700 color-black-100">Price Details</span>
+                                    @if(selectedTickets.Count > 0)
+                                    {
+                                        @foreach (var item in selectedTickets)
+                                        {
+                                            <div class="d-flex justify-content-between py-1 price-per-head">
+                                                <div>
+                                                    @item.Value.Price.ToString("#,##0") x @item.Value.Count @(item.Value.Count > 1 ? "Tickets" : "Ticket")
+                                                </div>
+                                                <div>
+                                                    PHP @((item.Value.Price * item.Value.Count).ToString("#,##0.00"))
+                                                </div>
+                                            </div>   
+                                        }
+                                    }
+                                    else 
+                                    {
+                                        <div class="d-flex justify-content-between py-1 price-per-head">
+                                            <div>
+                                                0 x 0 Ticket
+                                            </div>
+                                            <div>
+                                                PHP 0.00
+                                            </div>
+                                        </div>   
+                                    }
+                                    @if(!IsInclusivePricing)
+                                    {
+                                        <div class="d-flex justify-content-between py-1 price-per-head">
+                                            <div>
+                                                Service Fee <span class="">@(ServiceFeePercent != 0 ? ServiceFeePercent + "%" : "")</span>
+                                            </div>
+                                            <div>
+                                                @(string.IsNullOrEmpty(SelectedPaymentCode) ? "Depends on payment method" : "PHP " + GetConvinienceFee.ToString("#,##0.00"))
+                                            </div>
+                                        </div>
+                                    }
+                                    @if(!IsInclusivePricing)
+                                    {
+                                        <div class="d-flex justify-content-between py-1 price-per-head service-fee">
+                                            <div class="d-flex align-items-center">
+                                                <CustomTooltip MarginLeft="0">
+                                                    <TextContent>
+                                                        <span class="rounded-circle service-fee-info">i</span>
+                                                    </TextContent>
+                                                    <TooltipContent>
+                                                        <span class="color-grey-100">
+                                                            This helps Cinnamon run its services and protects your payment in case the experience provider does 
+                                                            something illegal or against our policy. They won't get paid until after the sessions or work have been done.
+                                                        </span>
+                                                    </TooltipContent>
+                                                </CustomTooltip> 
+                                                <span class="ms-1">Handling Fee</span>
+                                            </div>
+                                            <div>
+                                                PHP @(GetServiceFee.ToString("#,##0.00"))
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="d-flex justify-content-between py-1 price-per-head">
+                                        <div class="d-flex position-relative">
+                                            <div class="position-relative" style="width: 150px;">
+                                                <TextEdit class='@(Coupon.IsCouponApplied && !Coupon.IsValid ? "is-invalid" : "")' 
+                                                    style='@(Coupon.IsCouponApplied ? "background-color: #F3F6FC; padding-right: 25px" : "background-color: #F3F6FC;")' 
+                                                    required Placeholder="Add coupon" Size="Size.ExtraSmall" @bind-Text="Coupon.CouponCode" />
+                                                @if(Coupon.IsCouponApplied && Coupon.IsValid)
+                                                {
+                                                    <img @onclick="RemoveAppliedCoupon" class="remove-coupon-icon" src="images/payment/close.png" alt="remove">
+                                                }
+                                            </div>
+                                            <Button Type="ButtonType.Button" Clicked="ValidateCouponCode"
+                                                class="btn-primary font-12" Border="Border.Is0" Loading="Coupon.IsValidating" Disabled="Coupon.IsValidating"
+                                                style="border-radius: 0; padding-top: 3px; padding-bottom: 3px; margin-left: 3px;">
+                                                <LoadingTemplate>
+                                                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                                                </LoadingTemplate>
+                                                <ChildContent>
+                                                    Apply
+                                                </ChildContent>
+                                            </Button>
+                                            @if(Coupon.IsCouponApplied && !Coupon.IsValid)
+                                            {
+                                                <div class="coupon-error-message font-12">
+                                                    <b style="color: #AD0C0C;">@Coupon.ErrorTitle</b>
+                                                    <br>
+                                                    <span class="color-grey-100">
+                                                        @Coupon.ErrorDescription
+                                                    </span>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div>
+                                            <span style='@(GetAppliedCoupon > 0 ? "color: #AD0C0C" : "")'>
+                                                @(GetAppliedCoupon > 0 ? "-" : "") PHP @(GetAppliedCoupon.ToString("#,##0.00"))
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between py-1 price-per-head">
+                                        <div class="apply-credits">
+                                            <span>Apply credits</span>
+                                        </div>
+                                        <div>
+                                            PHP @(GetTotalCredit.ToString("#,##0.00"))
+                                        </div>
+                                    </div>
+                                    <Divider />
+                                    <div class="d-flex justify-content-between py-1 total-payments">
+                                        <div>
+                                            TOTAL PAYMENT
+                                        </div>
+                                        <div>
+                                        PHP @(GetTotalPrice.ToString("#,##0.00"))
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardBody>
+                        </Card>
+                    </div>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.OnTablet.Is12.OnWidescreen.Is7.OnFullHD" class="left-order">
                     <section class="mt-5 item-pricings">
                         <div class="selected-ticket-table">
                             <div class="ticket-header">
@@ -242,7 +388,7 @@
                     </section>
                     <p class="font-12 color-grey-100 mt-3">By selecting the button below, I agree to the Cinnamon Maker’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</p>
                     <Button Loading="submitting" Disabled="DisableProceed || submitting || someoneAlreadyBooked" Clicked="ProceedToPayment"
-                        class="btn-primary border-radius-10 m-d-none" Border="Border.Is0" >
+                        class="btn-primary border-radius-10 m-d-none btn-payment" Border="Border.Is0" >
                         <LoadingTemplate>
                             <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
                         </LoadingTemplate>
@@ -250,152 +396,6 @@
                             Confirm and Pay
                         </ChildContent>
                     </Button>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is12.Is5.OnDesktop" class="right-order">
-                    <div class="booking-total-container sticky-top mb-3" style="top:80px;">
-                        <Card class="border-radius-20 overflow-hidden">
-                            <CardBody>
-                                <div class="d-flex" style="font-size:1.125rem">
-                                    <div class="activity-img me-3">
-                                        <img src="@GetActivityFirstImage" alt="Activity Image">
-                                    </div>
-                                    <div>
-                                        <p class="font-16 font-weight-700 color-black-100 mb-1 line-h-1-1">@activity.EventName</p>
-                                        <p class="font-14 color-grey-100 mb-1 line-h-1-1">@ActivityLocation</p>
-                                        @if (!string.IsNullOrEmpty(selectedDate))
-                                        {
-                                            <p class="font-14 color-grey-100 mb-1 line-h-1-1">
-                                                @selectedDate
-                                            </p>
-                                        }
-                                        else
-                                        {
-                                            <p class="font-14 color-grey-100 mb-1 line-h-1-1">
-                                                @activity.ScheduleFrom.ToString("dd MMMM yyyy") | @activity.ScheduleFrom.ToString("hh:mm tt").ToUpper()
-                                            </p>
-                                        }
-                                    </div>
-                                </div>
-                                <Divider />
-                                <div class="price-details">
-                                    <span class="font-16 font-weight-700 color-black-100">Price Details</span>
-                                    @if(selectedTickets.Count > 0)
-                                    {
-                                        @foreach (var item in selectedTickets)
-                                        {
-                                            <div class="d-flex justify-content-between py-1 price-per-head">
-                                                <div>
-                                                    @item.Value.Price.ToString("#,##0") x @item.Value.Count @(item.Value.Count > 1 ? "Tickets" : "Ticket")
-                                                </div>
-                                                <div>
-                                                    PHP @((item.Value.Price * item.Value.Count).ToString("#,##0.00"))
-                                                </div>
-                                            </div>   
-                                        }
-                                    }
-                                    else 
-                                    {
-                                        <div class="d-flex justify-content-between py-1 price-per-head">
-                                            <div>
-                                                0 x 0 Ticket
-                                            </div>
-                                            <div>
-                                                PHP 0.00
-                                            </div>
-                                        </div>   
-                                    }
-                                    @if(!IsInclusivePricing)
-                                    {
-                                        <div class="d-flex justify-content-between py-1 price-per-head">
-                                            <div>
-                                                Service Fee <span class="">@(ServiceFeePercent != 0 ? ServiceFeePercent + "%" : "")</span>
-                                            </div>
-                                            <div>
-                                                @(string.IsNullOrEmpty(SelectedPaymentCode) ? "Depends on payment method" : "PHP " + GetConvinienceFee.ToString("#,##0.00"))
-                                            </div>
-                                        </div>
-                                    }
-                                    @if(!IsInclusivePricing)
-                                    {
-                                        <div class="d-flex justify-content-between py-1 price-per-head service-fee">
-                                            <div class="d-flex align-items-center">
-                                                <CustomTooltip MarginLeft="0">
-                                                    <TextContent>
-                                                        <span class="rounded-circle service-fee-info">i</span>
-                                                    </TextContent>
-                                                    <TooltipContent>
-                                                        <span class="color-grey-100">
-                                                            This helps Cinnamon run its services and protects your payment in case the experience provider does 
-                                                            something illegal or against our policy. They won't get paid until after the sessions or work have been done.
-                                                        </span>
-                                                    </TooltipContent>
-                                                </CustomTooltip> 
-                                                <span class="ms-1">Handling Fee</span>
-                                            </div>
-                                            <div>
-                                                PHP @(GetServiceFee.ToString("#,##0.00"))
-                                            </div>
-                                        </div>
-                                    }
-                                    <div class="d-flex justify-content-between py-1 price-per-head">
-                                        <div class="d-flex position-relative">
-                                            <div class="position-relative" style="width: 150px;">
-                                                <TextEdit class='@(Coupon.IsCouponApplied && !Coupon.IsValid ? "is-invalid" : "")' 
-                                                    style='@(Coupon.IsCouponApplied ? "background-color: #F3F6FC; padding-right: 25px" : "background-color: #F3F6FC;")' 
-                                                    required Placeholder="Add coupon" Size="Size.ExtraSmall" @bind-Text="Coupon.CouponCode" />
-                                                @if(Coupon.IsCouponApplied && Coupon.IsValid)
-                                                {
-                                                    <img @onclick="RemoveAppliedCoupon" class="remove-coupon-icon" src="images/payment/close.png" alt="remove">
-                                                }
-                                            </div>
-                                            <Button Type="ButtonType.Button" Clicked="ValidateCouponCode"
-                                                class="btn-primary font-12" Border="Border.Is0" Loading="Coupon.IsValidating" Disabled="Coupon.IsValidating"
-                                                style="border-radius: 0; padding-top: 3px; padding-bottom: 3px; margin-left: 3px;">
-                                                <LoadingTemplate>
-                                                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
-                                                </LoadingTemplate>
-                                                <ChildContent>
-                                                    Apply
-                                                </ChildContent>
-                                            </Button>
-                                            @if(Coupon.IsCouponApplied && !Coupon.IsValid)
-                                            {
-                                                <div class="coupon-error-message font-12">
-                                                    <b style="color: #AD0C0C;">@Coupon.ErrorTitle</b>
-                                                    <br>
-                                                    <span class="color-grey-100">
-                                                        @Coupon.ErrorDescription
-                                                    </span>
-                                                </div>
-                                            }
-                                        </div>
-                                        <div>
-                                            <span style='@(GetAppliedCoupon > 0 ? "color: #AD0C0C" : "")'>
-                                                @(GetAppliedCoupon > 0 ? "-" : "") PHP @(GetAppliedCoupon.ToString("#,##0.00"))
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-between py-1 price-per-head">
-                                        <div class="apply-credits">
-                                            <span>Apply credits</span>
-                                        </div>
-                                        <div>
-                                            PHP @(GetTotalCredit.ToString("#,##0.00"))
-                                        </div>
-                                    </div>
-                                    <Divider />
-                                    <div class="d-flex justify-content-between py-1 total-payments">
-                                        <div>
-                                            TOTAL PAYMENT
-                                        </div>
-                                        <div>
-                                        PHP @(GetTotalPrice.ToString("#,##0.00"))
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardBody>
-                        </Card>
-                    </div>
                 </Column>
             </Row>
         </Container>
