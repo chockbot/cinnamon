@@ -6,6 +6,10 @@ export default function dragElement(parent, child) {
     let startX, startY, initialX, initialY;
     let scale = 1;
     let initialDistance = 0;
+    const dragThreshold = 10; // Threshold in pixels to distinguish drag from tap
+    let movedDistance = 0;
+    let startTime = 0; // Track when touch started
+    const tapDurationThreshold = 200; // Milliseconds to consider as tap instead of drag
 
     // Helper function to get the correct coordinates
     const getEventCoordinates = (e) => {
@@ -36,11 +40,13 @@ export default function dragElement(parent, child) {
 
         e.preventDefault();
         isDragging = true;
+        startTime = Date.now(); // Record the time the touch started
         const coords = getEventCoordinates(e);
         startX = coords.x;
         startY = coords.y;
         initialX = childEl.offsetLeft;
         initialY = childEl.offsetTop;
+        movedDistance = 0; // Reset moved distance
         childEl.style.cursor = "grabbing";
     };
 
@@ -59,17 +65,22 @@ export default function dragElement(parent, child) {
         }
 
         if (isDragging) {
-            requestAnimationFrame(() => {
-                const coords = getEventCoordinates(e);
-                const dx = coords.x - startX;
-                const dy = coords.y - startY;
-                let newX = initialX + dx;
-                let newY = initialY + dy;
+            const coords = getEventCoordinates(e);
+            const dx = coords.x - startX;
+            const dy = coords.y - startY;
+            movedDistance = Math.sqrt(dx * dx + dy * dy); // Calculate moved distance
 
-                // Move the child element
-                childEl.style.left = `${newX}px`;
-                childEl.style.top = `${newY}px`;
-            });
+            // Only treat it as a drag if movement exceeds the threshold
+            if (movedDistance > dragThreshold) {
+                requestAnimationFrame(() => {
+                    let newX = initialX + dx;
+                    let newY = initialY + dy;
+
+                    // Move the child element
+                    childEl.style.left = `${newX}px`;
+                    childEl.style.top = `${newY}px`;
+                });
+            }
         }
     };
 
@@ -109,5 +120,24 @@ export default function dragElement(parent, child) {
     // Touch events for mobile
     childEl.addEventListener("touchstart", onStartDrag);
     document.addEventListener("touchmove", onDragMove);
-    document.addEventListener("touchend", onStopDrag);
+    document.addEventListener("touchend", (e) => {
+        const duration = Date.now() - startTime;
+        // Consider it a tap if moved distance is below threshold and duration is short enough
+        if (movedDistance <= dragThreshold && duration <= tapDurationThreshold) {
+            e.target.click(); // Simulate a click for touch events
+        }
+        onStopDrag();
+    });
+
+    // Ensure clicks on buttons inside the child element work
+    childEl.addEventListener(
+        "click",
+        (e) => {
+            // Only prevent click if it was a real drag
+            if (movedDistance > dragThreshold) {
+                e.preventDefault();
+            }
+        },
+        true
+    ); // Use capturing to make sure it's applied before child elements' handlers
 }
