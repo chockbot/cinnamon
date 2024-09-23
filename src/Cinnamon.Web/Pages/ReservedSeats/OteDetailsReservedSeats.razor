@@ -149,92 +149,92 @@
                                 </Row>
                             </div>
                             <div class="schedule-body">
-                                    @*Body*@
-                                    @if (activity.IsOpen)
-                                    {
-                                        <div class="event-ticket-section">
-                                            <div class="ticket-details-header">
-                                                <p class="prices-title">Tickets</p>
-                                                <p class="prices-title">Price</p>
-                                                <p class="prices-title">Status</p>
-                                            </div>
-                                            @foreach (var item in AvailablePriceList)
-                                            {
-                                                <div class="ticket-details">
-                                                    @if (item.Name.Length > 15)
-                                                    {
-                                                        <Tooltip Text="@item.Name" Multiline>
-                                                        <p class="ticket-name">@item.Name.Substring(0, 20)...</p>
-                                                    </Tooltip>
-                                                    }
-                                                    else
-                                                    {
-                                                        <p class="ticket-name">@item.Name</p>
-                                                    }
-                                                    <p class="align-items-center">
-                                                        <span class="ticket-name">
-                                                            @((item.Price == 0) ? "Free" : $"₱{item.Price:N0}")
-                                                        </span>
-                                                    </p>
-                                                    <p class="align-items-center">
-                                                        @if (!item.IsUnlimited)
-                                                        {
-                                                            @if (activity.IsEventSoldOut)
-                                                            {
-                                                                <span class="ticket-sold-out">
-                                                                    sold out
-                                                                </span>
-                                                            }
-                                                            else
-                                                            {
-                                                                <span class="tickets-left">
-                                                                    Only @(item.MaxSlots - item.TicketSold) ticket/s left
-                                                                </span>
-                                                            }
-
-                                                        }
-                                                        else
-                                                        {
-                                                            <span class="ticket-unli">
-                                                                unlimited
-                                                            </span>
-                                                        }
-
-                                                    </p>
-                                                </div>
-                                                <Divider />
-                                            }
+                                @*Body*@
+                                @if (activity.IsOpen)
+                                {
+                                    <div class="event-ticket-section">
+                                        <div class="ticket-details-header">
+                                            <p class="prices-title">Tickets</p>
+                                            <p class="prices-title">Price</p>
+                                            <p class="prices-title">Status</p>
                                         </div>
-                                    }
-                                    else
-                                    {
-                                        <div class="waitlist-section">
-                                            <div class="ticket-close">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 23c6.075 0 11-4.925 11-11S18.075 1 12 1 1 5.925 1 12s4.925 11 11 11M7 10a2 2 0 1 0 0 4h10a2 2 0 1 0 0-4z"></path></svg>
-                                                <p class="close-text">Ticket Sales Closed</p>
-                                            </div>
-                                            <p class="close-sub-text">This event is not currently selling tickets. You may contact the host to receive updates.</p>
-                                        </div>
-                                    }
-                                    @*Footer*@
-                                    @if (activity.IsOpen)
-                                    {
-                                        <div class="schedule-footer">
-                                            <button class="btn buy-ticket-btn border-radius-10 bg-orange-100 color-white-100 font-20 font-weight-700" style="width: 90%" @onclick="ProceedToPayment" disabled="@isLoading">
-                                                @if (isLoading)
+                                        @foreach (var item in AvailablePriceList)
+                                        {
+                                            <div class="ticket-details">
+                                                @if (item.Name.Length > 15)
                                                 {
-                                                    <div class="spinner-border spinner-border-sm" role="status">
-                                                        <span class="visually-hidden">Loading...</span>
-                                                    </div>
+                                                    <Tooltip Text="@item.Name" Multiline>
+                                                    <p class="ticket-name">@item.Name.Substring(0, 20)...</p>
+                                                </Tooltip>
                                                 }
                                                 else
                                                 {
-                                                    <span>Buy Tickets</span>
+                                                    <p class="ticket-name">@item.Name</p>
                                                 }
-                                            </button>
+                                                <p class="align-items-center">
+                                                    <span class="ticket-name">
+                                                        @((item.Price == 0) ? "Free" : $"₱{item.Price:N0}")
+                                                    </span>
+                                                </p>
+                                                <p class="align-items-center">
+                                                    @if (!item.IsUnlimited)
+                                                    {
+                                                        @if (activity.IsEventSoldOut)
+                                                        {
+                                                            <span class="ticket-sold-out">
+                                                                sold out
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="tickets-left">
+                                                                Only @(item.MaxSlots - item.TicketSold) ticket/s left
+                                                            </span>
+                                                        }
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="ticket-unli">
+                                                            unlimited
+                                                        </span>
+                                                    }
+
+                                                </p>
+                                            </div>
+                                            <Divider />
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="waitlist-section">
+                                        <div class="ticket-close">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 23c6.075 0 11-4.925 11-11S18.075 1 12 1 1 5.925 1 12s4.925 11 11 11M7 10a2 2 0 1 0 0 4h10a2 2 0 1 0 0-4z"></path></svg>
+                                            <p class="close-text">Ticket Sales Closed</p>
                                         </div>
-                                    }
-                                </div>
+                                        <p class="close-sub-text">This event is not currently selling tickets. You may contact the host to receive updates.</p>
+                                    </div>
+                                }
+                                @*Footer*@
+                                @if (activity.IsOpen)
+                                {
+                                    <div class="schedule-footer">
+                                        <button class="btn buy-ticket-btn border-radius-10 bg-orange-100 color-white-100 font-20 font-weight-700" style="width: 90%" @onclick="ProceedToPayment" disabled="@isLoading">
+                                            @if (isLoading)
+                                            {
+                                                <div class="spinner-border spinner-border-sm" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span>Buy Tickets</span>
+                                            }
+                                        </button>
+                                    </div>
+                                }
+                            </div>
                         </div>
                     }
                     else
@@ -465,17 +465,17 @@
                 NavigationManager.NavigateTo("page-not-found");
                 return;
             }
-            activity                  = mapper.Map<OteActivity>(act);
-            activity.Pricings         = activity.Pricings.OrderBy(t => t.Id).ToList();
-            activity.OteDates         = activity.OteDates.OrderBy(d => d.Date);
-            activity.Sold             = activity.Pricings.Sum(a => a.TicketSold);
+            activity = mapper.Map<OteActivity>(act);
+            activity.Pricings = activity.Pricings.OrderBy(t => t.Id).ToList();
+            activity.OteDates = activity.OteDates.OrderBy(d => d.Date);
+            activity.Sold = activity.Pricings.Sum(a => a.TicketSold);
             activity.EventTicketLimit = act.OteSchedule.EventTicketLimit;
-            IsLimit                   = act.OteSchedule.EventTicketLimit != 0 ? true : false;
-            activity.IsOpen           = act.OteSchedule.IsOpen;
-            int soldLimitedTickets    = activity.Pricings.Where(a => !a.IsUnlimited).Sum(a => a.TicketSold);
-            activity.IsEventSoldOut   = activity.Pricings.Sum(a => a.MaxSlots) <= soldLimitedTickets ? true : false;
-            selectedDate              = SelectedDates.Where(a => a >= DateTime.Now).FirstOrDefault();
-            IsExpiredEvent            = selectedDate == DateTime.MinValue;
+            IsLimit = act.OteSchedule.EventTicketLimit != 0 ? true : false;
+            activity.IsOpen = act.OteSchedule.IsOpen;
+            int soldLimitedTickets = activity.Pricings.Where(a => !a.IsUnlimited).Sum(a => a.TicketSold);
+            activity.IsEventSoldOut = activity.Pricings.Sum(a => a.MaxSlots) <= soldLimitedTickets ? true : false;
+            selectedDate = SelectedDates.Where(a => a >= DateTime.Now).FirstOrDefault();
+            IsExpiredEvent = selectedDate == DateTime.MinValue;
             if (IsExpiredEvent)
             {
                 selectedDate = SelectedDates.FirstOrDefault();
@@ -850,7 +850,7 @@
         isLoading = false;
         StateHasChanged();
         NavigationManager.NavigateTo(paymentUrl);
-        
+
         submitting = false;
     }
 }
