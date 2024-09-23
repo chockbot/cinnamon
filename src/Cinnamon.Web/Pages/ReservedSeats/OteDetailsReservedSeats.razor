@@ -28,7 +28,7 @@
 {
     <div class="container details-page-section ote-details-page-wrapper">
         <div class="row">
-            <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12">
                 <div class="cover-photo">
                     <img class="cover-photo-img" src="@CoverImage" alt="cover-photo">
                 </div>
@@ -76,7 +76,7 @@
                     </Button>
                 </div>
             </div>
-            <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-12">
+            <div class="col-xl-8 col-lg-8 col-md-12 mt-md-3 col-sm-12 col-12">
                 @*Event Name*@
                 <h3 class="event-title">@activity.EventName</h3>
 
@@ -160,37 +160,6 @@
                                             </div>
                                             @foreach (var item in AvailablePriceList)
                                             {
-                                                if (currentLogin is not null)
-                                                {
-                                                    if (ticketCount != 0 && IsLimit)
-                                                    {
-                                                        if (ticketCount == activity.EventTicketLimit)
-                                                        {
-                                                            stringMaxTicket = $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.";
-                                                        }
-                                                        else
-                                                        {
-                                                            stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
-                                                        }
-
-                                                    }
-                                                    else
-                                                    {
-                                                        if (!IsLimit)
-                                                        {
-                                                            stringMaxTicket = "";
-                                                        }
-                                                        else
-                                                        {
-                                                            stringMaxTicket = $"You've already reached the maximum limit for ticket purchases.";
-                                                        }
-
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    stringMaxTicket = "";
-                                                }
                                                 <div class="ticket-details">
                                                     @if (item.Name.Length > 15)
                                                     {
@@ -251,16 +220,18 @@
                                     @if (activity.IsOpen)
                                     {
                                         <div class="schedule-footer">
-                                            <Button Disabled="submitting" Loading="submitting" style="width: 90%;"
-                                                    class="border-radius-10 bg-orange-100 color-white-100 font-20 font-weight-700"
-                                                Clicked="ProceedToPayment">
-                                                <LoadingTemplate>
-                                                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
-                                                </LoadingTemplate>
-                                                <ChildContent>
-                                                    Buy Ticket
-                                                </ChildContent>
-                                            </Button>
+                                            <button class="btn buy-ticket-btn border-radius-10 bg-orange-100 color-white-100 font-20 font-weight-700" style="width: 90%" @onclick="ProceedToPayment" disabled="@isLoading">
+                                                @if (isLoading)
+                                                {
+                                                    <div class="spinner-border spinner-border-sm" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <span>Buy Tickets</span>
+                                                }
+                                            </button>
                                         </div>
                                     }
                                 </div>
@@ -433,6 +404,7 @@
     private bool IsLimit { get; set; }
     private CoreDto.Activity.TopBookedCustomersDTO topBookedCustomers = new();
     private bool submitting = false;
+    private bool isLoading = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -620,28 +592,6 @@
                     ProfileId = profileResult.Result.Result.Id;
                     ProfileName = $"{profileResult.Result.Result.FirstName} {profileResult.Result.Result.LastName}";
                     ProfileEmail = profileResult.Result.Result.Email;
-                }
-                //Get the number of ticket purchased in this event
-                var ticketPurchase = await activityHandler.CustomerOte(token);
-                if (ticketPurchase.Succeeded && ticketPurchase.Result is not null && ticketPurchase.Result.IsSuccess)
-                {
-                    otesItems = ticketPurchase.Result.Result.Where(a => a.ActivityId == activity.Id).Select(t =>
-                    {
-                        return new TicketItem
-                            {
-                                EventName = t.EventTitle,
-                                PurchaseOrderId = t.PurchaseOrderId
-                            };
-                    });
-                    foreach (var item in otesItems)
-                    {
-                        var count = await transactionApiHandler.GetOtePurchaseOrder(item.PurchaseOrderId, token);
-                        if (count.Succeeded && count.Result is not null && count.Result.IsSuccess)
-                        {
-                            ticketCount += count.Result.Result.Tickets.Count();
-                        }
-                    }
-                    ticketCount = activity.EventTicketLimit > 0 ? activity.EventTicketLimit - ticketCount : 0;
                 }
             }
         }
@@ -876,20 +826,31 @@
         string paymentUrl = $"/reservation/{Handler}/?date={selectedDate}&token={token}";
         NavigationManager.NavigateTo(paymentUrl);
     }
-    private Task ProceedToPayment()
+    private async Task ProceedToPayment()
     {
+        isLoading = true;
+        StateHasChanged();
+
+        await Task.Delay(2000);
+
         submitting = true;
+
         if (currentLogin is null)
         {
             string oteDetailsUrl = $"/explore/ote/reserved/{Handler}";
             signInReturnUrl = oteDetailsUrl;
 
             loginModal.Show();
-            return Task.CompletedTask;
+            return;
         }
         string paymentUrl = $"/reservation/{Handler}/?date={selectedDate}&token={token}";
+
+        await Task.Delay(2000);
+
+        isLoading = false;
+        StateHasChanged();
         NavigationManager.NavigateTo(paymentUrl);
+        
         submitting = false;
-        return Task.CompletedTask;
     }
 }

@@ -28,12 +28,13 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject Cinnamon.Framework.Providers.IJsonSerializationProvider jsonSerializationProvider
 @inject ILocalStorage localStorage;
+@implements IAsyncDisposable;
 
 @if (activity is not null)
 {
     @if (_isProcessing)
     {
-        <div class="top-row">
+        <div class="top-row desktop">
             <!--App Name-->
             <div class="app-name">
                 <a href="/explore" class="app-name">@Resources.App.appName</a>
@@ -50,9 +51,28 @@
                 <p class="secure-text">Secure Checkout</p>
             </div>
         </div>
+        <div class="top-row mobile">
+            <div class="row-holder">
+                <!--App Name-->
+                <div class="app-name">
+                    <a href="/explore" class="app-name">@Resources.App.appName</a>
+                </div>
+                <div class="secured-section">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="18" viewBox="0 0 16 18" fill="none">
+                        <path d="M15.0055 8.53979C14.7668 8.30113 14.4772 8.18189 14.1361 8.18189H13.7273V5.72721C13.7273 4.15905 13.1649 2.81258 12.0399 1.68758C10.9149 0.562525 9.56857 0 8.00019 0C6.43185 0 5.08525 0.562525 3.96038 1.68753C2.83533 2.81258 2.27298 4.15901 2.27298 5.72721V8.18189H1.86395C1.52316 8.18189 1.23332 8.30113 0.994661 8.53979C0.756003 8.77827 0.636719 9.0681 0.636719 9.40921V16.7728C0.636719 17.1136 0.756048 17.4035 0.994661 17.6422C1.23332 17.8806 1.52316 18 1.86395 18H14.1364C14.4775 18 14.7671 17.8808 15.0059 17.6422C15.2443 17.4035 15.3638 17.1136 15.3638 16.7728V9.40908C15.364 9.06824 15.2443 8.77845 15.0055 8.53979ZM11.2728 8.18189H4.72753V5.72721C4.72753 4.82384 5.04719 4.05248 5.68637 3.41339C6.32564 2.77421 7.09687 2.45468 8.00032 2.45468C8.90386 2.45468 9.67491 2.77416 10.3142 3.41339C10.9532 4.05244 11.2728 4.82384 11.2728 5.72721V8.18189Z" fill="#343D4C" />
+                    </svg>
+                    <p class="secure-text">Secure Checkout</p>
+                </div>
+            </div>
+            <!--Timer-->
+            <div class="timer-section">
+                <p class="ticket-text">Tickets Reserved in Cart for</p>
+                <p class="timer-value">@RemainingTime</p>
+            </div>
+        </div>
         <div class="container reservation-page-section">
             <div class="row">
-                <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-12 ticket-column">
+                <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12 ticket-column">
                     @*Event & Ticket Details*@
                     <div class="event-details-section">
                         <p class="event-name">@activity.EventName</p>
@@ -122,31 +142,65 @@
                                 <Cinnamon.Web.Components.Common.SeatPlan.Container Payload="@selectedPayload" OnSeatSelected="HandleSeatSelection" ViewOnly="viewOnly"/>
                             </div>
                     
+
                             <div class="ticket-options">
                                 <div class="ticket-names">
                                     @foreach (var item in AvailablePriceList)
                                     {
-                                        <div class="ticket-info">
+                                        <div class="ticket-info" style="cursor: pointer;" @onclick="() => HandleClick(FormatId(item.Name))">
                                             <div class="ticket-color" style="width: 20px;height: 20px;background-color:@item.TicketColor;border-radius: 50%;"></div>
                                             <div class="ticket-name">@item.Name</div>
                                         </div>
                                     }
                                 </div>
-                    
+
                                 @if (selectedTickets.Count != 0)
                                 {
                                     @if (activity.Schedule.IsCapacity && activity.IsEventSoldOut && selectedTickets.Count <= capacityLimit && !selectedTickets.First().Value.IsUnlimited)
                                     {
-                                        <button class="btn-confirm" @onclick=JoinWaitlist>Join Waitlist</button>
+                                        <button class="btn-confirm" @onclick=JoinWaitlist disabled="@isLoading">
+                                            @if (isLoading)
+                                            {
+                                                <div class="spinner-border spinner-border-sm" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span>Join Waitlist</span>
+                                            }
+                                        </button>
                                     }
                                     else
                                     {
-                                        <button class="btn-confirm" @onclick=ProceedToPayment>Confirm Seats</button>
+                                        <button class="btn-confirm" @onclick=ProceedToPayment disabled="@isLoading">
+                                            @if (isLoading)
+                                            {
+                                                <div class="spinner-border spinner-border-sm" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span>Confirm Seats</span>
+                                            }
+                                        </button>
                                     }
                                 }
                                 else
                                 {
-                                    <button class="btn-confirm" @onclick=ProceedToPayment>Confirm Seats</button>
+                                    <button class="btn-confirm" @onclick=ProceedToPayment disabled="@isLoading">
+                                        @if (isLoading)
+                                        {
+                                            <div class="spinner-border spinner-border-sm" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span>Confirm Seats</span>
+                                        }
+                                    </button>
                                 }
                             </div>
                         </div>
@@ -254,7 +308,7 @@
                                 <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
                             </LoadingTemplate>
                             <ChildContent>
-                                Confirm seats
+                                <span class="btn-confirm-text">Confirm seats</span>
                             </ChildContent>
                         </Button>
                         <div class="d-flex align-items-center">
@@ -650,7 +704,7 @@
                     <p class="expired-text">Seats Unavailable</p>
                 </div>
             </div>
-            <p class="congratulations-text">Unfortunately, the seats (@unavailableSeats) you selected have already been purchased by another customer. Please choose different seats to continue with your booking.</p>
+            <p class="congratulations-text">Unfortunately, the seats (@unavailableSeats) you selected have already been reserved by another customer. Please choose different seats to continue with your booking.</p>
             <button class="btn-try" @onclick="() => modalUnAvailable.Close(CloseReason.UserClosing)">Select other ticket</button>
         </ModalBody>
     </ModalContent>
@@ -671,8 +725,6 @@
     private Modal modalRef {get; set;}
 
     private Modal modaltime {get; set;}
-
-    private Modal modalUnAvailable { get; set; }
 
     private Modal? modalQuestions;
 
@@ -730,12 +782,6 @@
 
     public bool IsExpired { get; set; } = false;
 
-    private string unavailableSeats { get; set; }
-
-    private const string RESERVEDSEAT_ID = "selected-seats";
-
-    public List<string> AvailableSeats = new List<string>();
-
     private QueueInfo queueInfo = new QueueInfo();
 
     private double progressPercentage;
@@ -762,6 +808,13 @@
     private Validations? predefinedQuestionValidation;
     private List<ActivityQuestion> filteredQuestions = new();
     public bool viewOnly { get; set; } = false;
+    IJSObjectReference scrollEffectModule;
+
+    private Modal modalUnAvailable { get; set; }
+    private string unavailableSeats { get; set; }
+    private const string RESERVEDSEAT_ID = "selected-seats";
+    public string paymentQueueName { get; set; }
+    public List<string> AvailableSeats = new List<string>();
 
 
     protected override async Task OnInitializedAsync()
@@ -775,12 +828,27 @@
                 NavigationManager.NavigateTo("/explore");
                 return;
             }
+            else
+            {
+                //Create payment queue
+                paymentQueueName = $"{Handler}-payment-queue";
+                await QueueServices.EnsureQueueExistsAsync(paymentQueueName);
+            }
         }
         catch (Exception ex)
         {
             await NotificationService.Error("An error occured. Please try again later.", "Error");
         }
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+        }
+    }
+
     protected override async Task OnParametersSetAsync()
     {
         try
@@ -852,6 +920,19 @@
         {
             await NotificationService.Error("An error occured. Please try again later.", "Error");
         }
+    }
+    private async Task HandleClick(string sectionId)
+    {
+        await ScrollToSection(sectionId);
+    }
+    private async Task ScrollToSection(string sectionId)
+    {
+        await JSRuntime.InvokeVoidAsync("MyLib.Utils.scrollEffect.scrollToElement", sectionId);
+    }
+
+    private string FormatId(string name)
+    {
+        return name.Replace(" ", "-");
     }
     private async Task MonitorQueue(string userId, TimeSpan time)
     {
@@ -1324,10 +1405,15 @@
 
     private Task ProceedToPayment()
     {
+        isLoading = true;
+        StateHasChanged();
         if (currentLogin is null)
         {
             string oteDetailsUrl = $"/explore/ote/{Handler}";
             signInReturnUrl = oteDetailsUrl;
+
+            isLoading = false;
+            StateHasChanged();
 
             return loginModal.Show();
         }
@@ -1335,6 +1421,9 @@
         if (selectedTickets.Count <= 0)
         {
             return NotificationService.Error("Select a ticket to proceed.", "Oops!");
+
+            isLoading = false;
+            StateHasChanged();
         }
 
         if (IsLimit)
@@ -1357,6 +1446,9 @@
         if(havePaidAndFreeTicket)
         {
             return NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
+
+            isLoading = false;
+            StateHasChanged();
         }
 
         bool freeWithApproval = selectedTickets.Any(t => t.Value.IsFree && t.Value.RequiredApproval);
@@ -1365,6 +1457,9 @@
         if(freeWithApproval && isFreeWithoutApproval)
         {
             return NotificationService.Error("Combining free tickets with and without approval is not permitted.", "Invalid");
+
+            isLoading = false;
+            StateHasChanged();
         }
 
         bool paidWithApproval = selectedTickets.Any(t => !t.Value.IsFree && t.Value.RequiredApproval);
@@ -1373,6 +1468,9 @@
         if(paidWithApproval && isPaidWithoutApproval)
         {
             return NotificationService.Error("Combining paid tickets with and without approval is not permitted.", "Invalid");
+
+            isLoading = false;
+            StateHasChanged();
         }
 
         bool haveQuestions = activityQuestions.Count > 0;
@@ -1382,6 +1480,10 @@
         if (isFreeWithoutApproval || freeWithApproval) return ProceedToFreePurchase();
 
         if(paidWithApproval) return ProceedToJoinWaitlist();
+
+
+        isLoading = false;
+        StateHasChanged();
 
         return ProceedToPaymentOption();
     }
@@ -1721,6 +1823,8 @@
 
     private async Task ProceedToPaymentOption()
     {
+        isLoading = true;
+        StateHasChanged();
         submitting = true;
         StateHasChanged();
 
@@ -1746,11 +1850,63 @@
         StateHasChanged();
 
         string paymentUrl = $"/payment/ote/reserved/{Handler}/?guid={createTracker.Guid}&token={createTracker.Token}";
+        await Task.Delay(2000);
 
+        isLoading = false;
+        StateHasChanged();
         NavigationManager.NavigateTo(paymentUrl);
     }
 
     private async Task ProceedToFreePurchase()
+    {
+        //Add to payment queue
+        var selectedSeats = selectedTickets.SelectMany(t => t.Value.SeatUUID.Split(',').Zip(t.Value.Seat.Split(','), (uuid, name) => new
+        {
+            SeatUUID = uuid,
+            SeatNumber = name
+        }))
+        .ToList();
+
+        // Initialize the list for unavailable seats
+        var unavailableSeatsList = new List<string>();
+        AvailableSeats.Clear();
+
+        foreach (var ticket in selectedSeats)
+        {
+            var isUserInQueue = await QueueServices.IsUserInQueueAsync(paymentQueueName, ticket.SeatUUID);
+            if (isUserInQueue)
+            {
+                // Add to the unavailable seats list
+                unavailableSeatsList.Add(ticket.SeatNumber);
+            }
+            else
+            {
+                AvailableSeats.Add(ticket.SeatUUID);
+            }
+        }
+
+        unavailableSeats = string.Join(", ", unavailableSeatsList);
+
+        if (!string.IsNullOrEmpty(unavailableSeats))
+        {
+            await modalUnAvailable.Show();
+            isLoading = false;
+            return;
+        }
+        else
+        {
+            //Save selected ticket to the local storage
+            await localStorage.SetItem(RESERVEDSEAT_ID, AvailableSeats);
+            // Queue the available seats if any
+            foreach (var seatUUID in AvailableSeats)
+            {
+                await QueueServices.EnqueueUserInPaymentAsync(paymentQueueName, seatUUID);
+            }
+            await SubmitFreeTransaction();
+        }
+    }
+
+    private async Task SubmitFreeTransaction()
     {
         try
         {
@@ -1791,128 +1947,51 @@
                 }, token);
 
             submitting = false;
+            isLoading = false;
 
             if (!submitFreePurchase.Succeeded || submitFreePurchase.Result is null || !submitFreePurchase.Result.IsSuccess)
             {
                 await NotificationService.Error(submitFreePurchase.Result?.ErrorInfo?.Message ?? submitFreePurchase.Message, "Error");
                 return;
             }
-
             await ClearAnswers();
-
             var haveApprovalTicket = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
-
             if (haveApprovalTicket)
             {
                 await modalPurchaseWithConfirmation?.Show();
-
             }
             else
             {
-                //Create payment queue
-                string paymentQueueName = $"{Handler}-payment-queue";
-                await QueueServices.EnsureQueueExistsAsync(paymentQueueName);
-
-                //Add to payment queue
-                var selectedSeats = selectedTickets.SelectMany(t => t.Value.SeatUUID.Split(',').Zip(t.Value.Seat.Split(','), (uuid, name) => new
+                //Update seat payload occupied selected seat
+                foreach (var ticket in selectedTickets)
                 {
-                    SeatUUID = uuid,
-                    SeatNumber = name
-                }))
-                .ToList();
-
-                // Initialize the list for unavailable seats
-                var unavailableSeatsList = new List<string>();
-                AvailableSeats.Clear();
-
-                foreach (var ticket in selectedSeats)
-                {
-                    var isUserInQueue = await QueueServices.IsUserInQueueAsync(paymentQueueName, ticket.SeatUUID);
-                    if (isUserInQueue)
+                    var ticketSeats = ticket.Value.SeatUUID.Split(",").ToList();
+                    foreach (var seat in ticketSeats)
                     {
-                        // Add to the unavailable seats list
-                        unavailableSeatsList.Add(ticket.SeatNumber);
-                        //Remove seat in selectedTickets
-                        var ticketToRemove = selectedTickets.FirstOrDefault(a => a.Value.SeatUUID.Contains(ticket.SeatUUID));
-                        var ticketSeatUUID = ticketToRemove.Value?.SeatUUID.Split(",");
-                        if (ticketSeatUUID.Length > 1)
+                        var updateSeatPlan = await seatplanApiHandler.UpdateSeatStatus(new Framework.ApiCommand.ApiCore.SeatPlan.Request.UpdateSeatStatusArgs
+                            {
+                                ActivityId = activity.Id,
+                                EventDate  = SelectedDate,
+                                CategoryId = ticket.Value.CategoryUUID,
+                                RowId      = ticket.Value.RowUUID,
+                                SeatId     = seat,
+                                Occupied   = true
+                            }, token);
+                        if (!updateSeatPlan.Succeeded || updateSeatPlan.Result is null || !updateSeatPlan.Result.IsSuccess)
                         {
-                            // Decrease the ticket count
-                            ticketToRemove.Value.Count -= 1;
-                            // Remove Seatnumner
-                            var seatList = ticketToRemove.Value.Seat.Split(",").ToList();
-                            seatList.Remove(ticket.SeatNumber);
-                            ticketToRemove.Value.Seat = string.Join(",",seatList);
-
-
-                            // Remove SeatUUID
-                            var seatUUIDList = ticketToRemove.Value.SeatUUID.Split(",").ToList();
-                            seatUUIDList.Remove(ticket.SeatUUID); // Ensure UUID is removed
-                            ticketToRemove.Value.SeatUUID = string.Join(",", seatUUIDList);
-                        }
-                        else
-                        {
-                            selectedTickets.Remove(ticketToRemove.Key);
+                            await NotificationService.Error("An error occured. Please contact support.", "Error");
                         }
                     }
-                    else
-                    {
-                        AvailableSeats.Add(ticket.SeatUUID);
-                    }
                 }
-
-                unavailableSeats = string.Join(", ", unavailableSeatsList);
-
-                if (!string.IsNullOrEmpty(unavailableSeats))
-                {
-                    await modalUnAvailable.Show();
-                    return;
-                }
-                else
-                {
-                    //Save selected ticket to the local storage
-                    await localStorage.SetItem(RESERVEDSEAT_ID, AvailableSeats);
-                    // Queue the available seats if any
-                    foreach (var seatUUID in AvailableSeats)
-                    {
-                        await QueueServices.EnqueueUserInPaymentAsync(paymentQueueName, seatUUID);
-                    }
-                    await PurchaseWithoutConfirmation();
-                }
+                //Set Seat Plan
+                await GetUpdatedSeatPayload();
+                await modalPurchaseWithoutConfirmation?.Show();
             }
         }
         catch (Exception ex)
         {
             await NotificationService.Error("An error occured. Contact Cinnamon support.", "Error");
         }
-    }
-
-    private async Task PurchaseWithoutConfirmation()
-    {
-        //Update seat payload occupied selected seat
-        foreach (var ticket in selectedTickets)
-        {
-            var ticketSeats = ticket.Value.SeatUUID.Split(",").ToList();
-            foreach (var seat in ticketSeats)
-            {
-                var updateSeatPlan = await seatplanApiHandler.UpdateSeatStatus(new Framework.ApiCommand.ApiCore.SeatPlan.Request.UpdateSeatStatusArgs
-                    {
-                        ActivityId = activity.Id,
-                        EventDate  = SelectedDate,
-                        CategoryId = ticket.Value.CategoryUUID,
-                        RowId      = ticket.Value.RowUUID,
-                        SeatId     = seat,
-                        Occupied   = true
-                    }, token);
-                if (!updateSeatPlan.Succeeded || updateSeatPlan.Result is null || !updateSeatPlan.Result.IsSuccess)
-                {
-                    await NotificationService.Error("An error occured. Please contact support.", "Error");
-                }
-            }
-        }
-        //Set Seat Plan
-        await GetUpdatedSeatPayload();
-        await modalPurchaseWithoutConfirmation?.Show();
     }
 
     private Task ClearAnswers()
@@ -2052,7 +2131,15 @@
                 selectedPayload = selectedOteDate.SeatPlanPayload;
             }
             await ViewAvailableDates();
-            await InvokeAsync(StateHasChanged);
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (scrollEffectModule != null)
+        {
+            await scrollEffectModule.DisposeAsync();
         }
     }
     private class CouponDetails
