@@ -641,6 +641,20 @@
         </ModalFooter>
     </ModalContent>
 </Modal>
+<Modal @ref="modalUnAvailable">
+    <ModalContent Centered>
+        <ModalBody>
+            <div class="queue-up d-flex">
+                <img class="img-logo" src="images/ote/information.svg" />
+                <div class="queue-up-text">
+                    <p class="expired-text">Seats Unavailable</p>
+                </div>
+            </div>
+            <p class="congratulations-text">Unfortunately, the seats (@unavailableSeats) you selected have already been purchased by another customer. Please choose different seats to continue with your booking.</p>
+            <button class="btn-try" @onclick="() => modalUnAvailable.Close(CloseReason.UserClosing)">Select other ticket</button>
+        </ModalBody>
+    </ModalContent>
+</Modal>
 }
 @code {
     [Parameter]
@@ -657,6 +671,8 @@
     private Modal modalRef {get; set;}
 
     private Modal modaltime {get; set;}
+
+    private Modal modalUnAvailable { get; set; }
 
     private Modal? modalQuestions;
 
@@ -713,6 +729,12 @@
     public TimeSpan RemainingTime { get; set; }
 
     public bool IsExpired { get; set; } = false;
+
+    private string unavailableSeats { get; set; }
+
+    private const string RESERVEDSEAT_ID = "selected-seats";
+
+    public List<string> AvailableSeats = new List<string>();
 
     private QueueInfo queueInfo = new QueueInfo();
 
@@ -1733,7 +1755,6 @@
         try
         {
             submitting = true;
-            isLoading = true;
             StateHasChanged();
 
             var createTracker = await CreatePaymentTracker();
@@ -1770,7 +1791,6 @@
                 }, token);
 
             submitting = false;
-            isLoading = false;
 
             if (!submitFreePurchase.Succeeded || submitFreePurchase.Result is null || !submitFreePurchase.Result.IsSuccess)
             {
@@ -1789,36 +1809,110 @@
             }
             else
             {
-                //Update seat payload occupied selected seat
-                foreach (var ticket in selectedTickets)
+                //Create payment queue
+                string paymentQueueName = $"{Handler}-payment-queue";
+                await QueueServices.EnsureQueueExistsAsync(paymentQueueName);
+
+                //Add to payment queue
+                var selectedSeats = selectedTickets.SelectMany(t => t.Value.SeatUUID.Split(',').Zip(t.Value.Seat.Split(','), (uuid, name) => new
                 {
-                    var ticketSeats = ticket.Value.SeatUUID.Split(",").ToList();
-                    foreach (var seat in ticketSeats)
+                    SeatUUID = uuid,
+                    SeatNumber = name
+                }))
+                .ToList();
+
+                // Initialize the list for unavailable seats
+                var unavailableSeatsList = new List<string>();
+                AvailableSeats.Clear();
+
+                foreach (var ticket in selectedSeats)
+                {
+                    var isUserInQueue = await QueueServices.IsUserInQueueAsync(paymentQueueName, ticket.SeatUUID);
+                    if (isUserInQueue)
                     {
-                        var updateSeatPlan = await seatplanApiHandler.UpdateSeatStatus(new Framework.ApiCommand.ApiCore.SeatPlan.Request.UpdateSeatStatusArgs
-                            {
-                                ActivityId = activity.Id,
-                                EventDate  = SelectedDate,
-                                CategoryId = ticket.Value.CategoryUUID,
-                                RowId      = ticket.Value.RowUUID,
-                                SeatId     = seat,
-                                Occupied   = true
-                            }, token);
-                        if (!updateSeatPlan.Succeeded || updateSeatPlan.Result is null || !updateSeatPlan.Result.IsSuccess)
+                        // Add to the unavailable seats list
+                        unavailableSeatsList.Add(ticket.SeatNumber);
+                        //Remove seat in selectedTickets
+                        var ticketToRemove = selectedTickets.FirstOrDefault(a => a.Value.SeatUUID.Contains(ticket.SeatUUID));
+                        var ticketSeatUUID = ticketToRemove.Value?.SeatUUID.Split(",");
+                        if (ticketSeatUUID.Length > 1)
                         {
-                            await NotificationService.Error("An error occured. Please contact support.", "Error");
+                            // Decrease the ticket count
+                            ticketToRemove.Value.Count -= 1;
+                            // Remove Seatnumner
+                            var seatList = ticketToRemove.Value.Seat.Split(",").ToList();
+                            seatList.Remove(ticket.SeatNumber);
+                            ticketToRemove.Value.Seat = string.Join(",",seatList);
+
+
+                            // Remove SeatUUID
+                            var seatUUIDList = ticketToRemove.Value.SeatUUID.Split(",").ToList();
+                            seatUUIDList.Remove(ticket.SeatUUID); // Ensure UUID is removed
+                            ticketToRemove.Value.SeatUUID = string.Join(",", seatUUIDList);
+                        }
+                        else
+                        {
+                            selectedTickets.Remove(ticketToRemove.Key);
                         }
                     }
+                    else
+                    {
+                        AvailableSeats.Add(ticket.SeatUUID);
+                    }
                 }
-                //Set Seat Plan
-                await GetUpdatedSeatPayload();
-                await modalPurchaseWithoutConfirmation?.Show();
+
+                unavailableSeats = string.Join(", ", unavailableSeatsList);
+
+                if (!string.IsNullOrEmpty(unavailableSeats))
+                {
+                    await modalUnAvailable.Show();
+                    return;
+                }
+                else
+                {
+                    //Save selected ticket to the local storage
+                    await localStorage.SetItem(RESERVEDSEAT_ID, AvailableSeats);
+                    // Queue the available seats if any
+                    foreach (var seatUUID in AvailableSeats)
+                    {
+                        await QueueServices.EnqueueUserInPaymentAsync(paymentQueueName, seatUUID);
+                    }
+                    await PurchaseWithoutConfirmation();
+                }
             }
         }
         catch (Exception ex)
         {
             await NotificationService.Error("An error occured. Contact Cinnamon support.", "Error");
         }
+    }
+
+    private async Task PurchaseWithoutConfirmation()
+    {
+        //Update seat payload occupied selected seat
+        foreach (var ticket in selectedTickets)
+        {
+            var ticketSeats = ticket.Value.SeatUUID.Split(",").ToList();
+            foreach (var seat in ticketSeats)
+            {
+                var updateSeatPlan = await seatplanApiHandler.UpdateSeatStatus(new Framework.ApiCommand.ApiCore.SeatPlan.Request.UpdateSeatStatusArgs
+                    {
+                        ActivityId = activity.Id,
+                        EventDate  = SelectedDate,
+                        CategoryId = ticket.Value.CategoryUUID,
+                        RowId      = ticket.Value.RowUUID,
+                        SeatId     = seat,
+                        Occupied   = true
+                    }, token);
+                if (!updateSeatPlan.Succeeded || updateSeatPlan.Result is null || !updateSeatPlan.Result.IsSuccess)
+                {
+                    await NotificationService.Error("An error occured. Please contact support.", "Error");
+                }
+            }
+        }
+        //Set Seat Plan
+        await GetUpdatedSeatPayload();
+        await modalPurchaseWithoutConfirmation?.Show();
     }
 
     private Task ClearAnswers()
@@ -1958,7 +2052,7 @@
                 selectedPayload = selectedOteDate.SeatPlanPayload;
             }
             await ViewAvailableDates();
-            InvokeAsync(StateHasChanged);
+            await InvokeAsync(StateHasChanged);
         }
     }
     private class CouponDetails
