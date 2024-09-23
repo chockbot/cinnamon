@@ -1916,6 +1916,8 @@
             var createTracker = await CreatePaymentTracker();
             if (createTracker is null)
             {
+                //Remove if not sucessfull
+                await RemoveInQueueIfError();
                 await NotificationService.Error("An error occured. Please contact support.", "Error");
                 return;
             }
@@ -1951,6 +1953,8 @@
 
             if (!submitFreePurchase.Succeeded || submitFreePurchase.Result is null || !submitFreePurchase.Result.IsSuccess)
             {
+                //Remove if not sucessfull
+                await RemoveInQueueIfError();
                 await NotificationService.Error(submitFreePurchase.Result?.ErrorInfo?.Message ?? submitFreePurchase.Message, "Error");
                 return;
             }
@@ -1993,7 +1997,20 @@
             await NotificationService.Error("An error occured. Contact Cinnamon support.", "Error");
         }
     }
-
+    private async Task RemoveInQueueIfError()
+    {
+        //Remove if not sucessfull
+        var seats = await localStorage.GetItem<List<string>>(RESERVEDSEAT_ID);
+        if (seats is not null)
+        {
+            //Dequeue selected seats
+            foreach (var seat in seats)
+            {
+                await QueueServices.RemoveSeatInPaymentQueue(seat, paymentQueueName);
+            }
+            await localStorage.RemoveItem(RESERVEDSEAT_ID);
+        }
+    }
     private Task ClearAnswers()
     {  
         predefinedQuestion.NameAnswer = string.Empty;
