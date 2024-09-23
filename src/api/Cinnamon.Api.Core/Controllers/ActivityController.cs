@@ -2722,8 +2722,9 @@ public class ActivityController : ControllerBase
                 Questions = args.Questions is not null ? args.Questions.Select(s => new Services.ActivityService.Interactors.OteCreateArgs.CustomQuestion
                 {
                     FieldType = s.FieldType,
-                    Question = s.Question,
-                    Required = s.Required
+                    Question  = s.Question,
+                    Required  = s.Required,
+                    Options   = s.Options
                 }) : null,
             });
 
@@ -2844,15 +2845,17 @@ public class ActivityController : ControllerBase
                 NewQuestions = args.NewQuestions is not null ? args.NewQuestions.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.CustomQuestion
                 {
                     FieldType = s.FieldType,
-                    Question = s.Question,
-                    Required = s.Required
+                    Question  = s.Question,
+                    Required  = s.Required,
+                    Options   = s.Options
                 }) : null,
                 UpdatedQuestions = args.UpdatedQuestions is not null ? args.UpdatedQuestions.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.CustomQuestion
                 {
                     FieldType = s.FieldType,
-                    Question = s.Question,
-                    Required = s.Required,
-                    Id = s.Id
+                    Question  = s.Question,
+                    Required  = s.Required,
+                    Options   = s.Options,
+                    Id        = s.Id
                 }) : null,
                 DeletedQuestions = args.DeletedQuestions
             });

@@ -18,4 +18,6 @@ public class CreateCustomQuestionArgs
 
     [Required]
     public bool Required {get; set;}
+
+    public string Options { get; set; }
 }

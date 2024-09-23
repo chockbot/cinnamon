@@ -298,9 +298,10 @@ public class OteCreateHandler : IOteCreateHandler
                 var questionsRes = args.Questions.Select(q => providerCustomQuestionData.CreateCustomQuestion(new Framework.ApiCommand.ApiData.ProviderCustomQuestion.Request.CreateCustomQuestionArgs {
                     ActivityId = createOteRes.Result.Result.Id,
                     FieldLabel = q.Question,
-                    FieldType = q.FieldType,
+                    FieldType  = q.FieldType,
                     ProviderId = currentUser.Result.Id,
-                    Required = q.Required
+                    Required   = q.Required,
+                    Options    = q.Options
                 }));
 
                 // dont check the result if error or success

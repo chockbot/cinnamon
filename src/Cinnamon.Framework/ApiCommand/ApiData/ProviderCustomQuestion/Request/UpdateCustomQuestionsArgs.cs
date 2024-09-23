@@ -26,5 +26,7 @@ public class UpdateCustomQuestionsArgs
 
         [Required]
         public bool Required {get; set;}
+
+        public string Options { get; set; }
     }
 }

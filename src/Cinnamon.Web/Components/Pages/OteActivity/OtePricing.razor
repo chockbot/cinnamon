@@ -61,7 +61,6 @@
         <div class="ticket-options">
             <div class="div-option-details email-box" id="hoverDiv" @onclick="() => registrationModal.Show()">
                 <img class="option-img image-holder" src="images/ote/registration.svg" alt="cover-photo">
-                <img class="option-img image-holder" src="images/ote/registration.svg" alt="cover-photo">
                 <div class="option-name text-box">
                     <p class="registration">Registration</p>
                     <p class="reg-status">@((ModelState.IsOpen == true) ? "Open" : "Closed")</p>
@@ -325,22 +324,50 @@
 <Modal @ref="modalCustomQuestion">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center pb-0">
-            @if(questionAction == QuestionAction.Edit)
-            {
-                <p class="font-20 font-weight-700 color-black-100 mb-0">Edit Question</p>
-            }
-            else
-            {
-                <p class="font-20 font-weight-700 color-black-100 mb-0">Add Question</p>
-            }
+            <p class="font-20 font-weight-700 color-black-100 mb-0">
+                @(questionAction == QuestionAction.Edit ? "Edit Question" : "Add Question")
+            </p>
         </ModalHeader>
         <ModalBody class="px-4">
             <Field class="mb-3">
-                <FieldLabel class="color-grey-100 mb-0">Question</FieldLabel>
+                <div class="d-flex justify-content-between">
+                    <FieldLabel class="color-grey-100 text-question">Question</FieldLabel>
+                    <Field>
+                        <FieldBody>
+                            <Select class="dropdown-type" Size="Size.Medium" @bind-SelectedValue="formQuestion.FieldType" @onchange="OnQuestionTypeChange">
+                                <SelectItem Value="0" Disabled class="text-capitalize">--Question Type--</SelectItem>
+                                <SelectItem Value="@Cinnamon.Framework.Enums.FieldType.TextArea.ToString()" class="text-capitalize">Short Text</SelectItem>
+                                <SelectItem Value="@Cinnamon.Framework.Enums.FieldType.Check.ToString()" class="text-capitalize">Checkboxes</SelectItem>
+                            </Select>
+                        </FieldBody>
+                    </Field>
+                </div>
                 <FieldBody>
                     <MemoEdit @bind-Text="formQuestion.Question" Rows="5" />
                 </FieldBody>
             </Field>
+           
+            @if (formQuestion.FieldType == Cinnamon.Framework.Enums.FieldType.Check.ToString())
+            {
+                <Field class="mb-3">
+                    <FieldBody>
+                        @for (int i = 0; i < formQuestion.Options.Count; i++)
+                        {
+                            string name = $"Option {i + 1}";
+                            <div class="d-flex mb-2 gap-2 w-100">
+                                <TextEdit Placeholder="@name" class="option-text" @bind-Value="formQuestion.Options[i]"/>
+                                <Button class="btn-remove-option" @onclick="() => RemoveOption(i)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M1 15L8.00002 8.00003M8.00002 8.00003L15 1M8.00002 8.00003L1 1M8.00002 8.00003L15 15" stroke="#D9D9D9" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </Button>
+                            </div>
+                        }
+                        <button class="btn-add-option" @onclick="AddOption">+ Add Option</button>
+                    </FieldBody>
+                </Field>
+            }
+
             <div class="d-flex">
                 <label class="color-black-100 font-weight-700 me-3">Required</label>
                 <div class="form-check form-switch">
@@ -359,10 +386,10 @@
             </div>
         </ModalFooter>
     </ModalContent>
-    </Modal>
+</Modal>
 
-    @*Registration Modal*@
-    <Modal @ref="registrationModal">
+@*Registration Modal*@
+<Modal @ref="registrationModal">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center pb-0">
             <p class="font-20 font-weight-700 color-black-100 mb-0">Registration</p>
@@ -389,7 +416,7 @@
     </ModalContent>
     </Modal>
 
-    <Offcanvas @ref="offcanvas" Closing="OffCanvasClosing" ShowBackdrop Placement="Placement.End">
+<Offcanvas @ref="offcanvas" Closing="OffCanvasClosing" ShowBackdrop Placement="Placement.End">
     <OffcanvasHeader class="px-0 py-4 bg-white-100">
         <div class="px-3 d-flex justify-content-between position-relative w-100">
             @if (selectedEmailTemplate == 0)
@@ -497,7 +524,7 @@
     </ModalContent>
     </Modal>
 
-    @*Add Ticket Modal*@
+@*Add Ticket Modal*@
 <Modal @ref="ticketModal">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center pb-0">
@@ -695,7 +722,7 @@
     </ModalContent>
     </Modal>
 
-    <Modal @ref="modalError">
+<Modal @ref="modalError">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center pb-0">
             <p class="font-20 font-weight-700 color-black-100 mb-0">Error Message</p>
@@ -710,7 +737,7 @@
     </ModalContent>
     </Modal>
 
-    <ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
+<ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
                OnConfirmationChanged="ConfirmDeleteChanged">
     <HeaderContent>
         <p class="m-0">Confirm Action</p>
@@ -718,10 +745,10 @@
     <BodyContent>
         <p class="m-0">Are you sure you want to remove this ticket?</p>
     </BodyContent>
-    </ConfirmDialog>
+</ConfirmDialog>
 
 @code
-{
+    {
     [Parameter]
     public EventCallback OnNextClick { get; set; }
 
@@ -797,7 +824,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-       
+
         await Task.Delay(2000);
         await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.addHoverEffect", "#hoverDiv");
         if (IsEditRegistration)
@@ -943,9 +970,10 @@
         {
             questions.AddRange(data.UpdatedQuestions.Select(q => new CustomQuestion {
                 FieldType = q.FieldType,
-                Question = q.Question,
-                Required = q.Required,
-                Id = q.Id
+                Question  = q.Question,
+                Required  = q.Required,
+                Id        = q.Id,
+                Options   = q.Options
             }));
         }
 
@@ -1536,7 +1564,9 @@
             Id = lastId + 1,
             Question = formQuestion.Question,
             Required = formQuestion.Required,
-            IsNew = true
+            IsNew = true,
+            FieldType = formQuestion.FieldType,
+            Options = formQuestion.Options
         });
         return CloseCustomQuestion();
     }
@@ -1548,6 +1578,8 @@
         {
             question.Question = formQuestion.Question;
             question.Required = formQuestion.Required;
+            question.FieldType = formQuestion.FieldType;
+            question.Options = formQuestion.Options;
         }
         return CloseCustomQuestion();
     }
@@ -1578,7 +1610,8 @@
             FieldType = question.FieldType,
             Id = question.Id,
             Question = question.Question,
-            Required = question.Required
+            Required = question.Required,
+            Options = question.Options,
         };
         questionAction = QuestionAction.Edit;
         return modalCustomQuestion?.Show();
@@ -1681,6 +1714,7 @@
         public bool Required {get; set;}
         public string FieldType {get; set;} = Cinnamon.Framework.Enums.FieldType.TextArea.ToString();
         public bool IsNew {get; set;} = false;
+        public List<string> Options { get; set; } = new List<string>(); // Add this line for options
     }
 
     public class SeatPlan
@@ -1741,4 +1775,25 @@
 
         return capacityModal.Show();
     }
-}
+    private void OnQuestionTypeChange(ChangeEventArgs e)
+    {
+        formQuestion.FieldType = e.Value.ToString();
+        if (formQuestion.FieldType != Cinnamon.Framework.Enums.FieldType.Check.ToString())
+        {
+            formQuestion.Options.Clear(); // Clear options if not a checkbox question
+        }
+    }
+
+    private void AddOption()
+    {
+        formQuestion.Options.Add(string.Empty); // Add an empty option
+    }
+
+    private void RemoveOption(int index)
+    {
+        if (index >= 0 && index <= formQuestion.Options.Count)
+        {
+            formQuestion.Options.RemoveAt(index - 1); // Remove the selected option
+        }
+    }
+} 
