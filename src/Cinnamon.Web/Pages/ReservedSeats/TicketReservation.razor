@@ -695,6 +695,20 @@
         </ModalFooter>
     </ModalContent>
 </Modal>
+<Modal @ref="modalUnAvailable">
+    <ModalContent Centered>
+        <ModalBody>
+            <div class="queue-up d-flex">
+                <img class="img-logo" src="images/ote/information.svg" />
+                <div class="queue-up-text">
+                    <p class="expired-text">Seats Unavailable</p>
+                </div>
+            </div>
+            <p class="congratulations-text">Unfortunately, the seats (@unavailableSeats) you selected have already been reserved by another customer. Please choose different seats to continue with your booking.</p>
+            <button class="btn-try" @onclick="() => modalUnAvailable.Close(CloseReason.UserClosing)">Select other ticket</button>
+        </ModalBody>
+    </ModalContent>
+</Modal>
 }
 @code {
     [Parameter]
@@ -796,6 +810,12 @@
     public bool viewOnly { get; set; } = false;
     IJSObjectReference scrollEffectModule;
 
+    private Modal modalUnAvailable { get; set; }
+    private string unavailableSeats { get; set; }
+    private const string RESERVEDSEAT_ID = "selected-seats";
+    public string paymentQueueName { get; set; }
+    public List<string> AvailableSeats = new List<string>();
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -807,6 +827,12 @@
             {
                 NavigationManager.NavigateTo("/explore");
                 return;
+            }
+            else
+            {
+                //Create payment queue
+                paymentQueueName = $"{Handler}-payment-queue";
+                await QueueServices.EnsureQueueExistsAsync(paymentQueueName);
             }
         }
         catch (Exception ex)
@@ -1376,7 +1402,7 @@
         ClearCouponDetails();
         StateHasChanged();
     }
-    
+
     private Task ProceedToPayment()
     {
         isLoading = true;
@@ -1833,6 +1859,55 @@
 
     private async Task ProceedToFreePurchase()
     {
+        //Add to payment queue
+        var selectedSeats = selectedTickets.SelectMany(t => t.Value.SeatUUID.Split(',').Zip(t.Value.Seat.Split(','), (uuid, name) => new
+        {
+            SeatUUID = uuid,
+            SeatNumber = name
+        }))
+        .ToList();
+
+        // Initialize the list for unavailable seats
+        var unavailableSeatsList = new List<string>();
+        AvailableSeats.Clear();
+
+        foreach (var ticket in selectedSeats)
+        {
+            var isUserInQueue = await QueueServices.IsUserInQueueAsync(paymentQueueName, ticket.SeatUUID);
+            if (isUserInQueue)
+            {
+                // Add to the unavailable seats list
+                unavailableSeatsList.Add(ticket.SeatNumber);
+            }
+            else
+            {
+                AvailableSeats.Add(ticket.SeatUUID);
+            }
+        }
+
+        unavailableSeats = string.Join(", ", unavailableSeatsList);
+
+        if (!string.IsNullOrEmpty(unavailableSeats))
+        {
+            await modalUnAvailable.Show();
+            isLoading = false;
+            return;
+        }
+        else
+        {
+            //Save selected ticket to the local storage
+            await localStorage.SetItem(RESERVEDSEAT_ID, AvailableSeats);
+            // Queue the available seats if any
+            foreach (var seatUUID in AvailableSeats)
+            {
+                await QueueServices.EnqueueUserInPaymentAsync(paymentQueueName, seatUUID);
+            }
+            await SubmitFreeTransaction();
+        }
+    }
+
+    private async Task SubmitFreeTransaction()
+    {
         try
         {
             submitting = true;
@@ -1841,6 +1916,8 @@
             var createTracker = await CreatePaymentTracker();
             if (createTracker is null)
             {
+                //Remove if not sucessfull
+                await RemoveInQueueIfError();
                 await NotificationService.Error("An error occured. Please contact support.", "Error");
                 return;
             }
@@ -1872,21 +1949,20 @@
                 }, token);
 
             submitting = false;
+            isLoading = false;
 
             if (!submitFreePurchase.Succeeded || submitFreePurchase.Result is null || !submitFreePurchase.Result.IsSuccess)
             {
+                //Remove if not sucessfull
+                await RemoveInQueueIfError();
                 await NotificationService.Error(submitFreePurchase.Result?.ErrorInfo?.Message ?? submitFreePurchase.Message, "Error");
                 return;
             }
-
             await ClearAnswers();
-
             var haveApprovalTicket = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
-
             if (haveApprovalTicket)
             {
                 await modalPurchaseWithConfirmation?.Show();
-
             }
             else
             {
@@ -1921,7 +1997,20 @@
             await NotificationService.Error("An error occured. Contact Cinnamon support.", "Error");
         }
     }
-
+    private async Task RemoveInQueueIfError()
+    {
+        //Remove if not sucessfull
+        var seats = await localStorage.GetItem<List<string>>(RESERVEDSEAT_ID);
+        if (seats is not null)
+        {
+            //Dequeue selected seats
+            foreach (var seat in seats)
+            {
+                await QueueServices.RemoveSeatInPaymentQueue(seat, paymentQueueName);
+            }
+            await localStorage.RemoveItem(RESERVEDSEAT_ID);
+        }
+    }
     private Task ClearAnswers()
     {  
         predefinedQuestion.NameAnswer = string.Empty;
