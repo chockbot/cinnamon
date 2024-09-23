@@ -1299,6 +1299,7 @@
         ClearCouponDetails();
         StateHasChanged();
     }
+
     private Task ProceedToPayment()
     {
         if (currentLogin is null)
@@ -1732,6 +1733,7 @@
         try
         {
             submitting = true;
+            isLoading = true;
             StateHasChanged();
 
             var createTracker = await CreatePaymentTracker();
@@ -1768,6 +1770,7 @@
                 }, token);
 
             submitting = false;
+            isLoading = false;
 
             if (!submitFreePurchase.Succeeded || submitFreePurchase.Result is null || !submitFreePurchase.Result.IsSuccess)
             {
