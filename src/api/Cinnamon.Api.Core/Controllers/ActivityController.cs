@@ -832,6 +832,7 @@ public class ActivityController : ControllerBase
                         Schedule = a.Schedule is not null ? new ActivityDTO.OteSchedule {
                             From = a.Schedule.From,
                             To = a.Schedule.To,
+                            IsReservedSeating = a.Schedule.IsReservedSeating
                         } : null
                         
                     };

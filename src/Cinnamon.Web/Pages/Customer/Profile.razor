@@ -436,8 +436,9 @@ else
                         };
                     }).ToList(),
                     Schedule = a.Schedule is not null ? new Activity.OteSchedule {
-                        From = a.Schedule.From,
-                        To = a.Schedule.To,
+                        From              = a.Schedule.From,
+                        To                = a.Schedule.To,
+                        IsReservedSeating = a.Schedule.IsReservedSeating
                     } : null
                 };
             }).ToList();
