@@ -115,7 +115,7 @@ public class ProviderCustomQuestionRepository : IProviderCustomQuestionRepositor
                 question.ActivityId = questionDTO.ActivityId;
                 question.ProviderId = questionDTO.ProviderId;
                 question.Required   = questionDTO.Required;
-                question.Options    = question.Options;
+                question.Options    = questionDTO.Options;
             }
              
             var result = await dataStore.ProviderCustomQuestion.UpdateRange(questions);

@@ -641,9 +641,26 @@
                             <Field class="mb-3">
                                 <FieldLabel class="color-black-100 mb-0"><span class="asterisk-symbol">&lowast;</span>@question.Question</FieldLabel>
                                 <FieldBody>
-                                    <MemoEdit @bind-Text="question.Answer" Rows="3" Placeholder="Place your answer here..">
-                                        <ValidationError />
-                                    </MemoEdit>
+                                    @if (question.FieldType == Cinnamon.Framework.Enums.FieldType.Check.ToString())
+                                    {
+                                        // For checkbox options
+                                        foreach (var option in question.Options.Split(",").ToList())
+                                        {
+                                            <div class="mt-2">
+                                                <input type="radio"
+                                                       name="@question.Id"
+                                                       value="@option"
+                                                       @onchange="(e) => UpdateAnswer(question, option)" />
+                                                <label>@option</label>
+                                            </div>
+                                        }
+                                    }
+                                    else if (question.FieldType == Cinnamon.Framework.Enums.FieldType.TextArea.ToString())
+                                    {
+                                        <MemoEdit @bind-Text="question.Answer" Rows="3" Placeholder="Place your answer here..">
+                                            <ValidationError />
+                                        </MemoEdit>
+                                    }
                                 </FieldBody>
                             </Field>
                         </Validation>
@@ -653,12 +670,30 @@
                         <Field class="mb-3">
                             <FieldLabel class="color-black-100 mb-0">@question.Question</FieldLabel>
                             <FieldBody>
-                                <MemoEdit @bind-Text="question.Answer" Rows="3" Placeholder="Place your answer here.." />
+                                @if (question.FieldType == Cinnamon.Framework.Enums.FieldType.Check.ToString())
+                                {
+                                    // For checkbox options
+                                    foreach (var option in question.Options.Split(",").ToList())
+                                    {
+                                        <div class="mt-2">
+                                                <input type="radio"
+                                                       name="@question.Id"
+                                                       value="@option"
+                                                       @onchange="(e) => UpdateAnswer(question, option)" />
+                                                <label>@option</label>
+                                         </div>
+                                    }
+                                }
+                                else if (question.FieldType == Cinnamon.Framework.Enums.FieldType.TextArea.ToString())
+                                {
+                                    <MemoEdit @bind-Text="question.Answer" Rows="3" Placeholder="Place your answer here.." />
+                                }
                             </FieldBody>
                         </Field>
                     }
                 }
             </Validations>
+
         </ModalBody>
         <ModalFooter>
             <div class="button-footer">
@@ -1799,9 +1834,10 @@
         activityQuestions.AddRange(activityQuestionsRes.Result.Result.Select(q => new ActivityQuestion
             {
                 FieldType = q.FieldType,
-                Id = q.Id,
-                Question = q.FieldLabel,
-                Required = q.Required
+                Id        = q.Id,
+                Question  = q.FieldLabel,
+                Required  = q.Required,
+                Options   = q.Options
             }));
 
         var filtered = activityQuestions
@@ -1957,12 +1993,23 @@
                 Id = q.Id,
                 Answer = q.Answer,
                 Question = q.Question,
-                Required = q.Required
+                Required = q.Required,
+                Options = q.Options
             }));
 
         return questions;
     }
+    private void UpdateAnswer(ActivityQuestion question, string selectedOption)
+    {
+        // Find the specific question using FirstOrDefault
+        var targetQuestion = filteredQuestions.FirstOrDefault(a => a.Id == question.Id);
 
+        // If the question is found, update its Answer property
+        if (targetQuestion != null)
+        {
+            targetQuestion.Answer = selectedOption;
+        }
+    }
     private class TicketItem
     {
         public int PurchaseOrderId { get; set; }
@@ -1977,6 +2024,7 @@
         public string Question { get; set; }
         public string FieldType { get; set; }
         public bool Required { get; set; }
+        public string Options { get; set; }
 
         // extra fields
         [Required(ErrorMessage = "Please write your answer")]

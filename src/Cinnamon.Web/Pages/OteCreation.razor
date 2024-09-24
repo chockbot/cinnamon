@@ -1105,7 +1105,7 @@
             declinedBody = declinedResult.Result.Result.Body;
         }
 
-        var providerQuestions = new List<OtePricing.CustomQuestion>();
+        var providerQuestions = new List<OtePricing.CustomQuestion>(); 
 
         var providerQuestionsRes = await activityApiHandler.ProviderQuestions(new Framework.ApiCommand.ApiCore.Activity.Request.ProviderQuestionsArgs {
             ActivityId = oteRes.Result.Result.Id
