@@ -88,6 +88,7 @@ public class GetOwnedActivitiesResult
         {
             public DateTime From {get; set;}
             public DateTime To {get; set;}
+            public bool IsReservedSeating { get; set; }
         }
     }
 }

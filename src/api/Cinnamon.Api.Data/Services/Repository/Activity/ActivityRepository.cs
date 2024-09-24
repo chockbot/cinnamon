@@ -596,8 +596,9 @@ public class ActivityRepository : IActivityRepository
                 if (includeOteSchedule.HasValue && includeOteSchedule.Value)
                 {
                     activityDTO.OteSchedule = a.OteSchedule is not null ?  new OteActivityDTO {
-                        ScheduleFrom = a.OteSchedule.From,
-                        ScheduleTo = a.OteSchedule.To
+                        ScheduleFrom      = a.OteSchedule.From,
+                        ScheduleTo        = a.OteSchedule.To,
+                        IsReservedSeating = a.OteSchedule.ReserveSeat
                     } : null;
                 }
                 return activityDTO;

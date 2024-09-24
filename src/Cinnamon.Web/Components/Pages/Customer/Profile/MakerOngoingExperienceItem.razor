@@ -23,20 +23,40 @@
                 }
                 else
                 {
-                    <a class="button" href=@DetailsUrl(Activity.Handler, (int)Activity.ExperienceCreationType, Activity.ForceDisable) style="text-decoration:none;">
-                        <img src="@GetImage()" class="image-header card-img">
-                        <div class="card-img-overlay">
-                            @if (Activity.OngoingStudents > 0)
-                            {
-                                <div class="rounded-pill ongoing-section">
-                                    <div class="active-badge" style="text-align:center">
-                                        <span class="pulse"></span>
-                                        <span class="active-tag-label">@Activity.OngoingStudents</span>
+                    @if(Activity.Schedule is not null)
+                    {
+                        <a class="button" href=@DetailsUrl(Activity.Handler, (int)Activity.ExperienceCreationType, Activity.ForceDisable, Activity.Schedule.IsReservedSeating) style="text-decoration:none;">
+                            <img src="@GetImage()" class="image-header card-img">
+                            <div class="card-img-overlay">
+                                @if (Activity.OngoingStudents > 0)
+                                {
+                                    <div class="rounded-pill ongoing-section">
+                                        <div class="active-badge" style="text-align:center">
+                                            <span class="pulse"></span>
+                                            <span class="active-tag-label">@Activity.OngoingStudents</span>
+                                        </div>
                                     </div>
-                                </div>
-                            }
-                        </div>
-                    </a>
+                                }
+                            </div>
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="button" href=@DetailsUrl(Activity.Handler, (int)Activity.ExperienceCreationType, Activity.ForceDisable, false) style="text-decoration:none;">
+                            <img src="@GetImage()" class="image-header card-img">
+                            <div class="card-img-overlay">
+                                @if (Activity.OngoingStudents > 0)
+                                {
+                                    <div class="rounded-pill ongoing-section">
+                                        <div class="active-badge" style="text-align:center">
+                                            <span class="pulse"></span>
+                                            <span class="active-tag-label">@Activity.OngoingStudents</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </a>
+                    }
                 }
                
                 <div class="card-container">
@@ -125,7 +145,7 @@
         }
         return string.Empty;
     }
-    private string DetailsUrl(string handler, int xpCreationType, bool IsForceDisabled)
+    private string DetailsUrl(string handler, int xpCreationType, bool IsForceDisabled, bool IsReservedSeat)
     {
         string url = string.Empty;
         if (IsForceDisabled)
@@ -136,7 +156,14 @@
         {
             if (xpCreationType == 3)
             {
-                url = $"explore/ote/{handler}";
+                if (IsReservedSeat)
+                {
+                    url = $"explore/ote/reserved/{handler}";
+                }
+                else
+                {
+                    url = $"explore/ote/{handler}";
+                }
             }
             else if (xpCreationType == 1)
             {
