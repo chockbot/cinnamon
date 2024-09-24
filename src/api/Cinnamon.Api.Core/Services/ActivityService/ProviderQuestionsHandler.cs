@@ -46,11 +46,12 @@ public class ProviderQuestionsHandler : IProviderQuestionsHandler
 
             var providerQuestions = providerCustomQuestionsRes.Result.Result.Select(q => new ProviderQuestionsResult.Question {
                 FieldLabel = q.FieldLabel,
-                FieldType = q.FieldType,
-                Required = q.Required,
-                ActivitId = q.ActivityId,
-                Id = q.Id,
-                ProviderId = q.ProviderId
+                FieldType  = q.FieldType,
+                Required   = q.Required,
+                ActivitId  = q.ActivityId,
+                Id         = q.Id,
+                ProviderId = q.ProviderId,
+                Options    = q.Options
             });
 
             return AppResult<ProviderQuestionsResult>.CreateSucceeded(new ProviderQuestionsResult {Questions = providerQuestions}, "Successfully get provider questions.");

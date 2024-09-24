@@ -169,5 +169,7 @@ public class CreateOteArgs
 
         [Required]
         public bool Required {get; set;}
+
+        public string Options { get; set; }
     }
 }

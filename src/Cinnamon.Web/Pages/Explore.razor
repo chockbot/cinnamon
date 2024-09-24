@@ -121,7 +121,7 @@
                             Login | Signup
                         </button>
                         }
-            @if (AuthState != null && AuthState.Identity.IsAuthenticated)
+            @if (AuthState != null && AuthState.Identity.IsAuthenticated && CustomerModel.CustomerProfile != null)
             {
             <div class="dropdown">
                 <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">

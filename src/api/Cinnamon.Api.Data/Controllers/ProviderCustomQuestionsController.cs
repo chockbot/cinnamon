@@ -28,7 +28,8 @@ public class ProviderCustomQuestionsController : ControllerBase
                 FieldLabel = args.FieldLabel,
                 FieldType = args.FieldType,
                 ProviderId = args.ProviderId,
-                Required = args.Required
+                Required = args.Required,
+                Options = args.Options
             });
             if(!result.Succeeded || result.Result is null)
             {
@@ -94,10 +95,11 @@ public class ProviderCustomQuestionsController : ControllerBase
             var dtos = args.Questions.Select(q => new Framework.ApiCommand.ApiData.DTO.ProviderCustomQuestion.ProviderCustomQuestionDTO {
                 ActivityId = q.ActivityId,
                 FieldLabel = q.FieldLabel,
-                FieldType = q.FieldType,
-                Id = q.Id,
+                FieldType  = q.FieldType,
+                Id         = q.Id,
                 ProviderId = q.ProviderId,
-                Required = q.Required
+                Required   = q.Required,
+                Options    = q.Options
             });
             
             var result = await providerCustomQuestionRepository.UpdateCustomerQuestions(dtos);

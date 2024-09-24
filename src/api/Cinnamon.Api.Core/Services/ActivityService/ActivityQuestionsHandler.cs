@@ -47,11 +47,12 @@ public class ActivityQuestionsHandler : IActivityQuestionsHandler
             }
 
             var questions = activityQuestions.Result.Result.Select(q => new ActivityQuestionsResult.Question {
-                ActivitId = q.ActivityId,
+                ActivitId  = q.ActivityId,
                 FieldLabel = q.FieldLabel,
-                FieldType = q.FieldType,
-                Id = q.Id,
-                Required = q.Required
+                FieldType  = q.FieldType,
+                Id         = q.Id,
+                Required   = q.Required,
+                Options    = q.Options
             });
 
             return AppResult<ActivityQuestionsResult>.CreateSucceeded(new ActivityQuestionsResult {Questions = questions}, "Successfully get activity questions.");

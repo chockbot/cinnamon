@@ -852,7 +852,8 @@
                     Questions = pricing.NewQuestions.Select(q => new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.CustomQuestion {
                         FieldType = q.FieldType,
                         Question = q.Question,
-                        Required = q.Required
+                        Required = q.Required,
+                        Options = string.Join(",", q.Options)
                     })
                 }, token);
 
@@ -974,14 +975,16 @@
                 NewQuestions = pricing.NewQuestions.Select(q => new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.CustomQuestion {
                     FieldType = q.FieldType,
                     Question = q.Question,
-                    Required = q.Required
+                    Required = q.Required,
+                    Options = string.Join(",", q.Options)
                 }),
                 DeletedQuestions = pricing.DeletedQuestions,
                 UpdatedQuestions = pricing.UpdatedQuestions.Select(q => new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.CustomQuestion {
                     Id = q.Id,
                     FieldType = q.FieldType,
                     Question = q.Question,
-                    Required = q.Required
+                    Required = q.Required,
+                    Options = string.Join(",", q.Options)
                 })
             }, token);
 
@@ -1102,7 +1105,7 @@
             declinedBody = declinedResult.Result.Result.Body;
         }
 
-        var providerQuestions = new List<OtePricing.CustomQuestion>();
+        var providerQuestions = new List<OtePricing.CustomQuestion>(); 
 
         var providerQuestionsRes = await activityApiHandler.ProviderQuestions(new Framework.ApiCommand.ApiCore.Activity.Request.ProviderQuestionsArgs {
             ActivityId = oteRes.Result.Result.Id
@@ -1111,10 +1114,11 @@
         {
             providerQuestions.AddRange(providerQuestionsRes.Result.Result.Select(q => new OtePricing.CustomQuestion {
                 FieldType = q.FieldType,
-                IsNew = false,
-                Question = q.FieldLabel,
-                Required = q.Required,
-                Id = q.Id
+                IsNew     = false,
+                Question  = q.FieldLabel,
+                Required  = q.Required,
+                Id        = q.Id,
+                Options   = q.Options.Split(',').ToList()
             }));
         }
 
