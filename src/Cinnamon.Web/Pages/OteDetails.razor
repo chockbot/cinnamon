@@ -1852,10 +1852,15 @@
 
     private async Task SubmitAnswerQuestions()
     {
-        var validForms = await questionValidation?.ValidateAll();
         var validPredefined = await predefinedQuestionValidation?.ValidateAll();
-        if (!validForms || !validPredefined) return;
-
+        //Get Question
+        var questions = GetQuestions();
+        var IsNotValid = questions.Any(a => a.Required && string.IsNullOrEmpty(a.Answer));
+        if(IsNotValid)
+        {
+            await NotificationService.Error("Please provide your answer.", "Required!");
+        }
+        if (!validPredefined || IsNotValid) return;
         await questionValidation.ClearAll();
         await predefinedQuestionValidation.ClearAll();
 
