@@ -354,9 +354,10 @@
                         @for (int i = 0; i < formQuestion.Options.Count; i++)
                         {
                             string name = $"Option {i + 1}";
+                            var index = i;  // Capture the current index
                             <div class="d-flex mb-2 gap-2 w-100">
-                                 <TextEdit Placeholder="@name" Text="@formQuestion.Options[i]" TextChanged="(value) => UpdateOptionValue(value, i)" />
-                                <Button class="btn-remove-option" @onclick="() => RemoveOption(i)">
+                                <TextEdit ElementId="@formQuestion.Options[i]" Placeholder="@name" Text="@formQuestion.Options[index]" TextChanged="(value) => UpdateOptionValue(value, index)" />
+                                <Button class="btn-remove-option" @onclick="() => RemoveOption(index)">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
                                         <path d="M1 15L8.00002 8.00003M8.00002 8.00003L15 1M8.00002 8.00003L1 1M8.00002 8.00003L15 15" stroke="#D9D9D9" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
@@ -1785,9 +1786,9 @@
     }
     private Task UpdateOptionValue(string value, int index)
     {
-        if (index >= 0 && index <= formQuestion.Options.Count) // Use < instead of <=
+        if (index >= 0 && index < formQuestion.Options.Count) // Use < instead of <=
         {
-            formQuestion.Options[index - 1] = value; // Update the option in the list
+            formQuestion.Options[index] = value; // Update the option in the list
             StateHasChanged(); // Trigger UI update if necessary
             return Task.CompletedTask; // Correctly returns a Task
         }
@@ -1801,9 +1802,9 @@
 
     private void RemoveOption(int index)
     {
-        if (index >= 0 && index <= formQuestion.Options.Count)
+        if (index >= 0 && index < formQuestion.Options.Count)
         {
-            formQuestion.Options.RemoveAt(index - 1); // Remove the selected option
+            formQuestion.Options.RemoveAt(index); // Remove the selected option
             StateHasChanged(); // Ensure the UI updates
         }
     }
