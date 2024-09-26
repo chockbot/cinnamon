@@ -459,18 +459,17 @@
                                 <div class="grid-item" @key="item">
                                     @if (!item.Empty)
                                     {
-                                        <span class="@DayClass(item.Selected, item.Date)">
-                                            @NumberString(item.Date.Day)
-                                        </span>
-                                        @if (item.Selected)
-                                        {
-                                            @foreach (var name in item.Title)
+                                        <div class="@DayClass(item.Selected, item.Date)">
+                                            <span>@NumberString(item.Date.Day)</span>
+                                            @if (item.Title.Any())
                                             {
-                                                <Tooltip Text="@name.EventName">
-                                                    <button class="event-title" @onclick="@(() => SelectSchedule(name))">@name.EventName</button>
-                                                </Tooltip>
+                                                <div class="event-dot-container">
+                                                    <Tooltip Text="@string.Join(Environment.NewLine, item.Title.Select(t => t.EventName))">
+                                                        <span class="event-dot"></span>
+                                                    </Tooltip>
+                                                </div>
                                             }
-                                        }
+                                        </div>
                                     }
                                 </div>
                             }

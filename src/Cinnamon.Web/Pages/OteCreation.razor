@@ -141,67 +141,69 @@
         
         @if(isSelectSeatPlan)
         {
-            <Row class="creation-seatplan-wrapper">
-                <Column ColumnSize="ColumnSize.Is9.OnDesktop">
-                    <Container>
-                        <div class="seat-plan-content pt-3">
-                            @if(!string.IsNullOrEmpty(seatPlanPayload))
-                            {
-                                <Cinnamon.Web.Components.Common.SeatPlan.Container ViewOnly="true" Payload="@seatPlanPayload" />
-                            }
-                            else
-                            {
-                                <div class="seat-plan">
-                                    <p>Seat plan not available</p>
-                                </div>
-                            }
-                        </div>
-                    </Container>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is3.OnDesktop">
-                    <div class="seat-plan-sidebar">
-                        <div class="position-relative h-100">
-                            <div class="p-3 text-center">
-                                <h4 class="m-0 color-black-100 font-18 font-weight-700">Select Template</h4>        
-                            </div>
-
-                            <ListGroup style="border-radius: 0px;" Mode="ListGroupMode.Selectable" SelectedItemChanged="SelectedItemChanged">
-                                @foreach (var template in templates)
+            <LoadingIndicator @ref="seatLoadingIndicator">
+                <Row class="creation-seatplan-wrapper">
+                    <Column ColumnSize="ColumnSize.Is9.OnDesktop">
+                        <Container>
+                            <div class="seat-plan-content pt-3">
+                                @if(!string.IsNullOrEmpty(seatPlanPayload))
                                 {
-                                    <ListGroupItem Name="@template.Id.ToString()" class="p-3">@template.Name</ListGroupItem>
+                                    <Cinnamon.Web.Components.Common.SeatPlan.Container ViewOnly="true" Payload="@seatPlanPayload" Image="@seatImage" />
                                 }
-                            </ListGroup>
-
-                            <div class="seat-plan-footer">
-                                <div class="p-3">
-                                    <p class="m-0">
-                                        <span class="color-black-100">Your place isn’t in the list?</span>
-                                        <br>
-                                        <a href="mailto:admin@cinnamon.ph">Contact us</a> 
-                                        <span class="color-grey-100">for support in creating a customize template for your event place.</span>
-                                    </p>
+                                else
+                                {
+                                    <div class="seat-plan">
+                                        <p>Seat plan not available</p>
+                                    </div>
+                                }
+                            </div>
+                        </Container>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is3.OnDesktop">
+                        <div class="seat-plan-sidebar">
+                            <div class="position-relative h-100">
+                                <div class="p-3 text-center">
+                                    <h4 class="m-0 color-black-100 font-18 font-weight-700">Select Template</h4>        
                                 </div>
-                                <Divider />
-                                <div class="p-3">
-                                    <Button Clicked="SaveSelectedTemplate" Loading="savingSelectedTemplate" Disabled="savingSelectedTemplate"
-                                        class="bg-orange-100 color-white-100" Border="Border.Is0">
-                                        <ChildContent>
-                                            Save
-                                        </ChildContent>
-                                        <LoadingTemplate>
-                                            <i id="email-spinner-loading" class="fa fa-spinner fa-spin"></i> Please Wait
-                                        </LoadingTemplate>
-                                    </Button>
-                                    <Button Clicked="CancelSelectedTemplate" Disabled="savingSelectedTemplate"
-                                        class="bg-grey-300 color-grey-100" Border="Border.Is0">
-                                        Cancel
-                                    </Button>
+
+                                <ListGroup style="border-radius: 0px;" Mode="ListGroupMode.Selectable" SelectedItemChanged="SelectedItemChanged">
+                                    @foreach (var template in templates)
+                                    {
+                                        <ListGroupItem Name="@template.Id.ToString()" class="p-3">@template.Name</ListGroupItem>
+                                    }
+                                </ListGroup>
+
+                                <div class="seat-plan-footer">
+                                    <div class="p-3">
+                                        <p class="m-0">
+                                            <span class="color-black-100">Your place isn’t in the list?</span>
+                                            <br>
+                                            <a href="mailto:admin@cinnamon.ph">Contact us</a> 
+                                            <span class="color-grey-100">for support in creating a customize template for your event place.</span>
+                                        </p>
+                                    </div>
+                                    <Divider />
+                                    <div class="p-3">
+                                        <Button Clicked="SaveSelectedTemplate" Loading="savingSelectedTemplate" Disabled="savingSelectedTemplate"
+                                            class="bg-orange-100 color-white-100" Border="Border.Is0">
+                                            <ChildContent>
+                                                Save
+                                            </ChildContent>
+                                            <LoadingTemplate>
+                                                <i id="email-spinner-loading" class="fa fa-spinner fa-spin"></i> Please Wait
+                                            </LoadingTemplate>
+                                        </Button>
+                                        <Button Clicked="CancelSelectedTemplate" Disabled="savingSelectedTemplate"
+                                            class="bg-grey-300 color-grey-100" Border="Border.Is0">
+                                            Cancel
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </Column>
-            </Row>
+                    </Column>
+                </Row>
+            </LoadingIndicator>
         }
         
     </div>
@@ -326,6 +328,7 @@
     public string Base64EncodedFile { get; set; }
     private LoadingIndicator? loadingIndicator;
     private LoadingIndicator? updateLoadingIndicator;
+    private LoadingIndicator? seatLoadingIndicator;
 
     private string token = string.Empty;
     private int accountId = 0;
@@ -344,10 +347,11 @@
     private OtePricing.Pricing pricingModel = new();
     private OteSchedule.Schedule scheduleModel = new();
     private OteOnlineEvent.ModelState onlineModel = new();
-    
+
     private bool isSelectSeatPlan = false;
     private List<Cinnamon.Framework.ApiCommand.ApiCore.DTO.SeatPlan.SeatPlanTemplateDTO> templates = new();
     private string seatPlanPayload = string.Empty;
+    private string seatImage = string.Empty;
     private int selectedTemplateId = 0;
     private bool savingSelectedTemplate = false;
 
@@ -1327,7 +1331,7 @@
                 //ImageSrcId   = $"{oteEvent.coverPhoto.ImageSrcId}",
                 //InputDataId  = $"{oteEvent.coverPhoto.InputDataId}",
                 //ImageSrc     = $"{oteEvent.coverPhoto.ImageSrc}" 
-                
+
 
             };
     }
@@ -1544,23 +1548,26 @@
     private async Task SelectedItemChanged(string value)
     {
         seatPlanPayload = string.Empty;
-        StateHasChanged();
-
+        seatImage = string.Empty;
+        await seatLoadingIndicator.Show();
+        StateHasChanged(); // Ensure the loading indicator shows immediately
         if (int.TryParse(value, out int templateId))
         {
             selectedTemplateId = templateId;
             await LoadSeatPlanTemplate(templateId);
         }
+        await seatLoadingIndicator.Hide();
     }
 
     private async Task LoadSeatPlanTemplate(int templateId)
     {
+
         var templateRes = await seatPlanApiHandler.GetTemplate(templateId, token);
         if(templateRes.Succeeded && templateRes.Result is not null && templateRes.Result.IsSuccess)
         {
             var template = templateRes.Result.Result;
             seatPlanPayload = template.Payload;
-
+            seatImage = template.ImageSrc;
             StateHasChanged();
         }
     }

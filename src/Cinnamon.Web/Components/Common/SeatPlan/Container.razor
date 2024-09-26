@@ -4,7 +4,13 @@
 @inject IJsonSerializationProvider JsonSerializationProvider;
 @inject IJSRuntime jsRuntime;
 
-<div id="seat-plan-container" class="w-100 overflow-hidden">
+<div id="seat-plan-container" class="w-100 overflow-hidden" style="position: relative;">
+    @if (!string.IsNullOrEmpty(Image))
+    {
+        <div class="image-container" @onclick="() => imageViewer.ShowModal()">
+            <img class="seat-image" src="@Image">
+        </div>
+    }
     <div class="categories-container" style="@GetCategoryStyle">
         @if(seatPlanFormat is not null)
         {
@@ -22,7 +28,7 @@
         <Button Clicked="ScaleDown" class="bg-orange-100 color-white-100" Border="Border.Is0">-</Button>
     </div> *@
 </div>
-
+<ImageViewer @ref="imageViewer" Image="@Image" />
 @code
 {
     [Parameter]
@@ -33,6 +39,12 @@
 
     [Parameter]
     public bool ViewOnly { get; set; }
+
+
+    [Parameter]
+    public string Image { get; set; }
+
+    private ImageViewer imageViewer;
 
     private SeatPlanModels.Format? seatPlanFormat;
 
