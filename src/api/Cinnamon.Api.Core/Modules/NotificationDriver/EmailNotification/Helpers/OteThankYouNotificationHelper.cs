@@ -8,7 +8,7 @@ public class OteThankYouNotificationHelper
     {
         string defaultBody = $@"
             <p style='margin: 0'>
-                Thank you for joining us at the Autumn Harvest Festival! We hope you had
+                Thank you for joining us at the {eventName}! We hope you had
                 a great time.
             </p>
 
@@ -61,7 +61,7 @@ public class OteThankYouNotificationHelper
 
                 {(string.IsNullOrEmpty(body.Trim()) ? defaultBody : body)}
 
-                <p style='margin-bottom: 1rem; margin-top: 3rem;'>What did you think of sample event?</p>
+                <p style='margin-bottom: 1rem; margin-top: 3rem;'>What did you think of {eventName}?</p>
                 <div style='display: flex'>
                     <a
                     href='{link}?rating=1'
