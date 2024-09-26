@@ -187,8 +187,9 @@
         </div>
         <Divider />
         <Row>
-            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+            <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnTablet.Is12.OnMobile">
                 <div class="mt-2">
+                    <br />
                     <label class="d-flex align-items-center mb-2">
                         <p class="font-16 color-black-100 mb-0 text-capitalize">seat plan (optional)</p>
                     </label>
@@ -212,13 +213,10 @@
                     </label>
                 </div>
             </Column>
-        </Row>
-
-        <Row class="mt-3">
-            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+            <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnTablet.Is12.OnMobile">
                 <div class="mt-2">
                     <label class="d-flex align-items-center mb-2">
-                        <p class="font-16 color-black-100 mb-0 text-capitalize">Select Template</p>
+                        <p class="font-16 color-black-100 mb-0 text-capitalize">Select event seat plan based on location (reserved seats only).</p>
                     </label>
                     <label class="cursor-pointer w-100" @onclick="() => OnSelectTemplateClicked()">
                         <div class='@(string.IsNullOrEmpty(ModelState.TemplateSelected.Payload) ? "" : "d-none")'>
