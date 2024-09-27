@@ -303,6 +303,24 @@
                 <div @key="question" class="bg-white-100 mb-2 p-3 border-radius-10 d-flex justify-content-between align-items-center">
                     <p class="font-16 color-grey-100 mb-0">
                         @question.Question
+                        <br/>
+                        <span class="field-type">
+                            @switch (question.FieldType)
+                            {
+                                case "Check":
+                                    <text>&#10004;Checkboxes</text>
+                                    break;
+                                case "TextArea":
+                                    <text>&#8776;Text</text>
+                                    break;
+                                case "DropDown":
+                                    <text>&darr;Dropdown</text>
+                                    break;
+                                default:
+                                    <text>&#8776;Text</text>
+                                break;
+                            }
+                        </span>
                     </p>
                     <div class="ms-3 d-flex">
                         <Button class="p-0" Clicked="() => UpdateQuestion(question)">
@@ -338,6 +356,7 @@
                                 <SelectItem Value="0" Disabled class="text-capitalize">--Question Type--</SelectItem>
                                 <SelectItem Value="@Cinnamon.Framework.Enums.FieldType.TextArea.ToString()" class="text-capitalize">Short Text</SelectItem>
                                 <SelectItem Value="@Cinnamon.Framework.Enums.FieldType.Check.ToString()" class="text-capitalize">Checkboxes</SelectItem>
+                                <SelectItem Value="@Cinnamon.Framework.Enums.FieldType.Dropdown.ToString()" class="text-capitalize">Dropdown</SelectItem>
                             </Select>
                         </FieldBody>
                     </Field>
@@ -347,7 +366,8 @@
                 </FieldBody>
             </Field>
            
-            @if (formQuestion.FieldType == Cinnamon.Framework.Enums.FieldType.Check.ToString())
+            @if (formQuestion.FieldType == Cinnamon.Framework.Enums.FieldType.Check.ToString() || 
+                formQuestion.FieldType == Cinnamon.Framework.Enums.FieldType.Dropdown.ToString())
             {
                 <Field class="mb-3">
                     <FieldBody>
@@ -1779,7 +1799,8 @@
     private void OnQuestionTypeChange(ChangeEventArgs e)
     {
         formQuestion.FieldType = e.Value.ToString();
-        if (formQuestion.FieldType != Cinnamon.Framework.Enums.FieldType.Check.ToString())
+        if (formQuestion.FieldType != Cinnamon.Framework.Enums.FieldType.Check.ToString() ||
+            formQuestion.FieldType != Cinnamon.Framework.Enums.FieldType.Dropdown.ToString())
         {
             formQuestion.Options.Clear(); // Clear options if not a checkbox question
         }
