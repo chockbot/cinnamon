@@ -688,6 +688,18 @@
                                 {
                                     <MemoEdit @bind-Text="question.Answer" Rows="3" Placeholder="Place your answer here.." />
                                 }
+                                else if (question.FieldType == Cinnamon.Framework.Enums.FieldType.Dropdown.ToString())
+                                {
+                                        // For dropdown options
+                                    <br/>
+                                    <select class="question-dropdown" @onchange="(e) => UpdateAnswer(question, e.Value.ToString())">
+                                        <option value="">--Select an option--</option>
+                                        @foreach (var option in question.Options.Split(",").ToList())
+                                        {
+                                            <option value="@option">@option</option>
+                                        }
+                                    </select>
+                                }
                             </FieldBody>
                         </Field>
                     }
