@@ -17,4 +17,5 @@ public interface IOteTicketData
     Task<AppResult<UpdateSharedLinkStatusResult>> UpdateSharedLinkStatus(UpdateSharedLinkStatusArgs args);
     Task<AppResult<CountBookedTicketsResult>> CountBookedTickets(CountBookedTicketsArgs args);
     Task<AppResult<BookedCustomersResult>> BookedCustomers(BookedCustomersArgs args);
+    Task<AppResult<GetAllTicketPurchasedResult>> GetAllTicketPurchased(GetAllTicketPurchasedArgs args);
 }

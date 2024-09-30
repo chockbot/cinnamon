@@ -18,4 +18,5 @@ public interface IOteTicketRepository
     Task<AppResult<OteSharedLinkDTO>> UpdateSharedLinkStatus(int id, bool status);
     Task<AppResult<int>> CountBookedTickets(int activityId);
     Task<AppResult<IEnumerable<BookedCustomerDTO>>> BookedCustomers(int activityId, int? dateId, int? limit, int? offset);
+    Task<AppResult<IEnumerable<OteTicketDTO>>> GetAllTicketPurchased(int activityId);
 }
