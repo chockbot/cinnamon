@@ -25,7 +25,7 @@ namespace Cinnamon.Web.Modules.Services
             string reservedQueueName = $"{handler}-reserved-queue";
 
             var activeQueueLength = await GetQueueLengthAsync(activeQueueName);
-            if (activeQueueLength >= 2)
+            if (activeQueueLength >= 10)
             {
                 // Move to reserved queue if active queue is full
                 var queueClient = _queueServiceClient.GetQueueClient(reservedQueueName);
