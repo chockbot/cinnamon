@@ -67,16 +67,26 @@
 
     public int TotalAvailable = 0;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         TotalSlots     = Tickets.Sum(a => a.OtePricing.MaxSlots);
         TotalSold      = Tickets.Sum(s => s.OtePricing.Sold);
         TotalAvailable = Tickets.Sum(v => v.OtePricing.Available);
+        Activity.Images = Activity.Images.OrderBy(i => i.Order);
     }
+
     private void NavigateToDetails()
     {
-        NavigationManager.NavigateTo($"/explore/ote/{Activity.Handler}");
+        if (!Activity.ReserveSeat) 
+        {
+            NavigationManager.NavigateTo($"/explore/ote/reserved/{Activity.Handler}");
+        } 
+        else 
+        {
+            NavigationManager.NavigateTo($"/explore/ote/{Activity.Handler}");
+        }  
     }
+    
     private void NavigateToEvents()
     {
         NavigationManager.NavigateTo("/maker/dashboard/events");

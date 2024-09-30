@@ -2185,6 +2185,9 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<int>("OteScheduleId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("SeatPlanPayload")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Date");
@@ -2380,6 +2383,12 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<int>("RepeatEvery")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("ReserveSeat")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("SeatPlanTemplateId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("SelectedDays")
                         .IsRequired()
                         .HasColumnType("text");
@@ -2447,6 +2456,10 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<bool>("RequiredApproval")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("ReserveSeatUuid")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("TicketSold")
                         .HasColumnType("integer");
 
@@ -2506,6 +2519,10 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.Property<bool>("RequiredApproval")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("ReserveSeatUuid")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("TicketSold")
                         .HasColumnType("integer");
@@ -2613,6 +2630,10 @@ namespace Cinnamon.Api.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("QRImageData")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SeatNumber")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -2821,6 +2842,10 @@ namespace Cinnamon.Api.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("FieldType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Options")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -3189,6 +3214,97 @@ namespace Cinnamon.Api.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("SearchTags");
+                });
+
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.SeatPlanFormatter", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Handler")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SeatPlanFormatters");
+                });
+
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.SeatPlanTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ImageSrc")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("SeatPlanFormatterId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UploadedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UploadedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SeatPlanFormatterId");
+
+                    b.ToTable("SeatPlanTemplates");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Student", b =>

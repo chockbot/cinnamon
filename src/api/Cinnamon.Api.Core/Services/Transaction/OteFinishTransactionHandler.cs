@@ -37,7 +37,6 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
     private readonly IGetOteRequestPaymentHandler getOteRequestPaymentHandler;
     private readonly IOteCreateRequestPaymentHandler createRequestPaymentHandler;
     private readonly ICreateChatHistoryHandler createChatHistoryHandler;
-
     public OteFinishTransactionHandler(IGetActivityHandler getActivityHandler, IOteFindByHandler oteFindByHandler,
         IJsonSerializationProvider jsonSerializationProvider, IPurchaseOrderData purchaseOrderData,
         ICustomerData customerData, IUpdateCreditBalanceHandler updateCreditBalanceHandler,
@@ -45,7 +44,8 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         ITokenGeneratedData tokenGeneratedData, ApplicationConfig applicationConfig, IActivityData activityData,
         IOteDateData oteDateData, ISendInviteEventHandler sendInviteEventHandler,
         ICreateChatRoomHandler createChatRoomHandler, IHubContext<ChatHub> chathub,
-        IGetOteRequestPaymentHandler getOteRequestPaymentHandler, IOteCreateRequestPaymentHandler createRequestPaymentHandler,
+        IGetOteRequestPaymentHandler getOteRequestPaymentHandler, 
+        IOteCreateRequestPaymentHandler createRequestPaymentHandler,
         ICreateChatHistoryHandler createChatHistoryHandler)
     {
         this.getActivityHandler = getActivityHandler;
@@ -61,6 +61,8 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         this.activityData = activityData;
         this.oteDateData = oteDateData;
         this.sendInviteEventHandler = sendInviteEventHandler;
+        this.createChatRoomHandler = createChatRoomHandler;
+        this.chathub = chathub;
         this.createChatRoomHandler = createChatRoomHandler;
         this.chathub = chathub;
         this.getOteRequestPaymentHandler = getOteRequestPaymentHandler;
@@ -154,17 +156,18 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                 IncludeImageAsResult = false,
                 Tickets = ticketsToCreate.Select(t => {
                     return new Framework.ApiCommand.ApiData.OteTicket.Request.CreateOteTicketArgs {
-                        ActivityId = oteActivity.Id,
-                        Amount = t.Price,
-                        CustomerId = purchaseOrder.CustomerId,
-                        OteScheduleId = deserializedPayload.OteScheduleId,
+                        ActivityId           = oteActivity.Id,
+                        Amount               = t.Price,
+                        CustomerId           = purchaseOrder.CustomerId,
+                        OteScheduleId        = deserializedPayload.OteScheduleId,
                         OteSchedulePricingId = t.Id,
-                        PurchaseOrderId = purchaseOrder.Id,
-                        QRCode = t.Code,
-                        QRImageData = t.ImageData,
-                        Status = "UNVERIFIED",
-                        Title = t.Name,
-                        OteDateId = t.OteDateId
+                        PurchaseOrderId      = purchaseOrder.Id,
+                        QRCode               = t.Code,
+                        QRImageData          = t.ImageData,
+                        Status               = "UNVERIFIED",
+                        Title                = t.Name,
+                        OteDateId            = t.OteDateId,
+                        SeatNumber           = t.SeatNumber
                     };
                 })
             });
@@ -270,15 +273,17 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                 if(!tickets.ContainsKey(item.Id))
                 {
                     tickets.Add(item.Id, new TicketSummary {
-                        Name = item.Name,
-                        Price = item.Price,
-                        Id = item.Id,
-                        Count = 1
+                        Name       = item.Name,
+                        Price      = item.Price,
+                        Id         = item.Id,
+                        Count      = 1,
+                        SeatNumber = item.SeatNumber
                     });
                 }
                 else
                 {
                     tickets[item.Id].Count++;
+                    tickets[item.Id].SeatNumber += $",{item.SeatNumber}";
                 }
             }
 
@@ -314,7 +319,8 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                     return new Modules.NotificationDriver.Interactors.OteCustomerPayedNotificationArgs.TicketDetails {
                         TicketCount = t.Value.Count,
                         TicketName = t.Value.Name,
-                        TicketPrice = t.Value.Price
+                        TicketPrice = t.Value.Price,
+                        TicketSeatNumber = t.Value.SeatNumber
                     };
                 }),
                 TotalAmount = purchaseOrder.OverallTotal,
@@ -420,6 +426,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         public string Code {get; set;}
         public string ImageData {get; set;}
         public bool RequiredApproval {get; set;}
+        public string SeatNumber { get; set; }
     }
 
     private class TicketSummary 
@@ -428,6 +435,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         public decimal Price {get; set;}
         public string Name {get; set;}
         public int Count {get; set;}
+        public string SeatNumber { get; set; }
     }
 
     class Fees {

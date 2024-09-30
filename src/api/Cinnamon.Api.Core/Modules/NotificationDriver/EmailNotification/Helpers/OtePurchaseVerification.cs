@@ -20,6 +20,7 @@ public class OtePurchaseVerification
 
         foreach(var item in args.Tickets)
         {
+            string tickeSeatNo = !string.IsNullOrEmpty(item.TicketSeatNumber) ? item.TicketSeatNumber : string.Empty;
             ticketsTemplate += $@"
                 <div style='display: flex; width: 100%; justify-content: space-between'>
                     <p
@@ -32,6 +33,16 @@ public class OtePurchaseVerification
                         '
                     >
                         <span style='text-transform: capitalize;'>{item.TicketName}</span> x {item.TicketCount}
+                    </p>
+                    <p
+                        style='
+                        color: #717171;
+                        font-size: 16px;
+                        margin-top: 0;
+                        margin-bottom: 10px;
+                        '
+                    >
+                       {tickeSeatNo}
                     </p>
                     <p
                         style='
@@ -93,8 +104,8 @@ public class OtePurchaseVerification
                     style='
                     background-color: #ffb84c;
                     padding-top: 35px;
-                    padding-left: 25px;
-                    padding-right: 25px;
+                    padding-left: 10px;
+                    padding-right: 10px;
                     padding-bottom: 30px;
                     margin-top: 3rem;
                     border-radius: 40px;
@@ -108,15 +119,15 @@ public class OtePurchaseVerification
                     style='
                         color: #0f173b;
                         text-align: center;
-                        font-size: 24px;
-                        font-weight: 900;
+                        font-size: 20px;
+                        font-weight: 700;
                     '
                     >
                     Thank you for your purchase!
                     </p>
                     <p
                     style='
-                        color: #343d4c;
+                        color: #0f173b;
                         font-size: 16px;
                         text-align: justify;
                         margin-bottom: 0;
@@ -332,5 +343,6 @@ public class OtePurchaseVerification
         public string TicketName {get; set;}
         public int TicketCount {get; set;}
         public decimal TicketPrice {get; set;}
+        public string TicketSeatNumber { get; set; }
     }
 }

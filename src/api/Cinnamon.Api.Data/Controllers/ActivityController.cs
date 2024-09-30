@@ -413,7 +413,8 @@ public class ActivityController : ControllerBase
                     Price = p.Price,
                     Name = p.Name,
                     IsUnlimited = p.IsUnlimited,
-                    RequiredApproval = p.RequiredApproval
+                    RequiredApproval = p.RequiredApproval,
+                    ReserveSeatUuid = p.ReserveSeatUuid ?? string.Empty
                 };
             }).ToList();
 
@@ -450,7 +451,8 @@ public class ActivityController : ControllerBase
                 args.Activity.RecurrenceDateEnd, args.Activity.RecurrenceDateStart, args.Activity.RepeatEvery,
                 args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit, 
                 args.Activity.EventTicketLimit , args.Activity.IsOpen, args.Activity.IsCapacity, args.Activity.CapacityCount ,
-                dateOverrides, onlineEvent, args.Activity.CategoryId, args.Activity.EmailReminderDays, args.Activity.EmailFeedbackDays);
+                dateOverrides, onlineEvent, args.Activity.CategoryId, args.Activity.EmailReminderDays, args.Activity.EmailFeedbackDays,
+                args.Activity.ReserveSeat, args.Activity.SeatPlanTemplateId, args.Activity.SeatPlanPayload ?? string.Empty);
             
             if(!result.Succeeded || result.Result is null)
             {
@@ -793,6 +795,27 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new OteAlreadyBookedResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [HttpPost]
+    [Route("UpdateOteDatePayload")]
+    [ProducesResponseType(typeof(UpdateOteDatePayloadResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateOteDatePayload([FromBody] UpdateOteDatePayloadArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.UpdateOteDatePayload(args.Id, args.Payload);
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateOteDatePayloadResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateOteDatePayloadResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateOteDatePayloadResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

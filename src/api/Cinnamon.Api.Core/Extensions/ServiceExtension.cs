@@ -75,6 +75,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IDirectStudentData, Modules.DataAccess.DirectStudent.DirectStudentData>();
         services.AddTransient<Modules.DataAccess.Handlers.IOteRemindersData, Modules.DataAccess.OteReminders.OteRemindersData>();
         services.AddTransient<Modules.DataAccess.Handlers.IProviderCustomQuestionData, Modules.DataAccess.ProviderCustomQuestion.ProviderCustomQuestionData>();
+        services.AddTransient<Modules.DataAccess.Handlers.ISeatPlanData, Modules.DataAccess.SeatPlan.SeatPlanData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
@@ -245,6 +246,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.DashboardService.Handlers.IGetOtePerDayHandler, Services.DashboardService.GetOtePerDayHandler>();
         services.AddTransient<Services.DashboardService.Handlers.IGetEnrolledStudentsByProviderHandler, Services.DashboardService.GetEnrolledStudentsByProviderHandler>();
         services.AddTransient<Services.DashboardService.Handlers.ICreateDirectStudentsHandler, Services.DashboardService.CreateDirectStudentsHandler>();
+        services.AddTransient<Services.DashboardService.Handlers.IGetAllTicketPurchasedHandler, Services.DashboardService.GetAllTicketPurchasedHandler>();
 
         //OnGoingActivities
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetAllOngoingActivitiesHandler, Services.OnGoingActivityService.GetAllOngoingActivitiesHandler>();
@@ -319,6 +321,14 @@ public static class ServiceExtenstion
         services.AddTransient<Services.DirectStudentService.Handlers.ICreateDirectStudentAttendanceHandler, Services.DirectStudentService.CreateDirectStudentAttendanceHandler>();
         services.AddTransient<Services.DirectStudentService.Handlers.IUpdateStudentAttendanceHandler, Services.DirectStudentService.UpdateStudentAttendanceHandler>();
         services.AddTransient<Services.DirectStudentService.Handlers.IStudentSessionHandler, Services.DirectStudentService.StudentSessionHandler>();
+
+        // seat plan service
+        services.AddTransient<Services.SeatPlanService.PretixFormatterHandler>();
+        services.AddTransient<Services.SeatPlanService.Handler.ICreateSeatPlanTemplateHandler, Services.SeatPlanService.CreateSeatPlanTemplateHandler>();
+        services.AddTransient<Services.SeatPlanService.Handler.IGetTemplatesHandler, Services.SeatPlanService.GetTemplatesHandler>();
+        services.AddTransient<Services.SeatPlanService.Handler.IGetTemplateHandler, Services.SeatPlanService.GetTemplateHandler>();
+        services.AddTransient<Services.SeatPlanService.Handler.IChangeSeatPlanStatusHandler, Services.SeatPlanService.ChangeSeatPlanStatusHandler>();
+        services.AddTransient<Services.SeatPlanService.Handler.IUpdateSeatStatusHandler, Services.SeatPlanService.UpdateSeatStatusHandler>();
 
         return services;
     }

@@ -369,7 +369,8 @@ public class OteUpdateHandler : IOteUpdateHandler
                     FieldLabel = q.Question,
                     FieldType = q.FieldType,
                     ProviderId = currentUser.Result.Id,
-                    Required = q.Required
+                    Required = q.Required,
+                    Options = q.Options
                 }));
 
                 // dont check the result if error or success
@@ -381,12 +382,13 @@ public class OteUpdateHandler : IOteUpdateHandler
                 // dont check the result if error or success
                 var updatedQuestions = await providerCustomQuestionData.UpdateCustomQuestions(new Framework.ApiCommand.ApiData.ProviderCustomQuestion.Request.UpdateCustomQuestionsArgs {
                     Questions = args.UpdatedQuestions.Select(q => new Framework.ApiCommand.ApiData.ProviderCustomQuestion.Request.UpdateCustomQuestionsArgs.UpdateCustomQuestion {
-                        Id = q.Id,
+                        Id         = q.Id,
                         FieldLabel = q.Question,
-                        FieldType = q.FieldType,
+                        FieldType  = q.FieldType,
                         ProviderId = currentUser.Result.Id,
-                        Required = q.Required,
-                        ActivityId = args.Activity.Id
+                        Required   = q.Required,
+                        ActivityId = args.Activity.Id,
+                        Options    = q.Options
                     })
                 });
             }

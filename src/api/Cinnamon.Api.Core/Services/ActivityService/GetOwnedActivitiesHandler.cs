@@ -140,7 +140,8 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                         } : null,
                         Schedule = a.OteSchedule is not null ? new GetOwnedActivitiesResult.Activity.OteSchedule {
                             From = a.OteSchedule.ScheduleFrom,
-                            To = a.OteSchedule.ScheduleTo
+                            To = a.OteSchedule.ScheduleTo,
+                            IsReservedSeating = a.OteSchedule.IsReservedSeating
                         } : null
                     };
                 })

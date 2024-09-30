@@ -1,0 +1,2262 @@
+﻿@layout EmptyLayout
+@page "/reservation/{Handler}"
+@using AutoMapper
+@using Newtonsoft.Json;
+@using System.Threading
+@using System.Globalization;
+@using System.Security.Claims;
+@using Cinnamon.Web.Utils;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Models.Ote
+@using Cinnamon.Web.Components;
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Components.Pages;
+@using Cinnamon.Web.Components.Common;
+@using Cinnamon.Web.Components.Common.SeatPlan;
+@using Cinnamon.Web.Modules.Services
+@using System.ComponentModel.DataAnnotations;
+@using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
+@inject IMapper mapper
+@inject IJSRuntime JSRuntime
+@inject QueueServices QueueServices
+@inject NavigationManager NavigationManager
+@inject IActivityApiHandler activityHandler
+@inject IAccountApiHandler accountApiHandler
+@inject ITransactionApiHandler transactionApiHandler;
+@inject ISeatPlanApiHandler seatplanApiHandler;
+@inject INotificationService NotificationService
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject Cinnamon.Framework.Providers.IJsonSerializationProvider jsonSerializationProvider
+@inject ILocalStorage localStorage;
+@implements IAsyncDisposable;
+
+@if (activity is not null)
+{
+    @if (_isProcessing)
+    {
+        <div class="top-row desktop">
+            <!--App Name-->
+            <div class="app-name">
+                <a href="/explore" class="app-name">@Resources.App.appName</a>
+            </div>
+            <!--Timer-->
+            <div class="timer-section">
+                <p class="ticket-text">Tickets Reserved in Cart for</p>
+                <p class="timer-value">@RemainingTime</p>
+            </div>
+            <div class="secured-section">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="18" viewBox="0 0 16 18" fill="none">
+                    <path d="M15.0055 8.53979C14.7668 8.30113 14.4772 8.18189 14.1361 8.18189H13.7273V5.72721C13.7273 4.15905 13.1649 2.81258 12.0399 1.68758C10.9149 0.562525 9.56857 0 8.00019 0C6.43185 0 5.08525 0.562525 3.96038 1.68753C2.83533 2.81258 2.27298 4.15901 2.27298 5.72721V8.18189H1.86395C1.52316 8.18189 1.23332 8.30113 0.994661 8.53979C0.756003 8.77827 0.636719 9.0681 0.636719 9.40921V16.7728C0.636719 17.1136 0.756048 17.4035 0.994661 17.6422C1.23332 17.8806 1.52316 18 1.86395 18H14.1364C14.4775 18 14.7671 17.8808 15.0059 17.6422C15.2443 17.4035 15.3638 17.1136 15.3638 16.7728V9.40908C15.364 9.06824 15.2443 8.77845 15.0055 8.53979ZM11.2728 8.18189H4.72753V5.72721C4.72753 4.82384 5.04719 4.05248 5.68637 3.41339C6.32564 2.77421 7.09687 2.45468 8.00032 2.45468C8.90386 2.45468 9.67491 2.77416 10.3142 3.41339C10.9532 4.05244 11.2728 4.82384 11.2728 5.72721V8.18189Z" fill="#343D4C" />
+                </svg>
+                <p class="secure-text">Secure Checkout</p>
+            </div>
+        </div>
+        <div class="top-row mobile">
+            <div class="row-holder">
+                <!--App Name-->
+                <div class="app-name">
+                    <a href="/explore" class="app-name">@Resources.App.appName</a>
+                </div>
+                <div class="secured-section">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="18" viewBox="0 0 16 18" fill="none">
+                        <path d="M15.0055 8.53979C14.7668 8.30113 14.4772 8.18189 14.1361 8.18189H13.7273V5.72721C13.7273 4.15905 13.1649 2.81258 12.0399 1.68758C10.9149 0.562525 9.56857 0 8.00019 0C6.43185 0 5.08525 0.562525 3.96038 1.68753C2.83533 2.81258 2.27298 4.15901 2.27298 5.72721V8.18189H1.86395C1.52316 8.18189 1.23332 8.30113 0.994661 8.53979C0.756003 8.77827 0.636719 9.0681 0.636719 9.40921V16.7728C0.636719 17.1136 0.756048 17.4035 0.994661 17.6422C1.23332 17.8806 1.52316 18 1.86395 18H14.1364C14.4775 18 14.7671 17.8808 15.0059 17.6422C15.2443 17.4035 15.3638 17.1136 15.3638 16.7728V9.40908C15.364 9.06824 15.2443 8.77845 15.0055 8.53979ZM11.2728 8.18189H4.72753V5.72721C4.72753 4.82384 5.04719 4.05248 5.68637 3.41339C6.32564 2.77421 7.09687 2.45468 8.00032 2.45468C8.90386 2.45468 9.67491 2.77416 10.3142 3.41339C10.9532 4.05244 11.2728 4.82384 11.2728 5.72721V8.18189Z" fill="#343D4C" />
+                    </svg>
+                    <p class="secure-text">Secure Checkout</p>
+                </div>
+            </div>
+            <!--Timer-->
+            <div class="timer-section">
+                <p class="ticket-text">Tickets Reserved in Cart for</p>
+                <p class="timer-value">@RemainingTime</p>
+            </div>
+        </div>
+        <div class="container reservation-page-section">
+            <div class="row">
+                <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12 ticket-column">
+                    @*Event & Ticket Details*@
+                    <div class="event-details-section">
+                        <p class="event-name">@activity.EventName</p>
+                        <p class="selected-date">Date: @SelectedDate.ToString("MMMM dd, yyyy")</p>
+                        <p class="time-start">Time Start: @SelectedDate.ToString("hh:mm tt") </p>
+                        @if (activity.ExperienceTypeId == 1)
+                        {
+                            string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
+                            <p class="event-location">@address</p>
+                        }
+                        else
+                        {
+                            <p class="event-location">Online</p>
+                        }
+                    </div>
+                    @*Event Ticekts*@
+                    @if (IsOnWaitlist)
+                    {
+                        @*Body*@
+                        <div class="waitlist-section">
+                            <div class="ticket-waitlist">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <g clip-path="url(#clip0_473_881)">
+                                        <path d="M10.0007 0.833374C8.18766 0.833374 6.41538 1.37099 4.90793 2.37824C3.40048 3.38548 2.22556 4.81712 1.53176 6.49211C0.837956 8.1671 0.656426 10.0102 1.01012 11.7884C1.36382 13.5665 2.23686 15.1999 3.51884 16.4819C4.80082 17.7638 6.43417 18.6369 8.21233 18.9906C9.99049 19.3443 11.8336 19.1627 13.5086 18.4689C15.1836 17.7751 16.6152 16.6002 17.6225 15.0928C18.6297 13.5853 19.1673 11.813 19.1673 10C19.1645 7.56977 18.1978 5.23986 16.4793 3.5214C14.7608 1.80293 12.4309 0.836241 10.0007 0.833374ZM13.0898 13.0892C12.9335 13.2454 12.7216 13.3332 12.5007 13.3332C12.2797 13.3332 12.0678 13.2454 11.9115 13.0892L9.41149 10.5892C9.2552 10.433 9.16737 10.221 9.16732 10V5.00004C9.16732 4.77903 9.25512 4.56707 9.4114 4.41079C9.56768 4.2545 9.77964 4.16671 10.0007 4.16671C10.2217 4.16671 10.4336 4.2545 10.5899 4.41079C10.7462 4.56707 10.834 4.77903 10.834 5.00004V9.65504L13.0898 11.9109C13.246 12.0671 13.3338 12.2791 13.3338 12.5C13.3338 12.721 13.246 12.9329 13.0898 13.0892Z" fill="#343D4C" />
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clip0_473_881">
+                                            <rect width="20" height="20" fill="white" />
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                                <p class="close-text">You're on the Waitlist</p>
+                            </div>
+                            <p class="waitlist-sub-text">A confirmation email has been sent to <span><a class="user-email">@currentLogin.Email</a></span>. We will let you know if you are admitted.</p>
+                            <p class="waitlist-sub-leave">If you can no longer join,  <span><a class="user-leave" @onclick="() => confirmDialogRef.Open()">you can leave the waitlist</a></span>.</p>
+                        </div>
+                    }
+
+                    @if(IsApprovedWaitlist)
+                    {
+                        @*Body*@
+                        <div class="waitlist-section">
+                            <div class="ticket-waitlist">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <g clip-path="url(#clip0_578_514)">
+                                        <path d="M10.0007 19.6666C15.3394 19.6666 19.6673 15.3387 19.6673 9.99992C19.6673 4.66117 15.3394 0.333252 10.0007 0.333252C4.6619 0.333252 0.333984 4.66117 0.333984 9.99992C0.333984 15.3387 4.6619 19.6666 10.0007 19.6666Z" fill="#4BB749" />
+                                        <path d="M8.08762 14.0234L5.82095 11.8094C5.77193 11.7617 5.73295 11.7047 5.70634 11.6417C5.67973 11.5787 5.66602 11.5111 5.66602 11.4427C5.66602 11.3743 5.67973 11.3066 5.70634 11.2437C5.73295 11.1807 5.77193 11.1237 5.82095 11.076L6.57262 10.3427C6.67342 10.245 6.80827 10.1904 6.94862 10.1904C7.08897 10.1904 7.22382 10.245 7.32462 10.3427L8.67395 11.6617L12.4583 5.90836C12.5364 5.79226 12.6565 5.71108 12.7934 5.68196C12.9302 5.65285 13.073 5.6781 13.1916 5.75236L14.0863 6.31436C14.1447 6.35029 14.1953 6.39759 14.2352 6.45345C14.275 6.50932 14.3032 6.57261 14.318 6.63957C14.3329 6.70653 14.3342 6.7758 14.3218 6.84328C14.3095 6.91075 14.2837 6.97505 14.246 7.03236L9.76495 13.847C9.67516 13.9804 9.55722 14.0925 9.41943 14.1754C9.28164 14.2583 9.12736 14.3099 8.96745 14.3267C8.80754 14.3435 8.64588 14.3251 8.49387 14.2727C8.34186 14.2203 8.20319 14.1352 8.08762 14.0234Z" fill="#F3F6FC" />
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clip0_578_514">
+                                            <rect width="20" height="20" fill="white" />
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                                <p class="close-text">Your request has been approved</p>
+                            </div>
+                            <p class="waitlist-sub-text">An approval email has been sent to <span><a class="user-email">@currentLogin.Email</a></span>. Check your email to proceed purchasing your tickets.</p>
+                        </div>
+                    }
+
+                    @*Not on waitlist*@
+                    @if(activity.Schedule.IsOpen && !IsApprovedWaitlist || !IsOnWaitlist)
+                    {
+                        <div class="ticket-event-section">
+                            <p class="ticket-section">Select seat for your tickets</p>
+                            <div class="ticket-box">
+                                <Cinnamon.Web.Components.Common.SeatPlan.Container Payload="@selectedPayload" OnSeatSelected="HandleSeatSelection" ViewOnly="viewOnly"/>
+                            </div>
+                    
+
+                            <div class="ticket-options">
+                                <div class="ticket-names">
+                                    @foreach (var item in AvailablePriceList)
+                                    {
+                                        <div class="ticket-info" style="cursor: pointer;" @onclick="() => HandleClick(FormatId(item.Name))">
+                                            <div class="ticket-color" style="width: 20px;height: 20px;background-color:@item.TicketColor;border-radius: 50%;"></div>
+                                            <div class="ticket-name">@item.Name</div>
+                                        </div>
+                                    }
+                                </div>
+
+                                @if (selectedTickets.Count != 0)
+                                {
+                                    @if (activity.Schedule.IsCapacity && activity.IsEventSoldOut && selectedTickets.Count <= capacityLimit && !selectedTickets.First().Value.IsUnlimited)
+                                    {
+                                        <button class="btn-confirm" @onclick=JoinWaitlist disabled="@isLoading">
+                                            @if (isLoading)
+                                            {
+                                                <div class="spinner-border spinner-border-sm" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span>Join Waitlist</span>
+                                            }
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn-confirm" @onclick=ProceedToPayment disabled="@isLoading">
+                                            @if (isLoading)
+                                            {
+                                                <div class="spinner-border spinner-border-sm" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span>Confirm Seats</span>
+                                            }
+                                        </button>
+                                    }
+                                }
+                                else
+                                {
+                                    <button class="btn-confirm" @onclick=ProceedToPayment disabled="@isLoading">
+                                        @if (isLoading)
+                                        {
+                                            <div class="spinner-border spinner-border-sm" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span>Confirm Seats</span>
+                                        }
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    }
+
+
+                    @if(!activity.Schedule.IsOpen){
+                        <div class="waitlist-section">
+                            <div class="ticket-close">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 23c6.075 0 11-4.925 11-11S18.075 1 12 1 1 5.925 1 12s4.925 11 11 11M7 10a2 2 0 1 0 0 4h10a2 2 0 1 0 0-4z"></path></svg>
+                                <p class="close-text">Ticket Sales Closed</p>
+                            </div>
+                            <p class="close-sub-text">This event is not currently selling tickets. You may contact the host to receive updates.</p>
+                        </div>
+                    }
+                    
+                    @*Event Seat Plan*@
+                    @if (!string.IsNullOrEmpty(SetPlanImage))
+                    {
+                        <div id="set-plan" class="mt-4 seat-plan-section">
+                            <p class="event-seat-plan">Seat Plan</p>
+                            <img class="img-seat-plan" src="@SetPlanImage" @onclick="() => imageViewer.ShowModal()" alt="seatplan">
+                        </div>
+                    }
+                </div>
+                @*Calculator*@
+                <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12 calculator-column">
+                    <div class="booking-total-container">
+                        <div class="payment-summary-section">
+                            <p class="header">Payment Summary</p>
+                            <Divider />
+                            @*Tickets*@
+                            <div class="selected-ticket-name">
+                                @if (selectedTickets.Count > 0)
+                                {
+                                    @foreach (var item in selectedTickets)
+                                    {
+                                        <div class="selected-tickets-section">
+                                            <p class="ticket-name">
+                                                @item.Value.Name <span class="ticket-name-price">@($"(x{item.Value.Count})")</span>
+                                            </p>
+                                            <p class="ticket-total-price">
+                                                &#8369; @((item.Value.Price * item.Value.Count).ToString("#,##0.00"))
+                                            </p>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                            @*Service Fee*@
+                            <div class="selected-tickets-section">
+                                <p class="ticket-name">Service fee</p>
+                                <p class="ticket-total-price">
+                                    @(string.IsNullOrEmpty(SelectedPaymentCode) ? "Depends on payment method" : "&#8369; " + GetConvinienceFee.ToString("#,##0.00"))
+                                </p>
+                            </div>
+                            @*Handling Fee*@
+                            @if (!IsInclusivePricing)
+                            {
+                                <div class="selected-tickets-section">
+                                    <div class="d-flex gap-1">
+                                        <p class="ticket-name">Handling fee (2%)</p>
+                                        <CustomTooltip MarginLeft="0">
+                                            <TextContent>
+                                                <span class="rounded-circle service-fee-info">i</span>
+                                            </TextContent>
+                                            <TooltipContent>
+                                                <span class="color-grey-100">
+                                                    This helps Cinnamon run its services and protects your payment in case the experience provider does
+                                                    something illegal or against our policy. They won't get paid until after the sessions or work have been done.
+                                                </span>
+                                            </TooltipContent>
+                                        </CustomTooltip>
+                                    </div>
+                                    <p class="ticket-total-price">
+                                        &#8369; @(GetServiceFee.ToString("#,##0.00"))
+                                    </p>
+                                </div>
+                            }
+                            @*Apply Credits*@
+                            <div class="selected-tickets-section">
+                                <p class="apply-credits">Apply credits</p>
+                                <p class="ticket-total-price">&#8369; @(GetTotalCredit.ToString("#,##0.00"))</p>
+                            </div>
+                            <Divider />
+                            @*Total Payment*@
+                            <div class="selected-tickets-section">
+                                <p class="total-header">Total Payment</p>
+                                <p class="total-header">&#8369; @(GetTotalPrice.ToString("#,##0.00"))</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <Footer></Footer>
+        <div class='mobile-calculator-wrapper'>
+            <div class="mobile-calculator-wrapper-container border-radius-10 mobile-footer-shadow
+                position-fixed left-0 right-0 bg-white-100">
+                <div>
+                    <div class="p-3 d-flex justify-content-between align-items-center">
+                        <Button Type="ButtonType.Button" Clicked="ProceedToPayment" Disabled="DisableProceed || submitting" Loading="submitting"
+                                class="btn-primary font-14 border-radius-10 px-4"
+                        Border="Border.Is0">
+                            <LoadingTemplate>
+                                <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
+                            </LoadingTemplate>
+                            <ChildContent>
+                                <span class="btn-confirm-text">Confirm seats</span>
+                            </ChildContent>
+                        </Button>
+                        <div class="d-flex align-items-center">
+                            <div class="prevent-select text-end" style="width: 160px;">
+                                <span class="font-20 font-weight-700 color-black-100 total-price" tabindex="-1">₱ @(GetTotalPrice.ToString("#,##0.00"))</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="container queuing-page-section">
+            <div class="modal-queue">
+                    <div class="header-queue">
+                        <img class="img-queue-logo" src="/images/ote/cinnamon-logo.svg" alt="img-queue-logo" />
+                        <img class="img-queue" src="images/ote/queue.svg" alt="img-queue" />
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width:@(CalculateProgress())%" aria-valuenow="@(CalculateProgress())%" aria-valuemin="0" aria-valuemax="100">@(CalculateProgress())%</div>
+                     </div>
+                    <div class="note-text">
+                        <p class="user-overloaded">Unfortunately, our system is currently overloaded with requests, preventing us from adding you to the queue at this time.</p>
+                        <br />
+                        <p class="user-overloaded">Queue Id: @queueInfo.QueueId</p>
+                        <br />
+                        <p class="user-overloaded">You can close this page without losing your place in line.</p>
+                    </div>
+                    <div class="queuing-info">
+                        <div class="info-box">
+                            <p class="user-overloaded">Expected time of arrival for tickets sales:</p>
+                            <p class="queing-value">@queueInfo.ExpectedTimeArrival.ToString("hh:mm tt")</p>
+                        </div>
+                        <div class="info-box">
+                            <p class="user-overloaded">Estimated wait time is:</p>
+                            <p class="queing-value">@queueInfo.EstimatedWaitingTime minutes</p>
+                        </div>
+                        <div class="info-box">
+                            <p class="user-overloaded">Number of users in line ahead of you:</p>
+                            <p class="queing-value">@queueInfo.UsersAhead</p>
+                        </div>
+                        <div class="info-box">
+                            <p class="user-overloaded">Status last updated:</p>
+                            <p class="queing-value">@queueInfo.LastUpdated.ToString("hh:mm:ss tt")</p>
+                        </div> 
+                    </div>
+                </div>
+        </div>
+    }
+<Modal @ref="modalRef">
+        <ModalContent Centered>
+            <ModalBody>
+                <div class="queue-up d-flex">
+                    <img class="img-logo" src="images/ote/ticket-queue.svg" />
+                    <div class="queue-up-text">
+                        <p class="logo">Cinnamon.ph</p>
+                        <p>You're up! It's your turn to buy tickets. </p>
+                    </div
+                </div>
+                <Progress>
+                    <ProgressBar Color="Color.Success" Value="100" />
+                </Progress>
+                <p class="congratulations-text">Congratulations! You're almost there. Please proceed to the next step to finalize your order and secure your tickets.</p>
+                <button class="btn-continue" @onclick="HideModal">Continue</button>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+<Modal @ref="modalQuestions">
+    <ModalContent Centered class="border-radius-15">
+        <ModalHeader class="justify-content-center pb-0">
+            <div>
+                <p class="font-20 font-weight-700 color-black-100 mb-0 text-center">Registration</p>
+                <p class="font-16 color-grey-100 mt-1 text-center">Please fill up some questions to complete your registration</p>
+            </div>
+        </ModalHeader>
+        <ModalBody class="px-4">
+            <Validations @ref="predefinedQuestionValidation" Mode="ValidationMode.Manual" Model="predefinedQuestion">
+                @if (predefinedQuestion.HaveNameQuestion)
+                {
+                    @if (predefinedQuestion.RequiredNameQuestion)
+                    {
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="color-black-100 mb-0"><span class="asterisk-symbol">&lowast;</span>Name</FieldLabel>
+                                <FieldBody>
+                                    <TextEdit @bind-Text="predefinedQuestion.NameAnswer" Placeholder="Your Name">
+                                        <ValidationError />
+                                    </TextEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    }
+                    else
+                    {
+                        <Field class="mb-3">
+                            <FieldLabel class="color-black-100 mb-0">Name</FieldLabel>
+                            <FieldBody>
+                                <TextEdit @bind-Text="predefinedQuestion.NameAnswer" Placeholder="Your Name" />
+                            </FieldBody>
+                        </Field>
+                    }
+                }
+
+                @if (predefinedQuestion.HaveEmailQuestion)
+                {
+                    @if (predefinedQuestion.RequiredEmailQuestion)
+                    {
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="color-black-100 mb-0"><span class="asterisk-symbol">&lowast;</span>Email</FieldLabel>
+                                <FieldBody>
+                                    <TextEdit Role="TextRole.Email" @bind-Text="predefinedQuestion.EmailAnswer" Placeholder="Your Email">
+                                        <ValidationError />
+                                    </TextEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    }
+                    else
+                    {
+                        <Field class="mb-3">
+                            <FieldLabel class="color-black-100 mb-0">Email</FieldLabel>
+                            <FieldBody>
+                                <TextEdit Role="TextRole.Email" @bind-Text="predefinedQuestion.EmailAnswer" Placeholder="Your Email" />
+                            </FieldBody>
+                        </Field>
+                    }
+                }
+
+                @if (predefinedQuestion.HavePhoneQuestion)
+                {
+                    @if (predefinedQuestion.RequiredPhoneQuestion || string.IsNullOrEmpty(predefinedQuestion.PhoneAnswer))
+                    {
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="color-black-100 mb-0"><span class="asterisk-symbol">&lowast;</span>Contact Number</FieldLabel>
+                                <FieldBody>
+                                    <TextEdit @bind-Text="predefinedQuestion.PhoneAnswer" Placeholder="Your Contact Number">
+                                        <ValidationError />
+                                    </TextEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    }
+                    else
+                    {
+                        <Field class="mb-3">
+                            <FieldLabel class="color-black-100 mb-0">Contact Number</FieldLabel>
+                            <FieldBody>
+                                <TextEdit @bind-Text="predefinedQuestion.PhoneAnswer" Placeholder="Your Contact Number" />
+                            </FieldBody>
+                        </Field>
+                    }
+                }
+            </Validations>
+            <Validations @ref="questionValidation" Mode="ValidationMode.Manual" Model="filteredQuestions">
+                @foreach (var question in filteredQuestions)
+                {
+                    if (question.Required)
+                    {
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="color-black-100 mb-0"><span class="asterisk-symbol">&lowast;</span>@question.Question</FieldLabel>
+                                <FieldBody>
+                                    <MemoEdit @bind-Text="question.Answer" Rows="3" Placeholder="Place your answer here..">
+                                        <ValidationError />
+                                    </MemoEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    }
+                    else
+                    {
+                        <Field class="mb-3">
+                            <FieldLabel class="color-black-100 mb-0">@question.Question</FieldLabel>
+                            <FieldBody>
+                                <MemoEdit @bind-Text="question.Answer" Rows="3" Placeholder="Place your answer here.." />
+                            </FieldBody>
+                        </Field>
+                    }
+                }
+            </Validations>
+        </ModalBody>
+        <ModalFooter>
+            <div class="button-footer">
+                <Button class="bg-white-200 color-grey-100 me-2"
+                        Clicked="() => modalQuestions.Close(CloseReason.UserClosing)">
+                    Cancel
+                </Button>
+                <Button class="bg-orange-100 color-white-100" Clicked="SubmitAnswerQuestions">
+                    Submit
+                </Button>
+            </div>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+<ImageViewer @ref="imageViewer" Image="@SetPlanImage" />
+<ModalLogin @ref="loginModal" ReturnUrl="@signInReturnUrl" />
+<ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
+                   OnConfirmationChanged="ConfirmDeleteChanged">
+        <HeaderContent>
+            <p class="m-0">Leave Waitlist</p>
+        </HeaderContent>
+        <BodyContent>
+            <p class="m-0">Are you sure you want to leave the waitlist?</p>
+        </BodyContent>
+    </ConfirmDialog>
+<Modal @ref="modalQuestions">
+    <ModalContent Centered class="border-radius-15">
+        <ModalHeader class="justify-content-center pb-0">
+            <div>
+                <p class="font-20 font-weight-700 color-black-100 mb-0 text-center">Registration</p>
+                <p class="font-16 color-grey-100 mt-1 text-center">Please fill up some questions to complete your registration</p>
+            </div>
+        </ModalHeader>
+        <ModalBody class="px-4">
+            <Validations @ref="predefinedQuestionValidation" Mode="ValidationMode.Manual" Model="predefinedQuestion">
+                @if (predefinedQuestion.HaveNameQuestion)
+                {
+                    @if (predefinedQuestion.RequiredNameQuestion)
+                    {
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="color-black-100 mb-0"><span class="asterisk-symbol">&lowast;</span>Name</FieldLabel>
+                                <FieldBody>
+                                    <TextEdit @bind-Text="predefinedQuestion.NameAnswer" Placeholder="Your Name">
+                                        <ValidationError />
+                                    </TextEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    }
+                    else
+                    {
+                        <Field class="mb-3">
+                            <FieldLabel class="color-black-100 mb-0">Name</FieldLabel>
+                            <FieldBody>
+                                <TextEdit @bind-Text="predefinedQuestion.NameAnswer" Placeholder="Your Name" />
+                            </FieldBody>
+                        </Field>
+                    }
+                }
+
+                @if (predefinedQuestion.HaveEmailQuestion)
+                {
+                    @if (predefinedQuestion.RequiredEmailQuestion)
+                    {
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="color-black-100 mb-0"><span class="asterisk-symbol">&lowast;</span>Email</FieldLabel>
+                                <FieldBody>
+                                    <TextEdit Role="TextRole.Email" @bind-Text="predefinedQuestion.EmailAnswer" Placeholder="Your Email">
+                                        <ValidationError />
+                                    </TextEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    }
+                    else
+                    {
+                        <Field class="mb-3">
+                            <FieldLabel class="color-black-100 mb-0">Email</FieldLabel>
+                            <FieldBody>
+                                <TextEdit Role="TextRole.Email" @bind-Text="predefinedQuestion.EmailAnswer" Placeholder="Your Email" />
+                            </FieldBody>
+                        </Field>
+                    }
+                }
+
+                @if (predefinedQuestion.HavePhoneQuestion)
+                {
+                    @if (predefinedQuestion.RequiredPhoneQuestion || string.IsNullOrEmpty(predefinedQuestion.PhoneAnswer))
+                    {
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="color-black-100 mb-0"><span class="asterisk-symbol">&lowast;</span>Contact Number</FieldLabel>
+                                <FieldBody>
+                                    <TextEdit @bind-Text="predefinedQuestion.PhoneAnswer" Placeholder="Your Contact Number">
+                                        <ValidationError />
+                                    </TextEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    }
+                    else
+                    {
+                        <Field class="mb-3">
+                            <FieldLabel class="color-black-100 mb-0">Contact Number</FieldLabel>
+                            <FieldBody>
+                                <TextEdit @bind-Text="predefinedQuestion.PhoneAnswer" Placeholder="Your Contact Number" />
+                            </FieldBody>
+                        </Field>
+                    }
+                }
+            </Validations>
+            <Validations @ref="questionValidation" Mode="ValidationMode.Manual" Model="filteredQuestions">
+                @foreach (var question in filteredQuestions)
+                {
+                    if (question.Required)
+                    {
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="color-black-100 mb-0"><span class="asterisk-symbol">&lowast;</span>@question.Question</FieldLabel>
+                                <FieldBody>
+                                    <MemoEdit @bind-Text="question.Answer" Rows="3" Placeholder="Place your answer here..">
+                                        <ValidationError />
+                                    </MemoEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    }
+                    else
+                    {
+                        <Field class="mb-3">
+                            <FieldLabel class="color-black-100 mb-0">@question.Question</FieldLabel>
+                            <FieldBody>
+                                <MemoEdit @bind-Text="question.Answer" Rows="3" Placeholder="Place your answer here.." />
+                            </FieldBody>
+                        </Field>
+                    }
+                }
+            </Validations>
+        </ModalBody>
+        <ModalFooter>
+            <div class="button-footer">
+                <Button class="bg-white-200 color-grey-100 me-2"
+                        Clicked="() => modalQuestions.Close(CloseReason.UserClosing)">
+                    Cancel
+                </Button>
+                <Button class="bg-orange-100 color-white-100" Clicked="SubmitAnswerQuestions">
+                    Submit
+                </Button>
+            </div>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+<Modal @ref="modalPurchaseWithConfirmation">
+    <ModalContent Centered class="border-radius-15">
+        <ModalHeader class="justify-content-center">
+            <div>
+                <p class="font-20 font-weight-700 color-black-100 mb-0 text-center">Registration Pending</p>
+            </div>
+        </ModalHeader>
+
+        <ModalBody class="px-4">
+            <p class="font-16 font-weight-700 color-black-100 mb-0">
+                You have been added to the waiting list.
+                We will send you an email if your registration is accepted by the event organizer.
+            </p>
+        </ModalBody>
+
+        <ModalFooter class="justify-content-center">
+            <Button class="bg-white-200 color-grey-100"
+                    Clicked="() => modalPurchaseWithConfirmation.Close(CloseReason.UserClosing)">
+                Close
+            </Button>
+        </ModalFooter>
+    </ModalContent>
+    </Modal>
+<Modal @ref="modalPurchaseWithoutConfirmation">
+    <ModalContent Centered class="border-radius-15">
+        <ModalHeader class="justify-content-center">
+            <div>
+                <p class="font-20 font-weight-700 color-black-100 mb-0 text-center">Registration Success</p>
+            </div>
+        </ModalHeader>
+
+        <ModalBody class="px-4">
+            <p class="font-16 font-weight-700 color-black-100 mb-0">
+                You have successfully registered for the event.
+                We have sent you an email containing your tickets and additional event details.
+                Please check your inbox for further information.
+                If you do not see the email, make sure to check your spam or junk folder. We look forward to seeing you at the event!
+            </p>
+        </ModalBody>
+
+        <ModalFooter class="justify-content-center">
+            <Button class="bg-white-200 color-grey-100"
+                    Clicked="() => modalPurchaseWithoutConfirmation.Close(CloseReason.UserClosing)">
+                Close
+            </Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+<Modal @ref="modalUnAvailable">
+    <ModalContent Centered>
+        <ModalBody>
+            <div class="queue-up d-flex">
+                <img class="img-logo" src="images/ote/information.svg" />
+                <div class="queue-up-text">
+                    <p class="expired-text">Seats Unavailable</p>
+                </div>
+            </div>
+            <p class="congratulations-text">Unfortunately, the seats (@unavailableSeats) you selected have already been reserved by another customer. Please choose different seats to continue with your booking.</p>
+            <button class="btn-try" @onclick="() => modalUnAvailable.Close(CloseReason.UserClosing)">Select other ticket</button>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+}
+@code {
+    [Parameter]
+    public string Handler { get; set; } = string.Empty;
+
+    [Parameter, SupplyParameterFromQuery]
+    public string Date { get; set; }
+
+    [Parameter, SupplyParameterFromQuery]
+    public string Token { get; set; }
+
+    private ModalLogin? loginModal;
+
+    private Modal modalRef {get; set;}
+
+    private Modal modaltime {get; set;}
+
+    private Modal? modalQuestions;
+
+    private ConfirmDialog confirmDialogRef { get; set; }
+
+    private CustomerProfile? currentLogin { get; set; }
+
+    private CustomerProfile? provider;
+
+    private DateTime SelectedDate { get; set; }
+
+    private CouponDetails Coupon { get; set; } = new();
+
+    private bool IsInclusivePricing { get; set; }
+
+    private IDictionary<int, TicketInfo> selectedTickets = new Dictionary<int, TicketInfo>();
+
+    private List<OtePricing> AvailablePriceList= new List<OtePricing>();
+
+    private List<Category.SelectedSeat> selectedSeats = new List<Category.SelectedSeat>();
+
+    private IEnumerable<TicketItem> otesItems { get; set; }
+
+    private string signInReturnUrl = string.Empty;
+
+    private string SelectedPaymentCode { get; set; }
+
+    private int ticketCount = 1;
+
+    private OteActivity? activity;
+
+    private ImageViewer imageViewer;
+
+    private string token = string.Empty;
+
+    private System.Timers.Timer? timer;
+
+    private bool IsLimit { get; set; }
+
+    private bool isLoading = false;
+
+    private bool submitting = false;
+
+    private bool _isProcessing;
+
+    private bool _isInActive;
+
+    private bool _isInReserved;
+
+    private bool _isTimeOut = false;
+
+    private Timer _countdownTimer;
+
+    public TimeSpan RemainingTime { get; set; }
+
+    public bool IsExpired { get; set; } = false;
+
+    private QueueInfo queueInfo = new QueueInfo();
+
+    private double progressPercentage;
+
+    private List<int> WaitlistIds = new List<int>();
+    private List<int> ApprovedWaitlistIds = new List<int>();
+    private List<OteWaitlist> oteWaitlists = new List<OteWaitlist>();
+    private bool IsOnWaitlist { get; set; }
+    private bool IsApprovedWaitlist { get; set; }
+    private int capacityLimit { get; set; }
+
+    private string? selectedPayload  { get; set; }
+    private List<ActivityQuestion> activityQuestions = new();
+    private Validations? questionValidation;
+    private Validations? phoneValidation;
+
+    private CoreDto.Activity.TopBookedCustomersDTO topBookedCustomers = new();
+    private Modal? modalPurchaseWithConfirmation;
+    private Modal? modalPurchaseWithoutConfirmation;
+
+    private const string TRACKER_ID = "checkout";
+
+    private PredefinedQuestion predefinedQuestion = new();
+    private Validations? predefinedQuestionValidation;
+    private List<ActivityQuestion> filteredQuestions = new();
+    public bool viewOnly { get; set; } = false;
+    IJSObjectReference scrollEffectModule;
+
+    private Modal modalUnAvailable { get; set; }
+    private string unavailableSeats { get; set; }
+    private const string RESERVEDSEAT_ID = "selected-seats";
+    public string paymentQueueName { get; set; }
+    public List<string> AvailableSeats = new List<string>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            token = user.FindFirstValue("Token");
+            if (string.IsNullOrEmpty(token))
+            {
+                NavigationManager.NavigateTo("/explore");
+                return;
+            }
+            else
+            {
+                //Create payment queue
+                paymentQueueName = $"{Handler}-payment-queue";
+                await QueueServices.EnsureQueueExistsAsync(paymentQueueName);
+            }
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            await LoadOteDetails();
+            await LoadProvider();
+            await LoadProfile();
+            if (activity.Schedule.IsCapacity)
+            {
+                await LoadWaitlist();
+            }
+            SelectedDate = DateTime.Parse(Date);
+            //Set Seat Plan
+            await GetUpdatedSeatPayload();
+
+            var url = $"/reservation/{Handler}/?date={Date}&token={Token}";
+            // Queue the user
+            if (currentLogin is not null)
+            {         
+                string activeQueueName = $"{Handler}-active-queue";
+                string reservedQueueName = $"{Handler}-reserved-queue";
+
+                //Remove all user in active queue w/ negative time
+                await QueueServices.RemoveExpiredUsersFromActiveQueueAsync(activeQueueName);
+
+                //Check user if is in the reserved-queue
+                if (await QueueServices.IsUserInQueueAsync(reservedQueueName, currentLogin.Handler))
+                {
+                    _isProcessing = false;
+                    _isInReserved = true;
+                    await MonitorQueue(currentLogin.Handler, RemainingTime);
+                    StateHasChanged();
+                }
+                //Check user if is in the active-queue
+                var activeQueueUserInfo = await QueueServices.GetUserInActiveQueueAsync(activeQueueName, currentLogin.Handler);
+                if (activeQueueUserInfo.HasValue)
+                {
+                    _isInActive = true;
+                    var (insertionTime, remainingTime) = activeQueueUserInfo.Value;
+                    if (remainingTime >= TimeSpan.Zero)
+                    {
+                        // Return the remaining processing time to the user
+                        _isProcessing = true;
+                        RemainingTime = remainingTime;
+                        await MonitorQueue(currentLogin.Handler, RemainingTime);
+                        StateHasChanged();
+                    }
+                    else
+                    {
+                        await OnTimeout();
+                    }
+                }
+                if (!_isInActive && !_isInReserved)
+                {
+                    //Enqueue user
+                    TimeSpan processTime = TimeSpan.FromMinutes(10);
+                    await QueueServices.EnqueueUserAsync(Handler, currentLogin.Handler);
+                    await MonitorQueue(currentLogin.Handler, processTime);
+                }
+
+            }
+            else
+            {
+                signInReturnUrl = url;
+                await loginModal.Show();
+            }
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+    private async Task HandleClick(string sectionId)
+    {
+        await ScrollToSection(sectionId);
+    }
+    private async Task ScrollToSection(string sectionId)
+    {
+        await JSRuntime.InvokeVoidAsync("MyLib.Utils.scrollEffect.scrollToElement", sectionId);
+    }
+
+    private string FormatId(string name)
+    {
+        return name.Replace(" ", "-");
+    }
+    private async Task MonitorQueue(string userId, TimeSpan time)
+    {
+        try
+        {
+            while (true)
+            {
+                //Remove all user in active queue w/ negative time
+                await QueueServices.RemoveExpiredUsersFromActiveQueueAsync($"{Handler}-active-queue");
+                //Update Seat Payload 
+                await GetUpdatedSeatPayload();
+                // Fetch the user's reserved queue info
+                var reservedQueueInfo = await QueueServices.GetReservedQueueUserInfoAsync(
+                    $"{Handler}-reserved-queue",
+                    $"{Handler}-active-queue",
+                    userId
+                );
+                if (reservedQueueInfo.numberAhead == -1)
+                {
+                    _isProcessing = true;
+                    StartCountdownTimer(time);
+                    StateHasChanged();
+                    break; // Exit the loop once the user is in the active queue
+                }
+                else
+                {
+                    _isProcessing                  = false;
+                    queueInfo.QueueId              = reservedQueueInfo.QueueId;
+                    queueInfo.UsersAhead           = reservedQueueInfo.numberAhead + 5;
+                    queueInfo.LastUpdated          = reservedQueueInfo.lastStatusUpdate;
+                    queueInfo.EstimatedWaitingTime = reservedQueueInfo.estimatedWaitingTime;
+                    queueInfo.ExpectedTimeArrival  = reservedQueueInfo.expectedTimeOfArrival;
+                    StateHasChanged();
+                }
+
+                // Wait for 10 seconds before checking again
+                await Task.Delay(10000);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log the exception for debugging (if needed) and show an error notification
+            Console.WriteLine($"Error in MonitorQueue: {ex.Message}");
+            await NotificationService.Error("An error occurred while monitoring the queue. Please try again later.", "Error");
+        }
+    }
+
+    private int CalculateProgress()
+    {
+        if (queueInfo.UsersAhead <= 0 || queueInfo.EstimatedWaitingTime.TotalSeconds == 0)
+        {
+            return 100;
+        }
+
+        // Calculate percentage based on users ahead and the estimated waiting time.
+        double totalUsers = queueInfo.UsersAhead + 5; // Adding 5 to include users in the active queue
+        double progress = (totalUsers - queueInfo.UsersAhead) / totalUsers * 100;
+        return (int)progress;
+    }
+    private double CalculateProgress(TimeSpan totalWaitingTime, TimeSpan remainingTime)
+    {
+        if (totalWaitingTime.TotalSeconds == 0)
+            return 100; // Full progress if there's no waiting time
+
+        var progress = (totalWaitingTime - remainingTime).TotalSeconds / totalWaitingTime.TotalSeconds * 100;
+        return Math.Clamp(progress, 0, 100);
+    }
+    private async void StartCountdownTimer(TimeSpan span)
+    {
+        if (_countdownTimer != null)
+        {
+            _countdownTimer.Dispose(); // Dispose of any existing timer to avoid multiple timers
+        }
+        // Set the countdown timer to 10 minutes
+        RemainingTime = span;
+        _countdownTimer = new Timer(TimerCallback, null, 0, 1000); // Update every second
+    }
+
+    private void TimerCallback(object state)
+    {
+        if (RemainingTime.TotalSeconds > 0)
+        {
+            RemainingTime = RemainingTime.Subtract(TimeSpan.FromSeconds(1));
+            InvokeAsync(StateHasChanged); // Notify Blazor to update the UI
+        }
+        else
+        {
+            // Time's up
+            _countdownTimer.Dispose();
+            OnTimeout();
+        }
+    }
+
+    public async Task OnTimeout()
+    {
+        // Handle user timeout logic
+        _isProcessing = false;
+        NavigateToOteReserved();
+    }
+    private async Task LoadProfile()
+    {
+        ticketCount = 0;
+        if (!string.IsNullOrEmpty(Token))
+        {
+            var profileResult = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
+            if (profileResult.Succeeded || profileResult.Result is not null && profileResult.Result.IsSuccess)
+            {
+                currentLogin = mapper.Map<Models.Entities.CustomerProfile>(profileResult.Result.Result);
+            }
+            //Get the number of ticket purchased in this event
+            var ticketPurchase = await activityHandler.CustomerOte(token);
+            if (ticketPurchase.Succeeded && ticketPurchase.Result is not null && ticketPurchase.Result.IsSuccess)
+            {
+                otesItems = ticketPurchase.Result.Result.Where(a => a.ActivityId == activity.Id).Select(t =>
+                {
+                    return new TicketItem
+                        {
+                            EventName = t.EventTitle,
+                            PurchaseOrderId = t.PurchaseOrderId
+                        };
+                });
+                foreach (var item in otesItems)
+                {
+                    var count = await transactionApiHandler.GetOtePurchaseOrder(item.PurchaseOrderId, token);
+                    if (count.Succeeded && count.Result is not null && count.Result.IsSuccess)
+                    {
+                        ticketCount += count.Result.Result.Tickets.Count();
+                    }
+                }
+                ticketCount = activity.Schedule.EventTicketLimit > 0 ? activity.Schedule.EventTicketLimit - ticketCount : 0;
+            }
+        }
+    }
+    private Task ShowModal()
+    {
+        return modalRef.Show();
+    }
+
+    private Task HideModal()
+    {
+        return modalRef.Hide();
+    }
+    private void NavigateToOteReserved()
+    {
+        IsExpired = true;
+        NavigationManager.NavigateTo($"/explore/ote/reserved/{Handler}/{IsExpired}");
+    }
+    private async Task LoadOteDetails()
+    {
+        try
+        {
+            var result = await activityHandler.FindOteByHandler(new Framework.ApiCommand.ApiCore.Activity.Request.OteActivityArgs
+                {
+                    IncludeAddress = true,
+                    IncludeDescription = true,
+                    IncludePricing = true,
+                    IncludeSchedule = true,
+                    IncludeImages = true
+                }, Handler);
+            if (!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+            {
+                throw new ApplicationException(result.Message);
+            }
+            var act = result.Result.Result;
+            if (!act.IsPublished)
+            {
+                NavigationManager.NavigateTo("not-found");
+                return;
+            }
+            activity                = mapper.Map<OteActivity>(act);
+            IsLimit                 = act.OteSchedule.EventTicketLimit != 0 ? true : false;
+            int soldLimitedTickets  = activity.Pricings.Where(a => !a.IsUnlimited).Sum(a => a.TicketSold);
+            activity.IsEventSoldOut = activity.Pricings.Sum(a => a.MaxSlots) <= soldLimitedTickets ? true : false;
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+    private string SetPlanImage
+    {
+        get
+        {
+            string imageSrc = string.Empty;
+            if (activity is not null)
+            {
+                var image = activity.Images.FirstOrDefault(i => i.Order == 100);
+                if (image is not null)
+                {
+                    imageSrc = image.ImageSrc;
+                }
+            }
+
+            return imageSrc;
+        }
+    }
+    private async Task LoadProvideDetails()
+    {
+        try
+        {
+            var inclusiveCheckRes = await activityHandler.OwnerPricingInclusive(activity.ProviderId);
+            if (inclusiveCheckRes.Succeeded && inclusiveCheckRes.Result is not null && inclusiveCheckRes.Result.IsSuccess)
+            {
+                IsInclusivePricing = inclusiveCheckRes.Result.Result.IsInclusivePricing;
+            }
+        }
+        catch (System.Exception)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+    private Task ViewAvailableDates()
+    {
+        var tickets = jsonSerializationProvider.Deserialize<Cinnamon.Framework.Models.SeatPlan.Format>(selectedPayload);
+        if (tickets is not null)
+        {
+            AvailablePriceList = new List<OtePricing>(); // Initialize the list
+            foreach (var ticket in tickets.Categories)
+            {
+                var cat = ticket.Value;
+                AvailablePriceList.Add(new OtePricing
+                {
+                    Name             = cat.Name,
+                    MaxSlots         = cat.Rows.Sum(r => r.Value.Seats.Count),
+                    TicketColor      = cat.Color
+                });
+            }
+        }
+        return Task.CompletedTask;
+    }
+    private void HandleSeatSelection(Category.SelectedSeat selectedSeat)
+    {
+        var selectedTicket = activity.Pricings.FirstOrDefault(a => a.ReserveSeatUuid == selectedSeat.CategoryUUID);
+        var ticketToUpdate = selectedTickets.FirstOrDefault(t => t.Value.Id == selectedTicket?.Id);
+        //Remove Ticket
+        if (ticketToUpdate.Value?.SeatUUID.Split(",").Contains(selectedSeat.Seat.Uuid) == true)
+        {
+            if (ticketToUpdate.Value.Count > 1)
+            {
+                // Decrease the ticket count
+                ticketToUpdate.Value.Count -= 1;
+
+                // Update the seat information by removing the specific seat
+                var seatList = ticketToUpdate.Value.Seat.Split(",").ToList();
+                seatList.Remove($"{selectedSeat.RowNumber}-{selectedSeat.Seat.SeatNumber}"); // Ensure correct format
+                ticketToUpdate.Value.Seat = string.Join(",", seatList);
+
+                var seatUUIDList = ticketToUpdate.Value.SeatUUID.Split(",").ToList();
+                seatUUIDList.Remove(selectedSeat.Seat.Uuid); // Ensure UUID is removed
+                ticketToUpdate.Value.SeatUUID = string.Join(",", seatUUIDList);
+            }
+            else
+            {
+                // Remove the ticket entirely if only one seat remains
+                selectedTickets.Remove(ticketToUpdate.Key);
+            }
+        }
+        else
+        {
+            // Add or update the ticket with the new seat
+            if (ticketToUpdate.Value != null)
+            {
+                ticketToUpdate.Value.Count += 1;
+                ticketToUpdate.Value.Seat += $",{selectedSeat.RowNumber}-{selectedSeat.Seat.SeatNumber}";
+                ticketToUpdate.Value.SeatUUID += $",{selectedSeat.Seat.Uuid}";
+            }
+            else
+            {
+                selectedTickets.Add(selectedTicket.Id, new TicketReservation.TicketInfo
+                {
+                    Id               = selectedTicket.Id,
+                    Count            = 1,
+                    Name             = selectedTicket.Name,
+                    Price            = selectedTicket.Price,
+                    RequiredApproval = selectedTicket.RequiredApproval,
+                    IsUnlimited      = selectedTicket.IsUnlimited,
+                    Seat             = $"{selectedSeat.RowNumber}-{selectedSeat.Seat.SeatNumber}",
+                    CategoryUUID     = selectedSeat.CategoryUUID,
+                    RowUUID          = selectedSeat.RowUUID,
+                    SeatUUID         = selectedSeat.Seat.Uuid
+                });
+            }
+        }
+    }
+    private decimal GetAppliedCoupon
+    {
+        get
+        {
+            decimal result = 0;
+
+            if (Coupon.IsCouponApplied && Coupon.IsValid)
+            {
+                // fixed amount
+                if (Coupon.DiscountType == 1)
+                {
+                    result = Coupon.Amount;
+                }
+                // percentage
+                else if (Coupon.DiscountType == 0)
+                {
+                    decimal percentage = Coupon.Amount / 100;
+                    decimal subTotal = 0;
+                    if (IsInclusivePricing)
+                    {
+                        subTotal = GetSubTotal;
+                    }
+                    else
+                    {
+                        subTotal = GetSubTotal;
+                    }
+                    result = subTotal * percentage;
+                }
+            }
+
+            return result;
+        }
+    }
+    private decimal GetSubTotal
+    {
+        get
+        {
+            return selectedTickets.Sum(t => t.Value.Price * t.Value.Count);
+        }
+    }
+    private void ClearCouponDetails()
+    {
+        Coupon.IsCouponApplied = false;
+        Coupon.IsValid = false;
+        Coupon.Amount = 0;
+        Coupon.DiscountType = -1;
+        Coupon.MaximumSpend = 0;
+        Coupon.CouponCode = string.Empty;
+    }
+
+    private Task RemoveAppliedCoupon()
+    {
+        ClearCouponDetails();
+        return Task.CompletedTask;
+    }
+    private async Task ValidateCouponCode()
+    {
+        Coupon.ErrorDescription = string.Empty;
+        Coupon.ErrorTitle = string.Empty;
+
+        if (ticketCount == 0)
+        {
+            Coupon.IsCouponApplied = true;
+            Coupon.IsValid = false;
+            Coupon.ErrorTitle = "Wrong Application of Code";
+            Coupon.ErrorDescription = "Please make sure you have selected an ticket first";
+
+            RemoveCouponError();
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(Coupon.CouponCode) && ticketCount > 0)
+        {
+            Coupon.IsValidating = true;
+
+            decimal subTotal = GetSubTotal;
+            decimal serviceFee = GetServiceFee;
+            decimal total = subTotal + serviceFee;
+
+            var validateRes = await activityHandler.ValidateCouponCode(new Framework.ApiCommand.ApiCore.Activity.Request.ValidateCouponCodeArgs
+                {
+                    ActivityId = activity.Id,
+                    Amount = total,
+                    CouponCode = Coupon.CouponCode
+                }, Token);
+
+            if (!validateRes.Succeeded || validateRes.Result == null)
+            {
+                Coupon.IsCouponApplied = true;
+                Coupon.IsValid = false;
+                Coupon.ErrorTitle = "External Error Occured";
+                Coupon.ErrorDescription = "An error occured when trying to validate coupon code";
+
+                RemoveCouponError();
+            }
+            else if (validateRes.Succeeded && validateRes.Result != null && !validateRes.Result.IsSuccess)
+            {
+                Coupon.IsCouponApplied = true;
+                Coupon.IsValid = false;
+                Coupon.ErrorTitle = validateRes.Result.ErrorInfo.Message;
+                Coupon.ErrorDescription = validateRes.Result.ErrorInfo.Description;
+
+                RemoveCouponError();
+            }
+            else
+            {
+                var result = validateRes.Result.Result;
+
+                Coupon.IsCouponApplied = true;
+                Coupon.IsValid = true;
+                Coupon.Amount = result.Amount;
+                Coupon.DiscountType = result.DiscountType;
+                Coupon.MaximumSpend = result.MaximumSpend;
+            }
+
+            Coupon.IsValidating = false;
+        }
+    }
+    private decimal GetServiceFee
+    {
+        get
+        {
+            if (selectedTickets.Sum(t => t.Value.Price) == 0) return 0;
+
+            if (selectedTickets.Count > 0 && !IsInclusivePricing) return 15;
+
+            return 0;
+        }
+    }
+    private decimal GetTotalCredit
+    {
+        get
+        {
+            decimal result = 0;
+
+            return result;
+        }
+    }
+    private decimal GetTotalPrice
+    {
+        get
+        {
+            decimal result = 0;
+
+            if (selectedTickets.Count > 0)
+            {
+                decimal discount = 0;
+                result = ((GetSubTotal + GetConvinienceFee + GetServiceFee) - GetAppliedCoupon) - GetTotalCredit;
+                result = result < 0 ? 0 : result;
+            }
+
+            return result;
+        }
+    }
+    private decimal GetConvinienceFee
+    {
+        get
+        {
+            decimal result = 0;
+
+            if (string.IsNullOrEmpty(SelectedPaymentCode)) return 0;
+
+            if (selectedTickets.Count > 0 && !IsInclusivePricing)
+            {
+                result = GetSubTotal * ((decimal)ServiceFeePercent / 100); //.05m;
+            }
+
+            return result;
+        }
+    }
+    private int ServiceFeePercent
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(SelectedPaymentCode)) return 0;
+            if (SelectedPaymentCode == "CARD") return 5;
+            else return 3;
+        }
+    }
+    private async Task RemoveCouponError()
+    {
+        await Task.Delay(3000);
+        ClearCouponDetails();
+        StateHasChanged();
+    }
+
+    private Task ProceedToPayment()
+    {
+        isLoading = true;
+        StateHasChanged();
+        if (currentLogin is null)
+        {
+            string oteDetailsUrl = $"/explore/ote/{Handler}";
+            signInReturnUrl = oteDetailsUrl;
+
+            isLoading = false;
+            StateHasChanged();
+
+            return loginModal.Show();
+        }
+
+        if (selectedTickets.Count <= 0)
+        {
+            return NotificationService.Error("Select a ticket to proceed.", "Oops!");
+
+            isLoading = false;
+            StateHasChanged();
+        }
+
+        if (IsLimit)
+        {
+            if (ticketCount < selectedTickets.Sum(a => a.Value.Count) && ticketCount != 0)
+            {
+                string message = ticketCount == activity.Schedule.EventTicketLimit
+                    ? $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer."
+                    : $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
+
+                return NotificationService.Error(message, "Opps!");
+            }
+            else if (ticketCount == 0)
+            {
+                return NotificationService.Error("You've already reached the maximum limit for ticket purchases.", "Opps!");
+            }
+        }
+
+        bool havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.IsFree) && selectedTickets.Any(t => !t.Value.IsFree);
+        if(havePaidAndFreeTicket)
+        {
+            return NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
+
+            isLoading = false;
+            StateHasChanged();
+        }
+
+        bool freeWithApproval = selectedTickets.Any(t => t.Value.IsFree && t.Value.RequiredApproval);
+        bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.IsFree && !t.Value.RequiredApproval);
+
+        if(freeWithApproval && isFreeWithoutApproval)
+        {
+            return NotificationService.Error("Combining free tickets with and without approval is not permitted.", "Invalid");
+
+            isLoading = false;
+            StateHasChanged();
+        }
+
+        bool paidWithApproval = selectedTickets.Any(t => !t.Value.IsFree && t.Value.RequiredApproval);
+        bool isPaidWithoutApproval = selectedTickets.Any(t => !t.Value.IsFree && !t.Value.RequiredApproval);
+
+        if(paidWithApproval && isPaidWithoutApproval)
+        {
+            return NotificationService.Error("Combining paid tickets with and without approval is not permitted.", "Invalid");
+
+            isLoading = false;
+            StateHasChanged();
+        }
+
+        bool haveQuestions = activityQuestions.Count > 0;
+
+        if (haveQuestions) return modalQuestions?.Show();
+
+        if (isFreeWithoutApproval || freeWithApproval) return ProceedToFreePurchase();
+
+        if(paidWithApproval) return ProceedToJoinWaitlist();
+
+
+        isLoading = false;
+        StateHasChanged();
+
+        return ProceedToPaymentOption();
+    }
+    private bool DisableProceed
+    {
+        get
+        {
+            if (activity is null) return true;
+
+            if (selectedTickets.Count > 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+    }
+    public TimeSpan SetRemainingTime(TimeSpan time)
+    {
+        RemainingTime = time;
+        return RemainingTime;
+    }
+    private async Task LoadProvider()
+    {
+        try
+        {
+            if (activity is null) return;
+
+            var result = await accountApiHandler.GetCustomerById(activity.ProviderId);
+            if (!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+            {
+                throw new ApplicationException(result.Message);
+            }
+
+            provider = mapper.Map<CustomerProfile>(result.Result.Result);
+        }
+        catch (System.Exception)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+    private async Task LoadWaitlist()
+    {
+        //0-NO STATUS 1-PENDING 2-APPROVED 3-DECLINED
+        //Get pending and approved
+        var waitlist = await activityHandler.GetOteWaitlistByProvider(new Framework.ApiCommand.ApiCore.Activity.Request.GetOteWaitlistByProviderArgs
+            {
+                ProviderId = provider.Id,
+                ActivityId = activity.Id,
+                Status = new[] { 1, 2 }
+            }, token);
+        if (waitlist.Succeeded && waitlist.Result is not null && waitlist.Result.IsSuccess)
+        {
+            oteWaitlists = waitlist.Result.Result.Select(s =>
+            {
+                return new OteWaitlist
+                {
+                    Id         = s.Id,
+                    Status     = s.Status,
+                    CustomerId = s.CustomerId,
+                    Payload    = s.Payload,
+                    Type       = s.Type
+                };
+            }).ToList();
+        }
+
+        //Pending Waitlist
+        IsOnWaitlist = oteWaitlists.Any(a => a.CustomerId == currentLogin.Id && a.Status == 1);
+        var oteWaitlistDTOs = oteWaitlists.Where(a => a.CustomerId == currentLogin.Id && a.Status == 1);
+        foreach (var item in oteWaitlistDTOs)
+        {
+            WaitlistIds.Add(item.Id);
+        }
+        //Approved Waitlist
+        IsApprovedWaitlist = oteWaitlists.Any(a => a.CustomerId == currentLogin.Id && a.Status == 2);
+        var oteApprovedWaitlistDTOs = oteWaitlists.Where(a => a.CustomerId == currentLogin.Id && a.Status == 2);
+        foreach (var item in oteApprovedWaitlistDTOs)
+        {
+            ApprovedWaitlistIds.Add(item.Id);
+        }
+
+        //Check capacity limit
+        if (activity.IsEventSoldOut)
+        {
+            capacityLimit = activity.Schedule.CapacityCount - oteWaitlists.Count;
+        }
+    }
+    private async Task RemoveFromWaitlist()
+    {
+        bool allSucceeded = true;
+        foreach (var waitlistId in WaitlistIds)
+        {
+            var removeWaitlist = await activityHandler.DeleteOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.DeleteOteWaitlistArgs
+                {
+                    Id = waitlistId
+                }, token);
+
+            if (!(removeWaitlist.Succeeded && removeWaitlist.Result is not null && removeWaitlist.Result.IsSuccess))
+            {
+                allSucceeded = false;
+            }
+        }
+        if (allSucceeded)
+        {
+            //Add Email
+            WaitlistIds.Clear();
+            await LoadWaitlist();
+            await NotificationService.Success("You're removed from the waitlist.", "Success");
+        }
+        else
+        {
+            await NotificationService.Error("Failed to remove one or more items from waitlist.", "Error");
+        }
+    }
+    private async Task JoinWaitlist()
+    {
+        if (currentLogin is null)
+        {
+            string oteDetailsUrl = $"/explore/ote/{Handler}";
+            await loginModal.Show();
+            signInReturnUrl = oteDetailsUrl;
+            return;
+        }
+
+        //0 NO STATUS 1 PENDING 2 APPROVED 3 DECLINED
+        //Get Selected Ticket
+        if (selectedTickets.Count <= 0)
+        {
+            await NotificationService.Error("Select a ticket to proceed.", "Oops!");
+            return;
+        }
+
+        bool havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.IsFree) && selectedTickets.Any(t => !t.Value.IsFree);
+        if(havePaidAndFreeTicket)
+        {
+            await NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
+            return;
+        }
+
+        bool freeWithApproval = selectedTickets.Any(t => t.Value.IsFree && t.Value.RequiredApproval);
+        bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.IsFree && !t.Value.RequiredApproval);
+
+        if(freeWithApproval && isFreeWithoutApproval)
+        {
+            await NotificationService.Error("Combining free tickets with and without approval is not permitted.", "Invalid");
+            return; 
+        }
+
+        bool paidWithApproval = selectedTickets.Any(t => !t.Value.IsFree && t.Value.RequiredApproval);
+        bool isPaidWithoutApproval = selectedTickets.Any(t => !t.Value.IsFree && !t.Value.RequiredApproval);
+
+        if(paidWithApproval && isPaidWithoutApproval)
+        {
+            await NotificationService.Error("Combining paid tickets with and without approval is not permitted.", "Invalid");
+            return;
+        }
+
+        bool haveQuestions = activityQuestions.Count > 0;
+
+        if (haveQuestions)
+        {
+            await modalQuestions?.Show();
+            return;
+        }
+
+        await ProceedToJoinWaitlist();
+    }
+    private async Task ProceedToJoinWaitlist()
+    {
+        var questions = GetQuestions();
+
+        var payload = new
+        {
+            Tickets = selectedTickets.Select(t => new
+            {
+                Id = t.Value.Id,
+                Count = t.Value.Count,
+                Date = SelectedDate,
+                Price = t.Value.Price,
+                Name = t.Value.Name,
+            }),
+            Questions = questions.Select(q => new
+            {
+                Id = q.Id,
+                Question = string.Empty,
+                Answer = string.Empty
+            })
+        };
+
+        var serializedPayload = JsonConvert.SerializeObject(payload);
+
+        submitting = true;
+        StateHasChanged();
+
+        //Add to Waitlist
+        var oteDate = activity.OteDates.FirstOrDefault(d => d.Date.Date == SelectedDate.Date);
+        var waitlist = await activityHandler.CreateOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteWaitlistArgs
+        {
+            ActivityId   = activity.Id,
+            ScheduleId   = oteDate.OteScheduleId,
+            CustomerId   = currentLogin.Id,
+            CustomerName = $"{currentLogin.FirstName} {currentLogin.LastName}",
+            ProviderId   = provider.Id,
+            Status       = 1,
+            Type         = "Paid",
+            Payload      = serializedPayload
+        },token);
+
+        if (waitlist.Succeeded && waitlist.Result is not null && waitlist.Result.IsSuccess)
+        {
+            //Add Email
+            await NotificationService.Success("Successfully added to waitlist.", "Success");
+            if (activity.Schedule.IsCapacity)
+            {
+                await LoadWaitlist();
+            }
+        }
+
+        submitting = false;
+        StateHasChanged();
+    }
+
+    private async Task ConfirmDeleteChanged(bool value)
+    {
+        if (value)
+        {
+            await RemoveFromWaitlist();
+        }
+        else
+        {
+            await confirmDialogRef.Close();
+        }
+    }
+
+    private async Task LoadActivityQuestions()
+    {
+        var activityQuestionsRes = await activityHandler.ActivityQuestions(new Framework.ApiCommand.ApiCore.Activity.Request.ActivityQuestionsArgs
+            {
+                ActivityId = activity.Id
+            });
+        if (!activityQuestionsRes.Succeeded || activityQuestionsRes.Result is null || !activityQuestionsRes.Result.IsSuccess)
+        {
+            NavigationManager.NavigateTo("/explore");
+            return;
+        }
+
+        activityQuestions.AddRange(activityQuestionsRes.Result.Result.Select(q => new ActivityQuestion
+            {
+                FieldType = q.FieldType,
+                Id = q.Id,
+                Question = q.FieldLabel,
+                Required = q.Required
+            }));
+
+        var filtered = activityQuestions
+            .Where(q => q.Question != predefinedQuestion.NameQuestion &&
+                q.Question != predefinedQuestion.EmailQuestion &&
+                q.Question != predefinedQuestion.PhoneQuestion);
+
+        filteredQuestions.AddRange(filtered);
+
+        await LoadPredefinedQuestions();
+    }
+
+    private async Task SubmitAnswerQuestions()
+    {
+        var validForms = await questionValidation?.ValidateAll();
+        var validPredefined = await predefinedQuestionValidation?.ValidateAll();
+        if (!validForms || !validPredefined) return;
+
+        await questionValidation.ClearAll();
+        await predefinedQuestionValidation.ClearAll();
+
+        await modalQuestions?.Close(CloseReason.UserClosing);
+
+        bool proceedToWaitList = activity.Schedule.IsCapacity && activity.IsEventSoldOut && selectedTickets.Count <= capacityLimit && !selectedTickets.First().Value.IsUnlimited;
+
+        bool freeWithApproval = selectedTickets.Any(t => t.Value.IsFree && t.Value.RequiredApproval);
+
+        bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.IsFree && !t.Value.RequiredApproval);
+
+        bool paidWithApproval = selectedTickets.Any(t => !t.Value.IsFree && t.Value.RequiredApproval);
+
+        if(proceedToWaitList || paidWithApproval)
+        {
+            await ProceedToJoinWaitlist();
+            return;
+        }
+
+        if (isFreeWithoutApproval || freeWithApproval)
+        {
+            await ProceedToFreePurchase();
+            return;
+        }
+
+        await ProceedToPaymentOption();
+    }
+
+    private async Task<PaymentTracker> CreatePaymentTracker(string guid = "", string webToken = "")
+    {
+        var question = GetQuestions();
+
+        var requestPaymentRes = await transactionApiHandler.PaymentRequest(new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs
+            {
+                ActivityId = activity.Id,
+                Guid = guid,
+                Token = webToken,
+                SelectedDate = SelectedDate,
+                SelectedTickets = selectedTickets.Select(t => new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs.RequestPaymentTicket
+                {
+                    TicketCount  = t.Value.Count,
+                    TicketId     = t.Value.Id,
+                    SeatNumber   = t.Value.Seat,
+                    CategoryUUID = t.Value.CategoryUUID,
+                    SeatUUID     = t.Value.SeatUUID,
+                    RowUUID      = t.Value.RowUUID
+                }),
+                Questions = question.Select(q => new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs.ProviderQuestion
+                {
+                    Answer = q.Answer,
+                    Question = q.Question,
+                    Id = q.Id
+                })
+            }, token);
+        if (!requestPaymentRes.Succeeded || requestPaymentRes.Result is null || !requestPaymentRes.Result.IsSuccess)
+        {
+            return null;
+        }
+        var requestedToken = requestPaymentRes.Result.Result;
+
+        return new PaymentTracker
+            {
+                Guid = requestedToken.Guid,
+                Token = requestedToken.Token
+            };
+    }
+
+    private async Task ProceedToPaymentOption()
+    {
+        isLoading = true;
+        StateHasChanged();
+        submitting = true;
+        StateHasChanged();
+
+        string guid = string.Empty, webToken = string.Empty;
+
+        var getTracker = await localStorage.GetItem<PaymentTracker>(TRACKER_ID);
+        if (getTracker is not null)
+        {
+            guid = getTracker.Guid;
+            webToken = getTracker.Token;
+        }
+
+        var createTracker = await CreatePaymentTracker(guid, webToken);
+        if (createTracker is null)
+        {
+            await NotificationService.Error("An error occured. Please contact support.", "Error");
+            return;
+        }
+
+        await TrackPaymentRequest(createTracker);
+
+        submitting = false;
+        StateHasChanged();
+
+        string paymentUrl = $"/payment/ote/reserved/{Handler}/?guid={createTracker.Guid}&token={createTracker.Token}";
+        await Task.Delay(2000);
+
+        isLoading = false;
+        StateHasChanged();
+        NavigationManager.NavigateTo(paymentUrl);
+    }
+
+    private async Task ProceedToFreePurchase()
+    {
+        //Add to payment queue
+        var selectedSeats = selectedTickets.SelectMany(t => t.Value.SeatUUID.Split(',').Zip(t.Value.Seat.Split(','), (uuid, name) => new
+        {
+            SeatUUID = uuid,
+            SeatNumber = name
+        }))
+        .ToList();
+
+        // Initialize the list for unavailable seats
+        var unavailableSeatsList = new List<string>();
+        AvailableSeats.Clear();
+
+        foreach (var ticket in selectedSeats)
+        {
+            var isUserInQueue = await QueueServices.IsUserInQueueAsync(paymentQueueName, ticket.SeatUUID);
+            if (isUserInQueue)
+            {
+                // Add to the unavailable seats list
+                unavailableSeatsList.Add(ticket.SeatNumber);
+            }
+            else
+            {
+                AvailableSeats.Add(ticket.SeatUUID);
+            }
+        }
+
+        unavailableSeats = string.Join(", ", unavailableSeatsList);
+
+        if (!string.IsNullOrEmpty(unavailableSeats))
+        {
+            await modalUnAvailable.Show();
+            isLoading = false;
+            return;
+        }
+        else
+        {
+            //Save selected ticket to the local storage
+            await localStorage.SetItem(RESERVEDSEAT_ID, AvailableSeats);
+            // Queue the available seats if any
+            foreach (var seatUUID in AvailableSeats)
+            {
+                await QueueServices.EnqueueUserInPaymentAsync(paymentQueueName, seatUUID);
+            }
+            await SubmitFreeTransaction();
+        }
+    }
+
+    private async Task SubmitFreeTransaction()
+    {
+        try
+        {
+            submitting = true;
+            StateHasChanged();
+
+            var createTracker = await CreatePaymentTracker();
+            if (createTracker is null)
+            {
+                //Remove if not sucessfull
+                await RemoveInQueueIfError();
+                await NotificationService.Error("An error occured. Please contact support.", "Error");
+                return;
+            }
+
+            var questions = GetQuestions();
+
+            var submitFreePurchase = await transactionApiHandler.SubmitOtePurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs
+                {
+                    ActivityId = activity.Id,
+                    CardInformation = null,
+                    CouponCode = string.Empty,
+                    IsCreditsApplied = false,
+                    PaymentMethod = "GCASH", // default to ewallet even without any payment method selected
+                    PaymentChannel = "EWALLET",
+                    Tickets = selectedTickets.Select(t => new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs.OTeTicket
+                    {
+                        Count      = t.Value.Count,
+                        Id         = t.Value.Id,
+                        SeatNumber = t.Value.Seat
+                    }),
+                    Questions = questions.Select(q => new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs.ActivityQuestion
+                    {
+                        Answer = q.Answer,
+                        Id = q.Id,
+                        Question = q.Question
+                    }),
+                    Guid = createTracker.Guid,
+                    Token = createTracker.Token
+                }, token);
+
+            submitting = false;
+            isLoading = false;
+
+            if (!submitFreePurchase.Succeeded || submitFreePurchase.Result is null || !submitFreePurchase.Result.IsSuccess)
+            {
+                //Remove if not sucessfull
+                await RemoveInQueueIfError();
+                await NotificationService.Error(submitFreePurchase.Result?.ErrorInfo?.Message ?? submitFreePurchase.Message, "Error");
+                return;
+            }
+            await ClearAnswers();
+            var haveApprovalTicket = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
+            if (haveApprovalTicket)
+            {
+                await modalPurchaseWithConfirmation?.Show();
+            }
+            else
+            {
+                //Update seat payload occupied selected seat
+                foreach (var ticket in selectedTickets)
+                {
+                    var ticketSeats = ticket.Value.SeatUUID.Split(",").ToList();
+                    foreach (var seat in ticketSeats)
+                    {
+                        var updateSeatPlan = await seatplanApiHandler.UpdateSeatStatus(new Framework.ApiCommand.ApiCore.SeatPlan.Request.UpdateSeatStatusArgs
+                            {
+                                ActivityId = activity.Id,
+                                EventDate  = SelectedDate,
+                                CategoryId = ticket.Value.CategoryUUID,
+                                RowId      = ticket.Value.RowUUID,
+                                SeatId     = seat,
+                                Occupied   = true
+                            }, token);
+                        if (!updateSeatPlan.Succeeded || updateSeatPlan.Result is null || !updateSeatPlan.Result.IsSuccess)
+                        {
+                            await NotificationService.Error("An error occured. Please contact support.", "Error");
+                        }
+                    }
+                }
+                //Set Seat Plan
+                await GetUpdatedSeatPayload();
+                await modalPurchaseWithoutConfirmation?.Show();
+            }
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Contact Cinnamon support.", "Error");
+        }
+    }
+    private async Task RemoveInQueueIfError()
+    {
+        //Remove if not sucessfull
+        var seats = await localStorage.GetItem<List<string>>(RESERVEDSEAT_ID);
+        if (seats is not null)
+        {
+            //Dequeue selected seats
+            foreach (var seat in seats)
+            {
+                await QueueServices.RemoveSeatInPaymentQueue(seat, paymentQueueName);
+            }
+            await localStorage.RemoveItem(RESERVEDSEAT_ID);
+        }
+    }
+    private Task ClearAnswers()
+    {  
+        predefinedQuestion.NameAnswer = string.Empty;
+        predefinedQuestion.EmailAnswer = string.Empty;
+        predefinedQuestion.PhoneAnswer = string.Empty;
+
+        foreach (var item in activityQuestions)
+        {
+            item.Answer = string.Empty;
+        }
+        return Task.CompletedTask;
+    }
+    private async Task LoadTopBooked()
+    {
+        var result = await activityHandler.TopBookedCustomers(new Framework.ApiCommand.ApiCore.Activity.Request.TopBookedCustomersArgs
+            {
+                ActivityId = activity.Id,
+                BookedDate = SelectedDate.ToString("yyyyMMddhhmmss")
+            });
+        if (result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        {
+            topBookedCustomers = result.Result.Result;
+        }
+    }
+
+    private string CustomerName(CoreDto.Customer.BasicProfileDTO profile)
+    {
+        return $"{Capitalize(profile.FirstName)} {Capitalize(profile.LastName)}";
+    }
+
+    private string Capitalize(string value)
+    {
+        if (string.IsNullOrEmpty(value)) return string.Empty;
+
+        var result = value
+                        .Split(" ")
+                        .Where(s => !string.IsNullOrEmpty(s.Trim()))
+                        .Select(s =>
+                        {
+                            string firsrChar = s.Substring(0, 1);
+                            return $"{firsrChar.ToUpper()}{s.Substring(1)}";
+                        });
+
+        return String.Join(" ", result);
+    }
+
+    private async Task TrackPaymentRequest(PaymentTracker track)
+    {
+        await localStorage.SetItem(TRACKER_ID, track);
+    }
+
+    private class PaymentTracker
+    {
+        public string Guid { get; set; }
+        public string Token { get; set; }
+    }
+
+    private bool HavePredefinedQuestion(string question)
+    {
+        var predefinedQuestion = activityQuestions.FirstOrDefault(q => q.Question == question);
+        return predefinedQuestion is not null;
+    }
+
+    private bool RequiredPredeinedQuestion(string question)
+    {
+        var predefinedQuestion = activityQuestions.FirstOrDefault(q => q.Question == question);
+        return predefinedQuestion is not null && predefinedQuestion.Required;
+    }
+
+    private Task LoadPredefinedQuestions()
+    {
+        predefinedQuestion.HaveNameQuestion = HavePredefinedQuestion(predefinedQuestion.NameQuestion);
+        predefinedQuestion.HaveEmailQuestion = HavePredefinedQuestion(predefinedQuestion.EmailQuestion);
+        predefinedQuestion.HavePhoneQuestion = HavePredefinedQuestion(predefinedQuestion.PhoneQuestion);
+
+        predefinedQuestion.RequiredNameQuestion = RequiredPredeinedQuestion(predefinedQuestion.NameQuestion);
+        predefinedQuestion.RequiredEmailQuestion = RequiredPredeinedQuestion(predefinedQuestion.EmailQuestion);
+        predefinedQuestion.RequiredPhoneQuestion = RequiredPredeinedQuestion(predefinedQuestion.PhoneQuestion);
+
+        return Task.CompletedTask;
+    }
+
+    private IEnumerable<ActivityQuestion> GetQuestions()
+    {
+        var questions = new List<ActivityQuestion>();
+
+        if (predefinedQuestion.HaveNameQuestion)
+        {
+            questions.Add(new ActivityQuestion
+                {
+                    Id = 0,
+                    Answer = predefinedQuestion.NameAnswer,
+                    Question = "Name",
+                });
+        }
+
+        if (predefinedQuestion.HaveEmailQuestion)
+        {
+            questions.Add(new ActivityQuestion
+                {
+                    Id = 0,
+                    Answer = predefinedQuestion.EmailAnswer,
+                    Question = "Email",
+                });
+        }
+
+        if (predefinedQuestion.HavePhoneQuestion)
+        {
+            questions.Add(new ActivityQuestion
+                {
+                    Id = 0,
+                    Answer = predefinedQuestion.PhoneAnswer,
+                    Question = "Phone",
+                });
+        }
+
+        questions.AddRange(filteredQuestions.Select(q => new ActivityQuestion
+            {
+                Id = q.Id,
+                Answer = q.Answer,
+                Question = q.Question,
+                Required = q.Required
+            }));
+
+        return questions;
+    }
+    private async Task GetUpdatedSeatPayload()
+    {
+        //Set Seat Plan
+        if (activity != null && activity.OteDates != null)
+        {
+            var selectedOteDate = activity.OteDates.FirstOrDefault(a => a.Date == SelectedDate.Date);
+            if (selectedOteDate != null)
+            {
+                selectedPayload = selectedOteDate.SeatPlanPayload;
+            }
+            await ViewAvailableDates();
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (scrollEffectModule != null)
+        {
+            await scrollEffectModule.DisposeAsync();
+        }
+    }
+    private class CouponDetails
+    {
+        public string CouponCode { get; set; }
+        public bool IsValid { get; set; }
+        public bool IsCouponApplied { get; set; }
+        public int DiscountType { get; set; }
+        public decimal Amount { get; set; }
+        public decimal MaximumSpend { get; set; }
+        public bool IsValidating { get; set; }
+
+        public string ErrorTitle { get; set; }
+        public string ErrorDescription { get; set; }
+    }
+    private class TicketInfo
+    {
+        public int Id { get; set; }
+        public int Count { get; set; }
+        public decimal Price { get; set; }
+        public string Name { get; set; }
+        public bool RequiredApproval { get; set; }
+        public bool IsUnlimited { get; set; }
+        public bool IsFree => Price == 0;
+        public string Seat { get; set; }
+        public string CategoryUUID { get; set; }
+        public string RowUUID { get; set; }
+        public string SeatUUID { get; set; }
+    }
+    private class QueueInfo
+    {
+        public string QueueId { get; set; }
+        public TimeSpan EstimatedWaitingTime { get; set; }
+        public int UsersAhead { get; set; }
+        public DateTime LastUpdated { get; set; }
+        public DateTime ExpectedTimeArrival { get; set; }
+    }
+     private class TicketItem
+    {
+        public int PurchaseOrderId { get; set; }
+        public string EventName { get; set; }
+    }
+
+    private class ActivityQuestion
+    {
+        public int Id { get; set; }
+
+        [Required]
+        public string Question { get; set; }
+        public string FieldType { get; set; }
+        public bool Required { get; set; }
+
+        // extra fields
+        [Required(ErrorMessage = "Please write your answer")]
+        public string Answer { get; set; }
+    }
+
+    private class PersonalValidation
+    {
+        [Required(ErrorMessage = "Please provider your mobile number")]
+        public string Phone { get; set; }
+    }
+     public class TicketDetails
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public double Price { get; set; }
+        public int OteDateId { get; set; }
+        public int Count { get; set; }
+        public DateTime Date { get; set; }
+    }
+    public class QuestionDetails
+    {
+        public string Question { get; set; }
+        public string Answer { get; set; }
+    }
+
+    private class PredefinedQuestion
+    {
+        public string NameQuestion { get; set; } = "##Name";
+        public string EmailQuestion { get; set; } = "##Email";
+        public string PhoneQuestion { get; set; } = "##Phone";
+
+        [Required(ErrorMessage = "This field is required")]
+        public string NameAnswer { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "This field is required")]
+        [EmailAddress(ErrorMessage = "Invalid email address")]
+        public string EmailAnswer { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "This field is required")]
+        [RegularExpression(@"^(\+63|0)[0-9]{10}$", ErrorMessage = "Invalid mobile number")]
+        public string PhoneAnswer { get; set; } = string.Empty;
+
+        public bool HaveNameQuestion { get; set; }
+        public bool HaveEmailQuestion { get; set; }
+        public bool HavePhoneQuestion { get; set; }
+
+        public bool RequiredNameQuestion { get; set; }
+        public bool RequiredEmailQuestion { get; set; }
+        public bool RequiredPhoneQuestion { get; set; }
+    }
+}

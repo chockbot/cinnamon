@@ -105,6 +105,10 @@ public class CreateOteArgs
         public string? CustomPendingBody {get; set;}
         public string? CustomAcceptedBody {get; set;}
         public string? CustomDeclinedBody {get; set;}
+
+        // for seat plan fields
+        public bool ReserveSeat { get; set; }
+        public int SeatPlanTemplateId { get; set; }
     }
 
     public class OtePricing 
@@ -126,6 +130,8 @@ public class CreateOteArgs
         public bool RequiredApproval {get; set;}
         [Required]
         public bool IsUnlimited { get; set; }
+
+        public string? ReserveSeatUuid {get; set;}
     }
 
     public class OteOnlineEvent
@@ -163,5 +169,7 @@ public class CreateOteArgs
 
         [Required]
         public bool Required {get; set;}
+
+        public string Options { get; set; }
     }
 }

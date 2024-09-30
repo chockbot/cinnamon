@@ -1,0 +1,441 @@
+@layout AdminLayout
+@page "/admin/seat-plan"
+@using System.Security.Claims
+@using System.ComponentModel.DataAnnotations;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Framework.ValidationAttributes;
+@using Cinnamon.Web.Components.Pages;
+@using Cinnamon.Web.Models;
+@using CoreSeatPlan = Cinnamon.Framework.ApiCommand.ApiCore.DTO.SeatPlan;
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject NavigationManager NavigationManager;
+@inject ISeatPlanApiHandler seatPlanApiHandler;
+@inject INotificationService notificationService;
+@inject IJSRuntime JSRuntime;
+@attribute [Authorize]
+
+<PageTitle>Seat Plan | CinnamonPH</PageTitle>
+<SeoMeta Title="Seat Plan" Subject="Dashboard" Url="/admin/seat-plan" />
+
+<section class="admin-seatplan-wrapper admin-dashboard-seatplan-wrapper mt-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between custom-flex">
+         <div class="mt-0 mt-md-0">
+            <Button Clicked="() => modalRef.Show()" class="bg-orange-100 color-white-100 m-font-14">
+                Create New Template
+            </Button>
+        </div>
+        <div class="searchbar-holder ml-md-auto mt-3 mt-md-0">
+            <div class="searchBar">
+                <input type="search" id="searchBar" class="form-control search-input" placeholder="Search">
+            </div>
+        </div>
+    </div>
+
+    <div class="section-content">
+        <div class="table-list">
+            <Table Shadow="Shadow.Default">
+                <TableHeader>
+                    <TableRow>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                Formatter
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </Label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                Name
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </Label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                Address
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </Label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                Image URL
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </Label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                Uploaded Date
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </Label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                Action
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </Label>
+                        </TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    @foreach (var item in seatPlanTemplates)
+                    {
+                        <TableRow @key="item">
+                            <TableRowCell>
+                                <span class="font-weight-700">@GetFormatterName(item.SeatPlanFormatterId)</span>
+                            </TableRowCell>
+                            <TableRowCell>
+                                <span>@item.Name</span>
+                            </TableRowCell>
+                            <TableRowCell>
+                                <span>@item.Address</span>
+                            </TableRowCell>
+                            <TableRowCell>
+                                <span>
+                                    <a href="@item.ImageSrc" target="_blank">View Image</a>
+                                </span>
+                            </TableRowCell>
+                            <TableRowCell>
+                                <span>@item.UploadedDate.ToString("MMMM dd, yyyy")</span>
+                            </TableRowCell>
+                            <TableRowCell>
+                                <Button Disabled="isLoadingTemplate" Clicked="() => LoadSelectedTemplate(item.Id)" 
+                                    class="btn-primary font-16 m-width-100 me-2" Border="Border.Is0">
+                                    View Seats
+                                </Button>
+                                <Button Border="Border.Is0" Disabled="isLoadingTemplate"
+                                    class="btn-primary font-16" Clicked="() => ChangeSeatPlanStatus(item.Id, item)">
+                                    @(item.Enabled ? "Disable" : "Enable")
+                                </Button>
+                            </TableRowCell>
+                        </TableRow>
+                    }
+                </TableBody>
+            </Table>
+        </div>
+    </div>
+
+    <Modal @ref="modalRef">
+        <ModalContent Centered>
+            <ModalHeader class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
+                <p class="font-16 m-0 font-weight-700">Create Template</p>
+                <Button Type="ButtonType.Button" style="top: 22px; right: 20px;" class="btn-close position-absolute" 
+                    Clicked="() => modalRef.Close(CloseReason.UserClosing)" />
+            </ModalHeader>
+            <ModalBody class="pt-5">
+                <Validations Mode="ValidationMode.Manual" @ref="FormValidation" Model="formModel">
+                    <Field class="mb-4">
+                        <FieldLabel class="font-16">Select Formatter</FieldLabel>
+                        <FieldBody>
+                            <Select Size="Size.Small" class="form-control" TValue="int" @bind-SelectedValue="formModel.FormmaterId">
+                                <SelectItem Value="1" >Prettix</SelectItem>
+                            </Select>
+                            <div class="invalid-feedback">Select formmater to generate</div>
+                        </FieldBody>
+                    </Field>
+                    <Validation>
+                        <Field class="mb-3">
+                            <FieldLabel class="font-16">Name</FieldLabel>
+                            <FieldBody>
+                                <TextEdit Placeholder="Template name" Size="Size.Small" Role="TextRole.Text"
+                                    @bind-Text="formModel.Name">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Validation>
+                        <Field class="mb-3">
+                            <FieldLabel class="font-16">Address</FieldLabel>
+                            <FieldBody>
+                                <TextEdit Placeholder="Template address" Size="Size.Small" Role="TextRole.Text"
+                                    @bind-Text="formModel.Address">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Field class="mb-3">
+                        <FieldLabel class="font-16">Image Seat Plan</FieldLabel>
+                        <FieldBody>
+                            <InputFile AdditionalAttributes='@ImageAttributes' OnChange="ImageSeatPlanChanged" />
+                            <div class="invalid-feedback">Image seat plan required</div>
+                        </FieldBody>
+                    </Field>
+                    <Field class="mb-3">
+                        <FieldLabel class="font-16">Json File</FieldLabel>
+                        <FieldBody>
+                            <InputFile AdditionalAttributes='@JsonAttributes' OnChange="JsonFileChanged" />
+                            <div class="invalid-feedback">Json file required</div>
+                        </FieldBody>
+                    </Field>
+                </Validations>
+
+                <div class="d-flex justify-content-end">
+                    <Button Clicked="() => modalRef.Close(CloseReason.UserClosing)" 
+                        Border="Border.Is0" class="btn-secondary font-16 m-width-100 me-2">
+                        Cancel
+                    </Button>
+                    <Button Clicked="CreateTemplate" Disabled="isLoading" Loading="isLoading"
+                        Border="Border.Is0" class="bg-orange-100 color-white-100 font-16 m-width-100">
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                            Creating Template
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Create Template
+                        </ChildContent>
+                    </Button>
+                </div>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+
+    <Modal @ref="modalViewTemplate" Closed="ModalTemplatedClosed">
+        <ModalContent Size="ModalSize.Fullscreen" style="max-width: 100vw;">
+            <ModalHeader class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
+                <p class="font-16 m-0 font-weight-700">Template View</p>
+                <Button Type="ButtonType.Button" style="top: 22px; right: 20px;" class="btn-close position-absolute" 
+                    Clicked="() => modalViewTemplate.Close(CloseReason.UserClosing)" />
+            </ModalHeader>
+            <ModalBody class="w-100">
+                @if(!string.IsNullOrEmpty(selectedPayload))
+                {
+                    <Cinnamon.Web.Components.Common.SeatPlan.Container Payload="@selectedPayload" />
+                }
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+
+</section>
+
+@code
+{
+    private Modal modalRef;
+    private Modal modalViewTemplate;
+    private Validations FormValidation {get; set;}
+    private string Token = string.Empty;
+    private FormModel formModel = new FormModel();
+    private bool isLoading = false;
+    private bool formValidated = false;
+    private IList<CoreSeatPlan.SeatPlanTemplateDTO> seatPlanTemplates = new List<CoreSeatPlan.SeatPlanTemplateDTO>();
+    private string selectedPayload = string.Empty;
+    private bool isLoadingTemplate = false;
+
+    enum ActionType {
+        Create = 0,
+        Update = 1
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            Token = user.FindFirstValue("Token");
+            if (Token == null)
+            {
+                // don't have current user login
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
+
+            await LoadTemplates();
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    private async Task LoadTemplates()
+    {
+        var response = await seatPlanApiHandler.GetTemplates(new Framework.ApiCommand.ApiCore.SeatPlan.Request.GetTemplatesArgs(
+
+        ), Token);
+
+        if(!response.Succeeded || response.Result is null || !response.Result.IsSuccess)
+        {
+            await notificationService.Error("Failed to load seat plan templates", "Error");
+            return;
+        }
+
+        seatPlanTemplates = response.Result.Result.ToList();
+    }
+
+    private async Task LoadSelectedTemplate(int templateId)
+    {
+        isLoadingTemplate = true;
+
+        var response = await seatPlanApiHandler.GetTemplate(templateId, Token);
+
+        if(!response.Succeeded || response.Result is null || !response.Result.IsSuccess)
+        {
+            await notificationService.Error("Failed to load seat plan template", "Error");
+            return;
+        }
+
+        selectedPayload = response.Result.Result.Payload;
+
+        isLoadingTemplate = false;
+
+        await modalViewTemplate.Show();
+    }
+
+    private async Task CreateTemplate()
+    {
+        formValidated = true;
+
+        var formValid = await FormValidation.ValidateAll();
+        if(!formValid) return;
+
+        if(formModel.JsonFile is null || formModel.ImageSeatPlan is null) return;
+
+        isLoading = true;
+
+        Dictionary<string, string> formData = new Dictionary<string, string> {
+            { "Name", formModel.Name },
+            { "Address", formModel.Address },
+            { "FormatterId", formModel.FormmaterId.ToString() }
+        };
+
+        var jsonSrc = "MyLib.Pages.admin.createTemplate";
+        var obj = new {
+            items = formData,
+            imgId = "image-seat-plan",
+            jsonId = "json-seat-plan"
+        };
+        var jsResponse = await JSRuntime.InvokeAsync<JsResultModel>(jsonSrc, obj);
+
+        isLoading = false;
+
+        if(!jsResponse.Success)
+        {
+            await notificationService.Error(jsResponse.Message, "Error");
+            return;
+        }
+
+        await modalRef.Close(CloseReason.UserClosing);
+
+        await notificationService.Success("Seat plan template created successfully", "Success");
+
+        await LoadTemplates();
+    }
+
+    private IDictionary<string, object> ImageAttributes
+    {
+        get 
+        {
+            IDictionary<string, object> attributes = new Dictionary<string, object> {
+                { "accept", "image/png, image/jpeg" },
+                { "id", "image-seat-plan" },
+                { "name", "image-seat-plan" }
+            };
+
+            if (formValidated && formModel.ImageSeatPlan is null)
+            {
+                attributes.Add("class", "form-control is-invalid");
+            }
+            else
+            {
+                attributes.Add("class", "form-control");
+            }
+
+            return attributes;
+        }    
+    }
+
+    private IDictionary<string, object> JsonAttributes
+    {
+        get 
+        {
+            IDictionary<string, object> attributes = new Dictionary<string, object> {
+                { "accept", "application/json" },
+                { "id", "json-seat-plan" },
+                { "name", "json-seat-plan" }
+            };
+
+            if (formValidated && formModel.JsonFile is null)
+            {
+                attributes.Add("class", "form-control is-invalid");
+            }
+            else
+            {
+                attributes.Add("class", "form-control");
+            }
+
+            return attributes;
+        }    
+    }
+
+    private Task ImageSeatPlanChanged(InputFileChangeEventArgs e)
+    {
+        formModel.ImageSeatPlan = e.File;
+        return Task.CompletedTask;
+    }
+
+    private Task JsonFileChanged(InputFileChangeEventArgs e)
+    {
+        formModel.JsonFile = e.File;
+        return Task.CompletedTask;
+    }
+
+    private string GetFormatterName(int formatterId)
+    {
+        string result;
+        switch (formatterId)
+        {
+            case 1:
+                result = "Pretix";
+                break;
+            default:
+                result = "Unknown";
+                break;
+        }   
+        return result;
+    }
+
+    private Task ModalTemplatedClosed()
+    {
+        selectedPayload = string.Empty;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private async Task ChangeSeatPlanStatus(int templateId, CoreSeatPlan.SeatPlanTemplateDTO template)
+    {
+        isLoadingTemplate = true;
+
+        var seatPlanRes = await seatPlanApiHandler.ChangeSeatPlanStatus(templateId, new Framework.ApiCommand.ApiCore.SeatPlan.Request.ChangeSeatPlanStatusArgs {
+            Enabled = !template.Enabled
+        }, Token);
+        if(!seatPlanRes.Succeeded || seatPlanRes.Result is null || !seatPlanRes.Result.IsSuccess)
+        {
+            await notificationService.Error("Failed to change seat plan status", "Error");
+            return;
+        }
+
+        template.Enabled = !template.Enabled;
+
+        isLoadingTemplate = false;
+
+        await notificationService.Success("Seat plan status changed successfully", "Success");
+    }
+
+    private class FormModel 
+    {
+        [Required(ErrorMessage = "Select formmater to generate")]
+        public int FormmaterId { get; set; } = 1;
+
+        [Required(ErrorMessage = "Name is required")]
+        public string Name { get; set; }
+
+        [Required(ErrorMessage = "Address is required")]
+        public string Address { get; set; }
+
+        public IBrowserFile ImageSeatPlan { get; set; }
+
+        public IBrowserFile JsonFile { get; set; }
+    }
+}

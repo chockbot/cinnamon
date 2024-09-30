@@ -5,6 +5,7 @@ using ActivityResults = Cinnamon.Api.Core.Services.ActivityService.Interactors.R
 using DashboardResults = Cinnamon.Api.Core.Services.DashboardService.Interactors.Results;
 using TransactionResults = Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using DirectStudentResult = Cinnamon.Api.Core.Services.DirectStudentService.Interactors.Results;
+using SeatPlanResult = Cinnamon.Api.Core.Services.SeatPlanService.Interactors.Result;
 
 namespace Cinnamon.Api.Core.Models;
 
@@ -131,5 +132,11 @@ public class MappingProfile : Profile
         CreateMap<TransactionResults.OteGetRequestPaymentResult.RequestPaymentTicket, CoreDto.PurchaseOrder.PaymentRequestDTO.RequestPaymentTicket>();
         CreateMap<TransactionResults.OteGetRequestPaymentResult.ProviderQuestion, CoreDto.PurchaseOrder.PaymentRequestDTO.ProviderQuestion>();
         CreateMap<TransactionResults.OteGetRequestPaymentResult, CoreDto.PurchaseOrder.PaymentRequestDTO>();
+
+        // for seat plan template
+        CreateMap<DataDto.SeatPlan.SeatPlanTemplateDTO, SeatPlanResult.GetTemplatesResult.Template>();
+        CreateMap<SeatPlanResult.GetTemplatesResult.Template, CoreDto.SeatPlan.SeatPlanTemplateDTO>();
+        CreateMap<DataDto.SeatPlan.SeatPlanTemplateDTO, SeatPlanResult.GetTemplateResult>();
+        CreateMap<SeatPlanResult.GetTemplateResult, CoreDto.SeatPlan.SeatPlanTemplateDTO>();
     }
 }

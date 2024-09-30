@@ -167,5 +167,7 @@ public class UpdateOteArgs
 
         [Required]
         public bool Required {get; set;}
+
+        public string Options { get; set; }
     }
 }

@@ -596,8 +596,9 @@ public class ActivityRepository : IActivityRepository
                 if (includeOteSchedule.HasValue && includeOteSchedule.Value)
                 {
                     activityDTO.OteSchedule = a.OteSchedule is not null ?  new OteActivityDTO {
-                        ScheduleFrom = a.OteSchedule.From,
-                        ScheduleTo = a.OteSchedule.To
+                        ScheduleFrom      = a.OteSchedule.From,
+                        ScheduleTo        = a.OteSchedule.To,
+                        IsReservedSeating = a.OteSchedule.ReserveSeat
                     } : null;
                 }
                 return activityDTO;
@@ -1742,7 +1743,8 @@ public class ActivityRepository : IActivityRepository
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
         int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates,int eventDurationCount, string eventDurationTimeUnit, 
         int eventTicketLimit, bool IsOpen, bool isCapacity, int capacityCount, IList<OteDateOverrideDTO>? dateOverrides, 
-        IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId, int emailReminderDays, int emailFeedbackDays)
+        IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId, int emailReminderDays, int emailFeedbackDays,
+        bool reserveSeat, int seatPlanTemplateId, string seatPlanPayload)
     {
         try
         {
@@ -1797,7 +1799,9 @@ public class ActivityRepository : IActivityRepository
                 IsCapacity            = isCapacity,
                 CapacityCount         = capacityCount,
                 EmailFeedbackDays     = emailFeedbackDays,
-                EmailReminderDays     = emailReminderDays
+                EmailReminderDays     = emailReminderDays,
+                ReserveSeat           = reserveSeat,
+                SeatPlanTemplateId    = seatPlanTemplateId,
             };
 
             var pricingsGroup = pricingDTOs.Select(p => {
@@ -1809,7 +1813,8 @@ public class ActivityRepository : IActivityRepository
                     Name = p.Name,
                     RequiredApproval = p.RequiredApproval,
                     IsUnlimited = p.IsUnlimited,
-                    OteSchedule = schedule
+                    OteSchedule = schedule,
+                    ReserveSeatUuid = p.ReserveSeatUuid
                 };
             }).ToList();
 
@@ -1828,6 +1833,7 @@ public class ActivityRepository : IActivityRepository
                     Date = d.Date.SetKindUtc(),
                     DateEnd = d.DateEnd.SetKindUtc(),
                     DateStart = d.DateStart.SetKindUtc(),
+                    SeatPlanPayload = seatPlanPayload,
                     OteSchedulePricing = pricingsGroup.Select(p => {
                         return new OteSchedulePricing {
                             Description             = p.Description,
@@ -1838,7 +1844,8 @@ public class ActivityRepository : IActivityRepository
                             RequiredApproval        = p.RequiredApproval,
                             IsUnlimited             = p.IsUnlimited,
                             OteSchedule             = schedule,
-                            OteSchedulePricingGroup = p
+                            OteSchedulePricingGroup = p,
+                            ReserveSeatUuid         = p.ReserveSeatUuid
                         };
                     }).ToList(),
                     OteSchedule = schedule
@@ -1858,7 +1865,7 @@ public class ActivityRepository : IActivityRepository
                             Date = item.Date.SetKindUtc(),
                             DateStart = item.DateStart.SetKindUtc(),
                             DateEnd = item.DateEnd.SetKindUtc(),
-                            OteDate = oteDate
+                            OteDate = oteDate,
                         });
                     }
                 }
@@ -2305,6 +2312,34 @@ public class ActivityRepository : IActivityRepository
         catch (Exception ex)
         {
             return AppResult<IEnumerable<OteAlreadyBookDate>>.CreateFailed(ex, "An error occured when getting ote already booked dates.");
+        }
+    }
+
+    public async Task<AppResult<OteScheduleDateDTO>> UpdateOteDatePayload(int dateId, string payload)
+    {
+        try
+        {
+            var oteDateRes = await dataStore.OteDate.GetByIdAsync(dateId);
+            if(!oteDateRes.Succeeded || oteDateRes.Result is null)
+            {
+                return AppResult<OteScheduleDateDTO>.CreateFailed(new ApplicationException(oteDateRes.Message), oteDateRes.Message);
+            }
+            var oteDate = oteDateRes.Result;
+
+            oteDate.SeatPlanPayload = payload;
+
+            var updateRes = await dataStore.OteDate.Update(oteDate);
+            if(!updateRes.Succeeded || updateRes.Result is null)
+            {
+                return AppResult<OteScheduleDateDTO>.CreateFailed(new ApplicationException(updateRes.Message), updateRes.Message);
+            }
+
+            var updated = mapper.Map<OteScheduleDateDTO>(updateRes.Result);
+            return AppResult<OteScheduleDateDTO>.CreateSucceeded(updated, "Successfully update ote date payload.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteScheduleDateDTO>.CreateFailed(ex, "An error occured when updating ote date payload.");
         }
     }
 }

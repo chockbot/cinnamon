@@ -6,6 +6,7 @@ using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Response;
 using Dto = Cinnamon.Framework.ApiCommand.ApiData.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -112,6 +113,7 @@ public class OteTicketController : ControllerBase
     [Route("by-purchase-order/{purchaseOrderId}")]
     [HttpGet]
     [ProducesResponseType(typeof(GetByPurchaseOrderIdResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
     public async Task<IActionResult> GetByPurchaseOrderId(int purchaseOrderId, [FromQuery] GetByPurchaseOrderIdArgs args)
     {
         try
@@ -298,6 +300,27 @@ public class OteTicketController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new BookedCustomersResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetAllTicketPurchased")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetAllTicketPurchasedResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllTicketPurchased([FromQuery] GetAllTicketPurchasedArgs args)
+    {
+        try
+        {
+            var result = await oteTicketRepository.GetAllTicketPurchased(args.ActivityId);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllTicketPurchasedResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetAllTicketPurchasedResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetAllTicketPurchasedResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

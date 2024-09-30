@@ -59,7 +59,8 @@ public interface IActivityRepository
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, string scheduleExtraOpt, DateTime recurrenceDateEnd, 
         DateTime recurrenceDateStart, int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, 
         int eventDurationCount, string eventDurationTimeUnit, int eventTicketLimit,bool isOpen, bool isCapacity, int capacityCount, IList<OteDateOverrideDTO>? dateOverrides, 
-        IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId, int emailReminderDays, int emailFeedbackDays);
+        IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId, int emailReminderDays, int emailFeedbackDays,
+        bool reserveSeat, int seatPlanTemplateId, string seatPlanPayload);
 
     Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
         string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
@@ -83,4 +84,6 @@ public interface IActivityRepository
         int? categoryId = null, int? starReview = null, int? experienceType = null, int? experienceCategory = null);
     Task<AppResult<bool>> BatchSummaryUpdate();
     Task<AppResult<IEnumerable<OteAlreadyBookDate>>> OteAlreadyBooked(int activityId);
+
+    Task<AppResult<OteScheduleDateDTO>> UpdateOteDatePayload(int dateId, string payload);
 }

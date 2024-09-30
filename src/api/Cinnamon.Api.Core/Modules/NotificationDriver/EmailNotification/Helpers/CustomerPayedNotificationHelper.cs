@@ -154,8 +154,8 @@ public class CustomerPayedNotificationHelper
                         style='
                         background-color: #ffb84c;
                         padding-top: 35px;
-                        padding-left: 25px;
-                        padding-right: 25px;
+                        padding-left: 10px;
+                        padding-right: 10px;
                         padding-bottom: 30px;
                         margin-top: 3rem;
                         border-radius: 40px;
@@ -169,15 +169,15 @@ public class CustomerPayedNotificationHelper
                         style='
                             color: #0f173b;
                             text-align: center;
-                            font-size: 24px;
-                            font-weight: 900;
+                            font-size: 20px;
+                            font-weight: 700;
                         '
                         >
                         Thank you for your purchase!
                         </p>
                         <p
                         style='
-                            color: #343d4c;
+                            color: #0f173b;
                             font-size: 16px;
                             text-align: justify;
                             margin-bottom: 0;

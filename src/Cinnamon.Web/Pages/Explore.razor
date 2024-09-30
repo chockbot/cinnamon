@@ -104,14 +104,20 @@
         <!--Menu-->
         <div class="col-lg-4 d-flex justify-content-end col-md-2 d-flex justify-content-end col-sm-2 d-flex justify-content-end col-1 d-flex justify-content-end navbar-selection dropdown-section">
             <!-- Desktop -->
-            <form class="search-bar" @onsubmit=Search>
+            <form class="search-bar" @onsubmit="Search">
                 <div class="input-group p-1">
-                    <input type="text" placeholder="Search Experience" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
-                        <div class="input-group-append border-0">
-                            <button type="button" @onclick="Search" class="search-button btn btn-link text-success">
-                                <img src="images/explore-page-images/search-icon-explore.svg" alt="search-icon" />
-                            </button>
-                        </div>
+                    <input type="text" placeholder="Search Experience" id="19d13aa1-90c0-4232-a7bc-62a772baa223"
+                           autocomplete="new-password"
+                           @bind-value="searchValue"
+                           @oninput="SearchOnInput"
+                           aria-describedby="btn-search"
+                           class="form-control bg-none border-0"
+                           style="outline: none;box-shadow: none;">
+                    <div class="input-group-append border-0">
+                        <button type="button" @onclick="Search" class="search-button btn btn-link text-success">
+                            <img src="images/explore-page-images/search-icon-explore.svg" alt="search-icon" />
+                        </button>
+                    </div>
                 </div>
             </form>
 
@@ -121,7 +127,7 @@
                             Login | Signup
                         </button>
                         }
-            @if (AuthState != null && AuthState.Identity.IsAuthenticated)
+            @if (AuthState != null && AuthState.Identity.IsAuthenticated && CustomerModel.CustomerProfile != null)
             {
             <div class="dropdown">
                 <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
@@ -1080,7 +1086,7 @@
                             <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                 <div class="card activities-card">
                                     <div class="card-img img-fluid position-relative">
-                                        <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
+                                        <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId, act.IsReservedSeating)" target="_blank">
                                             <img src=@act.SummaryDetails.ImageSrc alt="banner image" class="img-zoom-effect">
                                         </a>
                                         @if (act.ExperienceCreationTypeId == 1 && act.SummaryDetails.Ongoing > 0)
@@ -1200,7 +1206,7 @@
                                                     }
                                             </div>
                                             @{
-                                               string formattedDate = act.From.ToString("MMM dd, yyyy ● h:mm tt");
+                                               string formattedDate = act.DateStart.ToString("MMM dd, yyyy ● h:mm tt");
                                             }
 
                                                 @if (@act.ExperienceCreationTypeId == 3)
@@ -1221,13 +1227,13 @@
                                         <div class="row price-badge-section">
                                             @if (act.Price.Contains("PHP 0.0 - 0.0") || act.Price.Contains("PHP 0.0"))
                                             {
-                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
+                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId, act.IsReservedSeating)" target="_blank">
                                                 <button class="card-title-button-free">
                                                     <span>Free Access</span>
                                                 </button>
                                             </a>
                                             } else {
-                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
+                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId, act.IsReservedSeating)" target="_blank">
                                                 <button class="card-title-button">
                                                     <span>Buy Tickets</span>
                                                 </button>
@@ -1236,7 +1242,7 @@
                                         </div>
                                         } else {
                                         <div class="row price-badge-section">
-                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
+                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId, act.IsReservedSeating)" target="_blank">
                                                 <button class="card-title-button-exp">
                                                     <span>Register</span>
                                                 </button>
@@ -1347,7 +1353,7 @@
                             <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                 <div class="card activities-card">
                                     <div class="card-img img-fluid position-relative">
-                                        <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
+                                        <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId, act.IsReservedSeating)" target="_blank">
                                             <img src=@act.SummaryDetails.ImageSrc alt="banner image" class="img-zoom-effect">
                                         </a>
                                         @if (act.ExperienceCreationTypeId == 1 && act.SummaryDetails.Ongoing > 0)
@@ -1467,7 +1473,7 @@
                                                     }
                                             </div>
                                             @{
-                                               string formattedDate = act.From.ToString("MMM dd, yyyy ● h:mm tt");
+                                               string formattedDate = act.DateStart.ToString("MMM dd, yyyy ● h:mm tt");
                                             }
 
                                                 @if (@act.ExperienceCreationTypeId == 3)
@@ -1488,13 +1494,13 @@
                                         <div class="row price-badge-section">
                                             @if (act.Price.Contains("PHP 0.0 - 0.0") || act.Price.Contains("PHP 0.0"))
                                             {
-                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
+                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId, act.IsReservedSeating)" target="_blank">
                                                 <button class="card-title-button-free">
                                                     <span>Free Access</span>
                                                 </button>
                                             </a>
                                             } else {
-                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
+                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId, act.IsReservedSeating)" target="_blank">
                                                 <button class="card-title-button">
                                                     <span>Buy Tickets</span>
                                                 </button>
@@ -1503,7 +1509,7 @@
                                         </div>
                                         } else {
                                         <div class="row price-badge-section">
-                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
+                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId, act.IsReservedSeating)" target="_blank">
                                                 <button class="card-title-button-exp">
                                                     <span>Register</span>
                                                 </button>
@@ -1614,7 +1620,7 @@
                             <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                 <div class="card activities-card">
                                     <div class="card-img img-fluid position-relative">
-                                        <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
+                                        <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId, act.IsReservedSeating)" target="_blank">
                                             <img src=@act.SummaryDetails.ImageSrc alt="banner image" class="img-zoom-effect">
                                         </a>
                                         @if (act.ExperienceCreationTypeId == 1 && act.SummaryDetails.Ongoing > 0)
@@ -1735,7 +1741,7 @@
                                                     }
                                             </div>
                                             @{
-                                               string formattedDate = act.From.ToString("MMM dd, yyyy ● h:mm tt");
+                                               string formattedDate = act.DateStart.ToString("MMM dd, yyyy ● h:mm tt");
                                             }
                                                 
 
@@ -1765,13 +1771,13 @@
                                         <div class="row price-badge-section">
                                             @if (act.Price.Contains("PHP 0.0 - 0.0") || act.Price.Contains("PHP 0.0"))
                                             {
-                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
+                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId, act.IsReservedSeating)" target="_blank">
                                                 <button class="card-title-button-free">
                                                     <span>Free Access</span>
                                                 </button>
                                             </a>
                                             } else {
-                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
+                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId, act.IsReservedSeating)" target="_blank">
                                                 <button class="card-title-button">
                                                     <span>Buy Tickets</span>
                                                 </button>
@@ -1780,7 +1786,7 @@
                                         </div>
                                         } else {
                                         <div class="row price-badge-section">
-                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
+                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId, act.IsReservedSeating)" target="_blank">
                                                 <button class="card-title-button-exp">
                                                     <span>Register</span>
                                                 </button>
@@ -2832,6 +2838,12 @@
         return "display:block";
     }
 
+    private async Task SearchOnInput(ChangeEventArgs e)
+    {
+        searchValue = e.Value.ToString();
+        await Search();
+    }
+
     private async Task InitializeSwiper()
     {
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.explore.initSwiper", ".activity-swiper", ".activity-swiper-scrollbar");
@@ -2972,11 +2984,19 @@
 
     public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
 
-    private string DetailsUrl(string handler, int xpCreationType) 
+    private string DetailsUrl(string handler, int xpCreationType, bool IsReservedSeating) 
     {
         string url = string.Empty;
-        if(xpCreationType == 3) {
-            url = $"explore/ote/{handler}";
+        if(xpCreationType == 3) 
+        {
+            if(IsReservedSeating)
+            {
+                url = $"explore/ote/reserved/{handler}";
+            }
+            else
+            {
+                url = $"explore/ote/{handler}";
+            }
         }
         else if (xpCreationType == 1){
             url = $"explore/{handler}";

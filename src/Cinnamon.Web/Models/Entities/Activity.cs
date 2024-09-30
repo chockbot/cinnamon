@@ -234,6 +234,7 @@ public class Activity
     {
         public DateTime From { get; set; }
         public DateTime To { get; set; }
+        public bool IsReservedSeating { get; set; } = false;
     }
 }
 

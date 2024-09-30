@@ -1,4 +1,6 @@
 ﻿@layout EmptyLayout
+@using ClosedXML.Excel;
+@using Newtonsoft.Json;
 @using System.Security.Claims
 @using Cinnamon.Web.Components.Pages.Maker.Dashboard
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
@@ -24,6 +26,7 @@
 
 @if(OTEActivities.Count != 0)
 {
+    <LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
     <div class="dashboard-header desktop-switch">
         <div class="dashboard-wrapper">
             <div class="experience-box">
@@ -265,7 +268,7 @@
                                 <div class="details-action">
                                     <Tooltip Text="Edit Event">
                                         <a button class="update-button" href="/experiences/ote/@item.Handler">
-                                            <img class="action-btn" src="images/Dashboard/edit.svg" />
+                                            <img class="action-btn" src="images/Dashboard/edit.png" />
                                         </a>
                                     </Tooltip>
                                     @if (!item.IsMultiple)
@@ -285,8 +288,22 @@
                                         </Tooltip>
                                     }
                                     <Tooltip Text="Go to details page">
-                                        <a button class="update-button" href="/explore/ote/@item.Handler">
-                                            <img class="action-btn" src="images/Dashboard/view.png" />
+                                        @if(!item.ReserveSeat)
+                                        {
+                                            <a button class="update-button" href="/explore/ote/@item.Handler">
+                                                <img class="action-btn" src="images/Dashboard/view.png" />
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a button class="update-button" href="/explore/ote/reserved/@item.Handler">
+                                                <img class="action-btn" src="images/Dashboard/view.png" />
+                                            </a>
+                                        }
+                                    </Tooltip>
+                                    <Tooltip Text="Download Guest list">
+                                        <a button class="update-button" @onclick="(() => ExportToExcel(item.Id))">
+                                            <img class="action-btn-1" src="images/Dashboard/download.png" />
                                         </a>
                                     </Tooltip>
                                 </div>
@@ -317,7 +334,9 @@
                     <div class="calendar-events">
                         <div class="@WrapperClass">
                             <div class="calendar-header d-flex align-items-center justify-content-between">
-                                <div class="text-center font-18 font-weight-700 color-black-100 text-capitalize">@activeDate.ToString("MMMM yyyy")</div>
+                                <div class="text-center font-18 font-weight-700 color-black-100 text-capitalize">
+                                    @activeDate.ToString("MMMM yyyy")
+                                </div>
                                 <div class="button-calendar">
                                     <Button Clicked="PrevMonthClick">
                                         <img class="img-navigation cursor-pointer" src="images/back-icon.png" alt="prev">
@@ -340,18 +359,17 @@
                                     <div class="grid-item" @key="item">
                                         @if (!item.Empty)
                                         {
-                                            <span class="@DayClass(item.Selected, item.Date)">
-                                                @NumberString(item.Date.Day)
-                                            </span>
-                                            @if (item.Selected)
-                                            {
-                                                @foreach (var name in item.Title)
+                                            <div class="@DayClass(item.Selected, item.Date)">
+                                                <span>@NumberString(item.Date.Day)</span>
+                                                @if (item.Title.Any())
                                                 {
-                                                    <Tooltip Text="@name.EventName">
-                                                        <button class="event-title" @onclick="@(() => SelectSchedule(name))">@name.EventName</button>
-                                                    </Tooltip>
+                                                    <div class="event-dot-container">
+                                                        <Tooltip Text="@string.Join(Environment.NewLine, item.Title.Select(t => t.EventName))">
+                                                            <span class="event-dot"></span>
+                                                        </Tooltip>
+                                                    </div>
                                                 }
-                                            }
+                                            </div>
                                         }
                                     </div>
                                 }
@@ -448,18 +466,17 @@
                                 <div class="grid-item" @key="item">
                                     @if (!item.Empty)
                                     {
-                                        <span class="@DayClass(item.Selected, item.Date)">
-                                            @NumberString(item.Date.Day)
-                                        </span>
-                                        @if (item.Selected)
-                                        {
-                                            @foreach (var name in item.Title)
+                                        <div class="@DayClass(item.Selected, item.Date)">
+                                            <span>@NumberString(item.Date.Day)</span>
+                                            @if (item.Title.Any())
                                             {
-                                                <Tooltip Text="@name.EventName">
-                                                    <button class="event-title" @onclick="@(() => SelectSchedule(name))">@name.EventName</button>
-                                                </Tooltip>
+                                                <div class="event-dot-container">
+                                                    <Tooltip Text="@string.Join(Environment.NewLine, item.Title.Select(t => t.EventName))">
+                                                        <span class="event-dot"></span>
+                                                    </Tooltip>
+                                                </div>
                                             }
-                                        }
+                                        </div>
                                     }
                                 </div>
                             }
@@ -560,6 +577,7 @@
         </div>
     }
     <br />
+    </LoadingIndicator>
 }
 else
 {
@@ -621,6 +639,8 @@ else
 
     private IJSObjectReference jsClipboard;
 
+    IJSObjectReference module;
+
     private Modal? modalProfile;
 
     public bool HasPayoutAccount { get; set; } = false;
@@ -668,6 +688,10 @@ else
 
     public int registrationCount { get; set; } = 0;
 
+    public List<OteTicket> ExportCustomer = new List<OteTicket>();
+
+    LoadingIndicator loadingIndicator;
+
     public List<OteSchedule> ticketList = new List<OteSchedule>();
 
     protected override async Task OnInitializedAsync()
@@ -713,6 +737,10 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/exportToExcel.js");
+        }
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiperMobile", ".schedule-swiper-mobile");
         jsClipboard = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/clipboard.js");
@@ -751,6 +779,7 @@ else
                 ScheduleTo       = a.DateEnd,
                 OteDateId        = a.DateId,
                 ForceDisable     = a.ForceDisable,
+                ReserveSeat      = a.ReserveSeat,
                 IsMultiple       = false
             }).ToList();
             //Add To OTEActivities
@@ -776,6 +805,7 @@ else
                     ScheduleTo       = group.Max(a => a.DateEnd), // Use the latest end date
                     OteDateId        = firstActivity.DateId,
                     ForceDisable     = firstActivity.ForceDisable,
+                    ReserveSeat      = firstActivity.ReserveSeat,
                     IsMultiple       = true
                 };
             }).ToList();
@@ -788,19 +818,20 @@ else
             {
                 return new OteActivity
                 {
-                        Id               = s.ActivityId,
-                        ExperienceTypeId = s.ExperienceTypeId,
-                        EventName        = s.Title,
-                        Description      = s.Description,
-                        Handler          = s.Handler,
-                        CityName         = s.CityName,
-                        RegionName       = s.RegionName,
-                        PinnedLocation   = s.PinnedLocation,
-                        EventImage       = s.EventImage,
-                        ScheduleFrom     = s.DateStart,
-                        ScheduleTo       = s.DateEnd,
-                        OteDateId        = s.DateId,
-                        ForceDisable     = s.ForceDisable
+                    Id = s.ActivityId,
+                    ExperienceTypeId = s.ExperienceTypeId,
+                    EventName = s.Title,
+                    Description = s.Description,
+                    Handler = s.Handler,
+                    CityName = s.CityName,
+                    RegionName = s.RegionName,
+                    PinnedLocation = s.PinnedLocation,
+                    EventImage = s.EventImage,
+                    ScheduleFrom = s.DateStart,
+                    ScheduleTo = s.DateEnd,
+                    OteDateId = s.DateId,
+                    ForceDisable = s.ForceDisable,
+                    ReserveSeat = s.ReserveSeat
                 };
             }).ToList();
 
@@ -979,7 +1010,7 @@ else
                 }).ToList();
         }
         registrationCount = ticketList.Sum(s => s.OtePricing.Sold);
-        
+
     }
     public void NavigateToScanTickets(string Handler, int OteDateId)
     {
@@ -994,5 +1025,99 @@ else
         string url = $"{NavigationManager.BaseUri}explore/ote/{Handler}";
         await jsClipboard.InvokeVoidAsync("copyToClipboard", url);
         await NotificationService.Info("Copied to clipboard", "Copied!");
+    }
+    private async Task ExportToExcel(int activityId)
+    {
+        await loadingIndicator.Show();
+        //Get Customer List
+        var result = await dashboardApiHandler.GetAllTicketPurchased(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllTicketPurchasedArgs
+            {
+                ActivityId = activityId,
+            }, Token);
+        if (result.Succeeded && result.Result != null)
+        {
+            ExportCustomer = result.Result.Result.Select(e =>
+            {
+                // Deserialize Payload (assuming Payload is a JSON string)
+                var payload = JsonConvert.DeserializeObject<Payload>(e.Payload);
+                // Get Registration from QuestionDetails
+                var registration = string.Join(", ", payload?.Questions?.Select(q => $"{q.Question}: {q.Answer}") ?? new List<string>());
+            
+                return new OteTicket
+                    {
+                        Id = e.Id,
+                        ActivityId = e.ActivityId,
+                        Title = e.Title,
+                        Amount = e.Amount,
+                        QRCode = e.QRCode,
+                        Status = e.Status,
+                        Payload = e.Payload,
+                        Customer = new CustomerProfile
+                        {
+                            FirstName = e.Customer.FirstName,
+                            LastName = e.Customer.LastName,
+                            Email = e.Customer.Email
+                        },
+                        Date = e.Date,
+                        Quantity = e.Quantity,
+                        Registration = registration
+                    };
+            }).OrderBy(a => a.Id).ToList();
+        }
+        using (var workbook = new XLWorkbook("wwwroot/Template/GuestListTemplate.xlsx"))
+        {
+            var worksheet = workbook.Worksheet(1);
+            int startRow = 3;
+            foreach (var item in ExportCustomer)
+            {
+                worksheet.Cell(1, 6).Value = $"Date: {DateTime.Today.ToString("MMMM dd, yyyy")}";
+                worksheet.Cell(startRow, 1).Value = item.Id;
+                worksheet.Cell(startRow, 2).Value = $"{item.Customer.FirstName} {item.Customer.LastName}";
+                worksheet.Cell(startRow, 3).Value = item.Customer.Email;
+                worksheet.Cell(startRow, 4).Value = item.Date;
+                worksheet.Cell(startRow, 5).Value = item.Title;
+                worksheet.Cell(startRow, 6).Value = item.Quantity;
+                worksheet.Cell(startRow, 7).Value = item.Amount;
+                worksheet.Cell(startRow, 8).Value = item.Status;
+                worksheet.Cell(startRow, 9).Value = item.Registration;
+                startRow++;
+            }
+            using (var memoryStream = new MemoryStream())
+            {
+                workbook.SaveAs(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                var currentDate = DateTime.Now.ToString("yyyyMMddHHmmss");
+                var fileName = $"GuestList_{currentDate}.xlsx";
+                byte[] bytes = memoryStream.ToArray();
+
+                var bytesBase64 = Convert.ToBase64String(bytes);
+
+                // Download the saved memorystream file
+                await Task.Run(() => module.InvokeVoidAsync("saveAsFile", fileName, bytesBase64));
+            }
+        }
+        await loadingIndicator.Hide();
+    }
+    public class Payload
+    {
+        public IEnumerable<TicketDetails> Tickets { get; set; }
+        public IEnumerable<QuestionDetails> Questions { get; set; }
+    }
+
+    public class TicketDetails
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public double Price { get; set; }
+        public int OteDateId { get; set; }
+        public DateTime Date { get; set; }
+        public int Count { get; set; }
+    }
+
+    public class QuestionDetails
+    {
+        public string Question { get; set; }
+        public string Answer { get; set; }
     }
 }

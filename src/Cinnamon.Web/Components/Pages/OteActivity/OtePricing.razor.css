@@ -8,8 +8,40 @@
   outline: none !important;
   box-shadow: none !important;
 }
+::deep .custom-select {
+    border-radius: 30px;
+    background: #F3F6FC;
+    color: #717171;
+    font-family: Nunito;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    border: none;
+    margin-bottom: 0.5rem;
+}
+::deep .text-question{
+    line-height: 2.5;
+}
+.field-type {
+    color: #717171;
+    font-family: Nunito;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+}
+.btn-add-option {
+    color: #34A853;
+    text-align: justify;
+    font-family: Nunito;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    background-color: transparent;
+    border: none;
+}
 .unli-flag {
-  gap: 5px;
+    gap: 5px;
 }
 .switch-light {
     position: relative;
@@ -325,6 +357,15 @@
     text-transform: capitalize;
     cursor: pointer;
     user-select: none;
+}
+
+.btn-remove-option svg path {
+    stroke: #343D4C;
+    transition: ease-in-out 0.3s;
+}
+
+.btn-remove-option:hover svg path {
+    stroke: red;
 }
   /*
 @media only screen (min-width: 618px) and (max-width: 767px) {

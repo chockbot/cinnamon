@@ -11,9 +11,13 @@ public class ActivityFeedDTO
     public bool IsNew {get; set;}
     public DateTime To { get; set; }
     public DateTime From { get; set; }
+    public DateTime Date { get; set; }
+    public DateTime DateStart { get; set; }
+    public DateTime DateEnd { get; set; }
     public string StartTime { get; set; }
     public Location Address {get; set;}
     public Summary SummaryDetails {get; set;}
+    public bool IsReservedSeating { get; set; }
 
     public class Location 
     {

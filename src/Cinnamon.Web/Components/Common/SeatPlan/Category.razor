@@ -1,0 +1,54 @@
+@namespace Cinnamon.Web.Components.Common.SeatPlan
+@using SeatPlanModels = Cinnamon.Framework.Models.SeatPlan;
+
+<div id="@SeatCategory.Name.Replace(" ", "-")" class="seat-plan-category text-center mt-3">
+    <label>@SeatCategory.Name</label>
+    <div class="category-row d-flex flex-wrap justify-content-center">
+        @foreach (var row in SeatCategory.Rows)
+        {
+            @foreach (var seat in row.Value.Seats)
+            {
+                <Seat @key="seat" RowSeat="seat.Value" RowNumber="@row.Value.RowNumber" Occupied="seat.Value.Occupied"
+                    CategoryColor="@SeatCategory.Color" OnSeatSelected="(seat) => OnSeatSelectedHandler(seat, row.Value)"
+                    ViewOnly="ViewOnly" />
+            }
+        }
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public SeatPlanModels.Category SeatCategory { get; set; }
+
+    [Parameter]
+    public EventCallback<SelectedSeat> OnSeatSelected { get; set; }
+
+    [Parameter]
+    public bool ViewOnly { get; set; }
+
+    private async Task OnSeatSelectedHandler(SeatPlanModels.Seat seat, SeatPlanModels.Row row)
+    {
+        if(OnSeatSelected.HasDelegate)
+        {
+            await OnSeatSelected.InvokeAsync(new SelectedSeat
+            {
+                CategoryUUID = SeatCategory.Uuid,
+                RowUUID      = row.Uuid,
+                RowNumber    = row.RowNumber,
+                Seat         = seat
+            });
+        }
+    }
+
+    public class SelectedSeat 
+    {
+        public string CategoryUUID { get; set; }
+
+        public string RowUUID { get; set; }
+
+        public string RowNumber { get; set; }
+
+        public SeatPlanModels.Seat Seat { get; set; }
+    }
+}

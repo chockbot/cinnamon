@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+﻿﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Api.Data.Repository.Interfaces;
@@ -701,7 +701,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 			string customerIdQuery = providerId is not null ? "and ac.\"CreatedBy\" = @providerId " : string.Empty;
 
 			string query = "select ac.\"Id\", ac.\"Title\", ac.\"Description\", ac.\"Handler\", ac.\"ForceDisable\", ad.\"PinnedLocation\", " +
-							   "ad.\"CityName\", ad.\"RegionName\", ac.\"ExperienceTypeId\", od.\"Date\", " +
+                               "ad.\"CityName\", ad.\"RegionName\", ac.\"ExperienceTypeId\", od.\"Date\", os.\"ReserveSeat\", " +
 							   "od.\"DateStart\", od.\"DateEnd\", od.\"Id\" \"DateId\", " +
 							   "( " +
 								   "SELECT \"ImageLocation\" " +
@@ -741,21 +741,22 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 						dt.Load(dr);
 
 						listResult = dt.AsEnumerable().Select(item => new OteActivityPerDateDTO {
-							ActivityId = Convert.ToInt32(item["Id"]),
-							CityName = item["CityName"].ToString() ?? string.Empty,
-							Date = Convert.ToDateTime(item["Date"]),
-							DateEnd = Convert.ToDateTime(item["DateEnd"]),
-							DateId = Convert.ToInt32(item["DateId"]),
-							DateStart = Convert.ToDateTime(item["DateStart"]),
-							Description = item["Description"].ToString() ?? string.Empty,
-							EventImage = item["EventImage"].ToString() ?? string.Empty,
+							ActivityId       = Convert.ToInt32(item["Id"]),
+							CityName         = item["CityName"].ToString() ?? string.Empty,
+							Date             = Convert.ToDateTime(item["Date"]),
+							DateEnd          = Convert.ToDateTime(item["DateEnd"]),
+							DateId           = Convert.ToInt32(item["DateId"]),
+							DateStart        = Convert.ToDateTime(item["DateStart"]),
+							Description      = item["Description"].ToString() ?? string.Empty,
+							EventImage       = item["EventImage"].ToString() ?? string.Empty,
 							ExperienceTypeId = Convert.ToInt32(item["ExperienceTypeId"]),
-							Handler = item["Handler"].ToString() ?? string.Empty,
-							PinnedLocation = item["PinnedLocation"].ToString() ?? string.Empty,
-							RegionName = item["RegionName"].ToString() ?? string.Empty,
-							Title = item["Title"].ToString() ?? string.Empty,
-							ForceDisable = Convert.ToBoolean(item["ForceDisable"])
-						}).ToList();
+							Handler          = item["Handler"].ToString() ?? string.Empty,
+							PinnedLocation   = item["PinnedLocation"].ToString() ?? string.Empty,
+							RegionName       = item["RegionName"].ToString() ?? string.Empty,
+							Title            = item["Title"].ToString() ?? string.Empty,
+							ForceDisable     = Convert.ToBoolean(item["ForceDisable"]),
+							ReserveSeat      = Convert.ToBoolean(item["ReserveSeat"])
+                        }).ToList();
 					}
 				}
 			}
@@ -860,21 +861,32 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 				searchClause = "and (ac.\"Title\" Ilike @search or su.\"Provider\" Ilike @search or su.\"Location\" Ilike @search )";
 			}
 
-			string query = "select ac.\"Id\", ac.\"Title\", ac.\"Handler\", ac.\"ExperienceTypeId\", ac.\"ExperienceCreationTypeId\", " +
-								"ad.\"CityName\", ad.\"RegionName\", ad.\"PinnedLocation\", su.\"ImageBannerSrc\", " +
-								"su.\"Ongoing\", su.\"Completed\", su.\"TotalReviews\", su.\"ReviewAccumulated\",  " +
-								"su.\"TotalParticipants\", ac.\"Price\", ac.\"IsNew\",os.\"From\", os.\"To\",TO_CHAR(os.\"To\",'HH12:MI AM') AS \"StartTime\" " +
-							"from public.\"Activities\" ac " +
-							"left join public.\"ActivityAddress\" ad " +
-								"on ac.\"Id\" = ad.\"ActivityId\" " +
-							"left join public.\"ActivitySummaries\" su " +
-								"on ac.\"Id\" = su.\"ActivityId\" " +
-							"left join public.\"OteSchedules\" os " +
-								"on os.\"ActivityId\" = ac.\"Id\"" +
-							"where ac.\"IsDeactivated\" = false and ac.\"Status\" = 1 " +
-								"and ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false " +
-								categoryClause + searchClause + starReviewClause + experienceTypeClause + creationTypeClause +
-							"order by ac.\"Guid\" " +
+			var dateString = DateTime.Now.ToString("yyyy-MM-dd");
+			string query = "with tb as ( " +
+								"select ac.\"Id\", ac.\"Title\", ac.\"Handler\", ac.\"ExperienceTypeId\", ac.\"ExperienceCreationTypeId\", " +
+									"ad.\"CityName\", ad.\"RegionName\", ad.\"PinnedLocation\", su.\"ImageBannerSrc\", " +
+									"su.\"Ongoing\", su.\"Completed\", su.\"TotalReviews\", su.\"ReviewAccumulated\",  " +
+									"su.\"TotalParticipants\", ac.\"Price\", ac.\"IsNew\",os.\"From\", os.\"To\",TO_CHAR(os.\"To\",'HH12:MI AM') AS \"StartTime\", os.\"ReserveSeat\", " +
+									"od.\"Date\", od.\"DateStart\", od.\"DateEnd\", " +
+									"Row_Number() over (partition by ac.\"Id\" order by od.\"Id\") \"RwCnt\" " +
+								"from public.\"Activities\" ac " +
+								"left join public.\"ActivityAddress\" ad " +
+									"on ac.\"Id\" = ad.\"ActivityId\" " +
+								"left join public.\"ActivitySummaries\" su " +
+									"on ac.\"Id\" = su.\"ActivityId\" " +
+								"left join public.\"OteSchedules\" os " +
+									"on os.\"ActivityId\" = ac.\"Id\" " +
+								"left join public.\"OteDates\" od " +
+									"on os.\"Id\" = od.\"OteScheduleId\" " +
+									"and Date(od.\"Date\") >= Date(' " + dateString + " ') " +
+								"where ac.\"IsDeactivated\" = false and ac.\"Status\" = 1 " +
+									"and ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false " +
+									categoryClause + searchClause + starReviewClause + experienceTypeClause + creationTypeClause +
+								"order by ac.\"Guid\" " +
+							") " +
+							"select * " +
+							"from tb " +
+							"where \"RwCnt\" = 1 " +
 							"limit " + take + " offset " + skip + " ";
 
 			IList<ActivityFeedDTO> listResult = new List<ActivityFeedDTO>();
@@ -900,7 +912,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 
 						listResult = dt.AsEnumerable().Select(item => new ActivityFeedDTO
 						{
-							ActivityId = Convert.ToInt32(item["Id"]),
+							ActivityId               = Convert.ToInt32(item["Id"]),
 							ExperienceCreationTypeId = Convert.ToInt32(item["ExperienceCreationTypeId"]),
 							ExperienceTypeId = Convert.ToInt32(item["ExperienceTypeId"]),
 							Handler = item["Handler"].ToString() ?? string.Empty,
@@ -909,21 +921,25 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 							IsNew = Convert.ToBoolean(item["IsNew"]),
 							To = item["To"] != DBNull.Value ? Convert.ToDateTime(item["To"]) : DateTime.MinValue,
 							From = item["From"] != DBNull.Value ? Convert.ToDateTime(item["From"]) : DateTime.MinValue,
+							Date = item["Date"] != DBNull.Value ? Convert.ToDateTime(item["Date"]) : DateTime.MinValue,
+							DateStart = item["DateStart"] != DBNull.Value ? Convert.ToDateTime(item["DateStart"]) : DateTime.MinValue,
+							DateEnd = item["DateEnd"] != DBNull.Value ? Convert.ToDateTime(item["DateEnd"]) : DateTime.MinValue,
 							StartTime = item["StartTime"].ToString() ?? string.Empty,
+							IsReservedSeating	     = Convert.ToBoolean(item["ReserveSeat"]),
 							Address = new ActivityFeedDTO.Location
 							{
-								City = item["CityName"].ToString() ?? string.Empty,
+								City           = item["CityName"].ToString() ?? string.Empty,
 								PinnedLocation = item["PinnedLocation"].ToString() ?? string.Empty,
-								Region = item["RegionName"].ToString() ?? string.Empty,
+								Region         = item["RegionName"].ToString() ?? string.Empty,
 							},
 							SummaryDetails = new ActivityFeedDTO.Summary
 							{
-								Completed = Convert.ToInt32(item["Completed"]),
-								ImageSrc = item["ImageBannerSrc"].ToString() ?? string.Empty,
-								Ongoing = Convert.ToInt32(item["Ongoing"]),
+								Completed         = Convert.ToInt32(item["Completed"]),
+								ImageSrc          = item["ImageBannerSrc"].ToString() ?? string.Empty,
+								Ongoing           = Convert.ToInt32(item["Ongoing"]),
 								ReviewAccumulated = Convert.ToDecimal(item["ReviewAccumulated"]),
 								TotalParticipants = Convert.ToInt32(item["TotalParticipants"]),
-								TotalReviews = Convert.ToInt32(item["TotalReviews"])
+								TotalReviews      = Convert.ToInt32(item["TotalReviews"])
 							}
 						}).ToList();
 					}
@@ -990,7 +1006,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 							   "where sm.\"ActivityId\" = og.\"ActivityId\" and og.\"Ongoing\" != sm.\"Ongoing\"; " +
 
 							   "with withCompletedStudents as ( " +
-								    "select grpstd.\"ActivityId\", Sum(\"Completed\") \"Completed\" " +
+									"select grpstd.\"ActivityId\", Sum(\"Completed\") \"Completed\" " +
 									"from " +
 										"( " +
 											"select ac.\"Id\" \"ActivityId\", Count(st.\"Id\") \"Completed\" " +
@@ -1015,7 +1031,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 							   "where sm.\"ActivityId\" = cm.\"ActivityId\" and sm.\"Completed\" != cm.\"Completed\"; " +
 
 							   "with withTotalStudents as ( " +
-								    "select grpstd.\"ActivityId\", Sum(grpstd.\"TotalParticipants\") \"TotalParticipants\" " +
+									"select grpstd.\"ActivityId\", Sum(grpstd.\"TotalParticipants\") \"TotalParticipants\" " +
 									"from ( " +
 										"select ac.\"Id\" \"ActivityId\", Count(st.\"Id\") \"TotalParticipants\" " +
 										"from public.\"Activities\" ac " +

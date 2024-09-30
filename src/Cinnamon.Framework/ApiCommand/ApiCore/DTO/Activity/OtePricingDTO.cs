@@ -17,4 +17,5 @@ public class OtePricingDTO
     public int OteSchedulePricingGroupId { get; set; }
     public bool RequiredApproval {get; set;}
     public bool IsUnlimited { get; set; }
+    public string ReserveSeatUuid { get; set; }
 }

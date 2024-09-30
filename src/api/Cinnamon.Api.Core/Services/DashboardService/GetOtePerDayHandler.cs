@@ -47,20 +47,21 @@ public class GetOtePerDayHandler : IGetOtePerDayHandler
             return AppResult<GetOtePerDayResult>.CreateSucceeded(new GetOtePerDayResult {
                 OtePerDays = otePerDayRes.Result.Result.Select(e => {
                     return new GetOtePerDayResult.OtePerDay {
-                        ActivityId = e.ActivityId,
-                        CityName = e.CityName,
-                        Date = e.Date,
-                        DateEnd = e.DateEnd,
-                        DateId = e.DateId,
-                        DateStart = e.DateStart,
-                        Description = e.Description,
-                        EventImage = e.EventImage,
+                        ActivityId       = e.ActivityId,
+                        CityName         = e.CityName,
+                        Date             = e.Date,
+                        DateEnd          = e.DateEnd,
+                        DateId           = e.DateId,
+                        DateStart        = e.DateStart,
+                        Description      = e.Description,
+                        EventImage       = e.EventImage,
                         ExperienceTypeId = e.ExperienceTypeId,
-                        Handler = e.Handler,
-                        PinnedLocation = e.PinnedLocation,
-                        RegionName = e.RegionName,
-                        Title = e.Title,
-                        ForceDisable = e.ForceDisable
+                        Handler          = e.Handler,
+                        PinnedLocation   = e.PinnedLocation,
+                        RegionName       = e.RegionName,
+                        Title            = e.Title,
+                        ForceDisable     = e.ForceDisable,
+                        ReserveSeat      = e.ReserveSeat
                     };
                 })
             }, "Ote per day successfully get.");

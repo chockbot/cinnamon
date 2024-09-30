@@ -22,5 +22,6 @@ public class OtePurchaseOrderDTO
         public string Name {get; set;}
         public string Code {get; set;}
         public string ImageData {get; set;}
+        public string SeatNumber { get; set; }
     }
 }

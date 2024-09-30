@@ -35,6 +35,8 @@ public class OteActivityDTO
     public int Available { get; set; }
     public bool ForceDisable {get; set;}
 
+    public bool IsReservedSeating { get; set; }
+
     public IEnumerable<OteSchedulePricingDTO> Pricings {get; set;}
     public IEnumerable<ActivityImageDTO> Images {get; set;}
     public CustomerDTO Owner {get; set;}

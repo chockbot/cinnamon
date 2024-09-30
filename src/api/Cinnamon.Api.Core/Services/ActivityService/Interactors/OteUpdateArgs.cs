@@ -143,5 +143,6 @@ public class OteUpdateArgs : IInteractor
         public string Question {get; set;}
         public string FieldType {get; set;}
         public bool Required {get; set;}
+        public string Options { get; set; }
     }
 }

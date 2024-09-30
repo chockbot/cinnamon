@@ -388,4 +388,26 @@ public class DashboardApiHandler : IDashboardApiHandler
             return AppResult<CreateDirectStudentsResult>.CreateFailed(ex, "An error occured when posting create direct students api");
         }
     }
+
+    public async Task<AppResult<GetAllTicketPurchasedResult>> GetAllTicketPurchased(GetAllTicketPurchasedArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Dashboard/GetAllTicketPurchased")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetAllTicketPurchasedResult>();
+
+            return AppResult<GetAllTicketPurchasedResult>.CreateSucceeded(result, "Successfully getting all ticket purchased");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAllTicketPurchasedResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllTicketPurchasedResult>.CreateFailed(ex, "An error occurred when getting all ticket purchased api");
+        }
+    }
 }

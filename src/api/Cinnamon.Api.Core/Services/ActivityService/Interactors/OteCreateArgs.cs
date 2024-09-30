@@ -84,6 +84,10 @@ public class OteCreateArgs : IInteractor
         public string? CustomPendingBody {get; set;}
         public string? CustomAcceptedBody {get; set;}
         public string? CustomDeclinedBody {get; set;}
+
+        // for reserve seat
+        public bool ReserveSeat {get; set;}
+        public int SeatPlanTemplateId {get; set;}
     }
 
     public class OtePricing 
@@ -100,6 +104,7 @@ public class OteCreateArgs : IInteractor
 
         public bool RequiredApproval {get; set;}
         public bool IsUnlimited { get; set; }
+        public string? ReserveSeatUuid {get; set;}
     }
 
     public class OteOnlinEvent
@@ -125,5 +130,6 @@ public class OteCreateArgs : IInteractor
         public string Question {get; set;}
         public string FieldType {get; set;}
         public bool Required {get; set;}
+        public string Options { get; set; }
     }
 }

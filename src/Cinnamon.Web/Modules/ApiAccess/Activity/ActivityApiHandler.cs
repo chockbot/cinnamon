@@ -1465,6 +1465,27 @@ public class ActivityApiHandler : IActivityApiHandler
         }
     }
 
+    public async Task<AppResult<TopBookedCustomersResult>> TopBookedCustomers(TopBookedCustomersArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Activity/TopBookedCustomers")
+                .SetQueryParams(args)
+                .GetJsonAsync<TopBookedCustomersResult>();
+
+            return AppResult<TopBookedCustomersResult>.CreateSucceeded(result, "Successfully get top booked customers.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<TopBookedCustomersResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<TopBookedCustomersResult>.CreateFailed(ex, "An error occured when getting top booked customers.");
+        }
+    }
+
     public async Task<AppResult<ApproveWaitListResult>> ApprovedWaitList(ApprovedWaitListArgs args, string token)
     {
         try
@@ -1485,27 +1506,6 @@ public class ActivityApiHandler : IActivityApiHandler
         catch (Exception ex)
         {
             return AppResult<ApproveWaitListResult>.CreateFailed(ex, "An error occured when calling approved waitlist api.");
-        }
-    }
-
-    public async Task<AppResult<TopBookedCustomersResult>> TopBookedCustomers(TopBookedCustomersArgs args)
-    {
-        try
-        {
-            var result = await flurlClient
-                .Request($"Activity/TopBookedCustomers")
-                .SetQueryParams(args)
-                .GetJsonAsync<TopBookedCustomersResult>();
-
-            return AppResult<TopBookedCustomersResult>.CreateSucceeded(result, "Successfully get top booked customers.");
-        }
-        catch (FlurlHttpException ex)
-        {
-            return AppResult<TopBookedCustomersResult>.CreateFailed(ex, ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return AppResult<TopBookedCustomersResult>.CreateFailed(ex, "An error occured when getting top booked customers.");
         }
     }
 }

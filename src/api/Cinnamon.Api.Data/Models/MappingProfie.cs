@@ -22,6 +22,8 @@ using OteWaitListAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.OteWaitlist;
 using OteWaitListReqAlias = Cinnamon.Framework.ApiCommand.ApiData.OteWaitlist.Request;
 using ReminderFlagAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.OteReminderFlag;
 using ProviderCustomQuestionAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.ProviderCustomQuestion;
+using SeatPlanAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.SeatPlan;
+using SeatPlanReqAlias = Cinnamon.Framework.ApiCommand.ApiData.SeatPlan.Request;
 
 namespace Cinnamon.Api.Data.Models;
 
@@ -157,5 +159,14 @@ public class MappingProfile : Profile
         // for provider custom question
         CreateMap<ProviderCustomQuestion, ProviderCustomQuestionAlias.ProviderCustomQuestionDTO>();
         CreateMap<ProviderCustomQuestionAlias.ProviderCustomQuestionDTO, ProviderCustomQuestion>();
+
+        CreateMap<SeatPlanFormatter, SeatPlanAlias.SeatPlanFormatterDTO>();
+        CreateMap<SeatPlanAlias.SeatPlanFormatterDTO, SeatPlanFormatter>();
+
+        CreateMap<SeatPlanTemplate, SeatPlanAlias.SeatPlanTemplateDTO>();
+        CreateMap<SeatPlanAlias.SeatPlanTemplateDTO, SeatPlanTemplate>();
+
+        CreateMap<SeatPlanReqAlias.CreateSeatPlanTemplateArgs, SeatPlanAlias.SeatPlanTemplateDTO>();
+        CreateMap<SeatPlanReqAlias.UpdateSeatPlanTemplateArgs, SeatPlanAlias.SeatPlanTemplateDTO>();
     }
 }

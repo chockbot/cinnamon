@@ -1,0 +1,856 @@
+﻿@page "/explore/ote/reserved/{Handler}"
+@page "/explore/ote/reserved/{Handler}/{IsExpired:bool}"
+@using System.Security.Claims;
+@using Cinnamon.Web.Components.Pages;
+@using AutoMapper;
+@using Newtonsoft.Json;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Models.Ote;
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Components;
+@using Cinnamon.Web.Components.Common;
+@using Cinnamon.Web.Utils;
+@using System.ComponentModel.DataAnnotations;
+@using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
+@using Humanizer;
+@inject INotificationService NotificationService;
+@inject IActivityApiHandler activityHandler;
+@inject IAccountApiHandler accountApiHandler;
+@inject ITransactionApiHandler transactionApiHandler;
+@inject NavigationManager NavigationManager;
+@inject IMapper mapper;
+@inject IJSRuntime JS;
+@inject IChatApiHandler chatApiHandler;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ILocalStorage localStorage;
+
+@if (activity is not null)
+{
+    <div class="container details-page-section ote-details-page-wrapper">
+        <div class="row">
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12">
+                <div class="cover-photo">
+                    <img class="cover-photo-img" src="@CoverImage" alt="cover-photo">
+                </div>
+                <a href='@($"/maker/profile/{provider.Handler}")' class="d-flex align-items-center mt-3 me-2 me-md-5">
+                    <img class="provider-avatar rounded-circle" src="@provider.ProfilePath" alt="avatar">
+                    <div class="ms-3">
+                        <label class="font-16 font-weight-400 color-grey-100 m-font-14">Experience by</label>
+                        <p class="text-capitalize font-16 font-weight-700 color-black-100 mb-0 m-font-14">@provider.FirstName @provider.LastName</p>
+                    </div>
+                </a>
+                <div class="provider-details d-flex mt-2">
+                    <div class="book-details d-flex align-items-center my-2">
+                        @if (topBookedCustomers.TopBooked is not null && topBookedCustomers.TopBooked.Any())
+                        {
+                            foreach (var booked in topBookedCustomers.TopBooked)
+                            {
+                                <div class="booked-avatar-wrapper">
+                                    <Tooltip Text="@CustomerName(booked)">
+                                        <img class="booked-avatar" src="@booked.ProfileImage" alt="avatar-circle" />
+                                    </Tooltip>
+                                </div>
+                            }
+
+                            if (topBookedCustomers.TotalBooked > 10)
+                            {
+                                <span class="ms-3 font-16">and @(topBookedCustomers.TotalBooked - 10) Booked</span>
+                            }
+                            else
+                            {
+                                <span class="ms-3 font-16">@topBookedCustomers.TotalBooked Booked</span>
+                            }
+                        }
+                    </div>
+                    @if (provider.IsVerified == 2)
+                    {
+                        <div class="verified-section">
+                            <img src="images/verified-badge.png" class="verified-icon">
+                            <span class="details-text">Verified Profile</span>
+                        </div>
+                    }
+                </div>
+                <div class="mt-2">
+                    <Button Clicked="() => MessageProvider(provider.Id)" class="message-me-button">
+                        <span>Message Me</span>
+                    </Button>
+                </div>
+            </div>
+            <div class="col-xl-8 col-lg-8 col-md-12 mt-md-3 col-sm-12 col-12">
+                @*Event Name*@
+                <h3 class="event-title">@activity.EventName</h3>
+
+                @*Share Event*@
+                <div class="d-flex">
+                    <div class="me-4 prevent-select" @onclick="OnFavoriteClick">
+                        <label class="m-d-none cursor-pointer me-1 font-20 color-grey-100 font-weight-400 text-decoration-underline">Add to Favorites</label>
+                        <img style="width: 25px;" class="cursor-pointer h-auto" src='@(isActivityFavorite ?  "images/ote/favorite.png" : "images/ote/heart-default.png")' alt="favorite">
+                    </div>
+                    <div class="cursor-pointer prevent-select" @onclick="CopyToClipboard">
+                        <label class="m-d-none cursor-pointer me-1 font-20 color-grey-100 font-weight-400 text-decoration-underline">Share this Activity</label>
+                        <img style="width: 20px;" class="cursor-pointer h-auto" src="images/ote/copy-link.png" alt="share">
+                    </div>
+                </div>
+
+                @*Event Description*@
+                <section id="ote-description">
+                    <p class="event-description">
+                        @((MarkupString)activity.Description.Replace(Environment.NewLine, "<br />").Replace("\r\n\r\n", "<br>"))
+                    </p>
+                </section>
+
+                @*Event Schedule*@
+                @if (!activity.IsComingSoon)
+                {
+                    if (!IsExpiredEvent)
+                    {
+                        <h3 class="event-schedule">Date & Time</h3>
+                        <div class="schedule-section">
+                            <div class="schedule-header">
+                                <p class="schedule-header-title">Select date and tickets</p>
+                                <Row class="align-items-center">
+                                    <Column class="schedule-header-left" ColumnSize="ColumnSize.Is12.Is5.OnDesktop">
+                                        <div class="calendar-section">
+                                            <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()"
+                                                SelectedDates="SelectedDates" ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" />
+                                        </div>
+                                        </Column>
+                                        <Column class="schedule-header-right" ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
+                                        <Row>
+                                        <Column class="schedule-event-time">
+                                        <div class="d-flex align-items-center event-schedule-time">
+                                            <img class="me-2" src="images/ote/clock-white.png" alt="clock">
+                                            <div class="w-100">
+                                                <p class="ote-schedule mb-0">
+                                                    Time Start: @selectedDateStart.ToString("hh:mm tt") (@EventDurationString)
+                                                </p>
+                                            </div>
+                                        </div>
+                                        </Column>
+                                        </Row>
+                                        </Column>
+                                        </Row>
+                                        <Row class="mt-3">
+                                        <Column ColumnSize="ColumnSize.Is12">
+                                        <div class="d-flex align-items-center event-schedule-place">
+                                            <img class="me-2" src="images/ote/location-white.png" alt="clock">
+                                            <label class="ote-schedule me-2">Location:</label>
+                                            @if (activity.ExperienceTypeId == 1)
+                                            {
+                                                string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
+                                                <label class="ote-schedule-details text-capitalize">@address</label>
+                                            }
+                                            else
+                                            {
+                                                <label class="ote-schedule-details">Online</label>
+                                            }
+                                        </div>
+                                    </Column>
+                                </Row>
+                            </div>
+                            <div class="schedule-body">
+                                    @*Body*@
+                                    @if (activity.IsOpen)
+                                    {
+                                        <div class="event-ticket-section">
+                                            <div class="ticket-details-header">
+                                                <p class="prices-title">Tickets</p>
+                                                <p class="prices-title">Price</p>
+                                                <p class="prices-title">Status</p>
+                                            </div>
+                                            @foreach (var item in AvailablePriceList)
+                                            {
+                                                <div class="ticket-details">
+                                                    @if (item.Name.Length > 15)
+                                                    {
+                                                        <Tooltip Text="@item.Name" Multiline>
+                                                        <p class="ticket-name">@item.Name.Substring(0, 20)...</p>
+                                                    </Tooltip>
+                                                    }
+                                                    else
+                                                    {
+                                                        <p class="ticket-name">@item.Name</p>
+                                                    }
+                                                    <p class="align-items-center">
+                                                        <span class="ticket-name">
+                                                            @((item.Price == 0) ? "Free" : $"₱{item.Price:N0}")
+                                                        </span>
+                                                    </p>
+                                                    <p class="align-items-center">
+                                                        @if (!item.IsUnlimited)
+                                                        {
+                                                            @if (activity.IsEventSoldOut)
+                                                            {
+                                                                <span class="ticket-sold-out">
+                                                                    sold out
+                                                                </span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="tickets-left">
+                                                                    Only @(item.MaxSlots - item.TicketSold) ticket/s left
+                                                                </span>
+                                                            }
+
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="ticket-unli">
+                                                                unlimited
+                                                            </span>
+                                                        }
+
+                                                    </p>
+                                                </div>
+                                                <Divider />
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="waitlist-section">
+                                            <div class="ticket-close">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 23c6.075 0 11-4.925 11-11S18.075 1 12 1 1 5.925 1 12s4.925 11 11 11M7 10a2 2 0 1 0 0 4h10a2 2 0 1 0 0-4z"></path></svg>
+                                                <p class="close-text">Ticket Sales Closed</p>
+                                            </div>
+                                            <p class="close-sub-text">This event is not currently selling tickets. You may contact the host to receive updates.</p>
+                                        </div>
+                                    }
+                                    @*Footer*@
+                                    @if (activity.IsOpen)
+                                    {
+                                        <div class="schedule-footer">
+                                            <button class="btn buy-ticket-btn border-radius-10 bg-orange-100 color-white-100 font-20 font-weight-700" style="width: 90%" @onclick="ProceedToPayment" disabled="@isLoading">
+                                                @if (isLoading)
+                                                {
+                                                    <div class="spinner-border spinner-border-sm" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <span>Buy Tickets</span>
+                                                }
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <h3 class="event-schedule">Date & Time</h3>
+                        <div class="schedule-section">
+                            <div class="schedule-header">
+                                <p class="schedule-header-title">Select date and tickets</p>
+                                <Row class="align-items-center">
+                                    <Column class="schedule-header-left" ColumnSize="ColumnSize.Is12.Is5.OnDesktop">
+                                        <div class="calendar-section">
+                                            <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()"
+                                                SelectedDates="SelectedDates" ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" />
+                                        </div>
+                                        </Column>
+                                        <Column class="schedule-header-right" ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
+                                        <Row>
+                                        <Column class="schedule-event-time">
+                                        <div class="d-flex align-items-center event-schedule-time">
+                                            <img class="me-2" src="images/ote/clock-white.png" alt="clock">
+                                            <div class="w-100">
+                                                <p class="ote-schedule mb-0">
+                                                    Time Start: @selectedDateStart.ToString("hh:mm tt") (@EventDurationString)
+                                                </p>
+                                            </div>
+                                        </div>
+                                        </Column>
+                                        </Row>
+                                        </Column>
+                                        </Row>
+                                        <Row class="mt-3">
+                                        <Column ColumnSize="ColumnSize.Is12">
+                                        <div class="d-flex align-items-center event-schedule-place">
+                                            <img class="me-2" src="images/ote/location-white.png" alt="clock">
+                                            <label class="ote-schedule me-2">Location:</label>
+                                            @if (activity.ExperienceTypeId == 1)
+                                            {
+                                                string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
+                                                <label class="ote-schedule-details text-capitalize">@address</label>
+                                            }
+                                            else
+                                            {
+                                                <label class="ote-schedule-details">Online</label>
+                                            }
+                                        </div>
+                                    </Column>
+                                </Row>
+                            </div>
+                            <div class="schedule-body">
+                                <div class="waitlist-section">
+                                    <div class="ticket-close">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 23c6.075 0 11-4.925 11-11S18.075 1 12 1 1 5.925 1 12s4.925 11 11 11M7 10a2 2 0 1 0 0 4h10a2 2 0 1 0 0-4z"></path></svg>
+                                        <p class="close-text">Ticket Sales Closed</p>
+                                    </div>
+                                    <p class="close-sub-text">The event has already started, and tickets are no longer available for purchase. You may contact the host for updates.</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+
+                    @*Important Information*@
+                    <section id="important-information" class="mt-3">
+                        <p class="event-schedule">Important Information</p>
+                        <p class="font-18 fw-bold color-black-100 m-font-16">What will happen after I purchase?</p>
+                        <ol class="color-grey-100 font-18 m-font-16">
+                            <li class="mb-3">A purchase confirmation email including your e-ticket will be sent to your email.</li>
+                            <li class="mb-3">You can access the event you purchased/joined by going to your Account from the menu.</li>
+                        </ol>
+                    </section>
+
+                    <Divider />
+
+                    @*Event Location*@
+                    <section id="map-details" class="mt-3">
+                        <p class="event-schedule">Venue</p>
+                        @if (activity.ExperienceTypeId == 1)
+                        {
+                            string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
+                            <p class="address text-capitalize">@address</p>
+                            <iframe height="373" id="mapframe" frameborder="0" class="w-100" src="@MapSource" allowfullscreen></iframe>
+                        }
+                        else
+                        {
+                            <p class="mb-1 font-20 font-weight-400 color-black-100 m-font-16">Online</p>
+                        }
+                    </section>
+
+                    @*Event Seat Plan*@
+                    @if (!string.IsNullOrEmpty(SetPlanImage))
+                    {
+                        <div id="set-plan" class="mt-4 seat-plan-section">
+                            <p class="event-schedule">Seat Plan</p>
+                            <img class="img-seat-plan" src="@SetPlanImage" @onclick="() => imageViewer.ShowModal()" alt="seatplan">
+                        </div>
+                    }
+
+                }
+
+                @if (activity.IsComingSoon)
+                {
+                    <div class="my-5">
+                        <img class="max-width-100 h-auto" src="images/coming-soon.png" alt="coming soon">
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+    <br />
+    <Footer></Footer>
+}
+<Modal @ref="modaltime">
+    <ModalContent Centered>
+        <ModalBody>
+            <div class="queue-up d-flex">
+                <img class="img-logo" src="images/ote/timeout.svg" />
+                <div class="queue-up-text">
+                    <p class="expired-text">Your reservation has expired!</p>
+                </div>
+            </div>
+            <p class="congratulations-text">Unfortunately, you've lost your chance to purchase tickets. Please start a new reservation.</p>
+            <button class="btn-try" @onclick="NavigateToReservation">Try Again</button>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+<ModalLogin @ref="loginModal" ReturnUrl="@signInReturnUrl" />
+<ImageViewer @ref="imageViewer" Image="@SetPlanImage" />
+@code {
+    [Parameter]
+    public string Handler { get; set; } = string.Empty;
+    [Parameter]
+    public bool IsExpired { get; set; } = false;
+    private OteActivity? activity;
+    private CustomerProfile? provider;
+    private IJSObjectReference jsClipboard;
+    private bool isActivityFavorite { get; set; }
+    private CustomerProfile? currentLogin { get; set; }
+    private string token { get; set; } = string.Empty;
+    private string signInReturnUrl = string.Empty;
+    private Modal modaltime { get; set; }
+    private ModalLogin? loginModal;
+    private ImageViewer imageViewer;
+    private ConfirmDialog confirmDialogRef { get; set; }
+    private bool IsInclusivePricing { get; set; }
+    private bool isOpenMobileCalculator { get; set; }
+    private bool isShowPreview = false;
+    private string selectedImage = string.Empty;
+    private TimeSpan Duration { get; set; }
+    private IEnumerable<TicketItem> otesItems { get; set; }
+    private IDictionary<int, TicketInfo> selectedTickets = new Dictionary<int, TicketInfo>();
+    private IEnumerable<OtePricing> AvailablePriceList { get; set; } = Enumerable.Empty<OtePricing>();
+    private DateTime selectedDate;
+    private bool IsExpiredEvent { get; set; } = false;
+    public string ProfileHandler { get; set; }
+    public int ProfileId { get; set; }
+    public string ProfileName { get; set; }
+    public string ProfileEmail { get; set; }
+    public bool showFullAbout = false;
+    private DateTime selectedDateStart;
+    private int SelectedScheduleId { get; set; }
+    private List<int> WaitlistIds = new List<int>();
+    private List<int> ApprovedWaitlistIds = new List<int>();
+    private List<OteWaitlist> oteWaitlists = new List<OteWaitlist>();
+    private int ticketCount { get; set; }
+    private string stringMaxTicket { get; set; }
+    private bool IsLimit { get; set; }
+    private CoreDto.Activity.TopBookedCustomersDTO topBookedCustomers = new();
+    private bool submitting = false;
+    private bool isLoading = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("MyLib.Track", "OTE Details Page");
+            jsClipboard = await JS.InvokeAsync<IJSObjectReference>("import", "./js/clipboard.js");
+        }
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            await LoadOteDetails();
+            await LoadProvider();
+            await LoadIsInclusiveOte();
+            await LoadProfile();
+            await LoadFavorite();
+            await LoadTopBooked();
+            if (!activity.Schedule.ReserveSeat)
+            {
+                NavigationManager.NavigateTo("page-not-found");
+                return;
+            }
+            if (IsExpired)
+            {
+                await modaltime.Show();
+            }
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
+    private async Task LoadOteDetails()
+    {
+        try
+        {
+            var result = await activityHandler.FindOteByHandler(new Framework.ApiCommand.ApiCore.Activity.Request.OteActivityArgs
+                {
+                    IncludeAddress = true,
+                    IncludeDescription = true,
+                    IncludePricing = true,
+                    IncludeSchedule = true,
+                    IncludeImages = true,
+                    IncludeOnlineEvent = true
+                }, Handler);
+            if (!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+            {
+                NavigationManager.NavigateTo("page-not-found");
+                return;
+            }
+            var act = result.Result.Result;
+
+            if (!act.IsPublished || act.ForceDisable)
+            {
+                NavigationManager.NavigateTo("page-not-found");
+                return;
+            }
+            activity = mapper.Map<OteActivity>(act);
+            activity.Pricings = activity.Pricings.OrderBy(t => t.Id).ToList();
+            activity.OteDates = activity.OteDates.OrderBy(d => d.Date);
+            activity.Sold = activity.Pricings.Sum(a => a.TicketSold);
+            activity.EventTicketLimit = act.OteSchedule.EventTicketLimit;
+            IsLimit = act.OteSchedule.EventTicketLimit != 0 ? true : false;
+            activity.IsOpen = act.OteSchedule.IsOpen;
+            int soldLimitedTickets = activity.Pricings.Where(a => !a.IsUnlimited).Sum(a => a.TicketSold);
+            activity.IsEventSoldOut = activity.Pricings.Sum(a => a.MaxSlots) <= soldLimitedTickets ? true : false;
+            selectedDate = SelectedDates.Where(a => a >= DateTime.Now).FirstOrDefault();
+            IsExpiredEvent = selectedDate == DateTime.MinValue;
+            if (IsExpiredEvent)
+            {
+                selectedDate = SelectedDates.FirstOrDefault();
+            }
+            ViewAvailableDates();
+        }
+        catch (System.Exception)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+    private IList<DateTime> SelectedDates
+    {
+        get
+        {
+            IList<DateTime> dates = new List<DateTime>();
+            if (activity is not null)
+            {
+                dates = activity.OteDates.Select(d => d.DateStart).ToList();
+            }
+            return dates;
+        }
+    }
+
+    private Task ViewAvailableDates()
+    {
+        AvailablePriceList = Enumerable.Empty<OtePricing>();
+        if (activity is not null)
+        {
+            var oteDate = activity.OteDates.FirstOrDefault(d => d.Date.Date == selectedDate.Date);
+            if (oteDate is not null)
+            {
+                selectedDateStart = oteDate.DateStart;
+                SelectedScheduleId = oteDate.OteScheduleId;
+                AvailablePriceList = activity.Pricings.Where(p => p.OteDateId == oteDate.Id);
+                Duration = (oteDate.DateEnd - oteDate.DateStart);
+            }
+        }
+        return Task.CompletedTask;
+    }
+    private async Task OnSelectedDateChanged(DateTime date)
+    {
+        selectedDate = date;
+        await ViewAvailableDates();
+    }
+
+    private string EventDurationString
+    {
+        get
+        {
+            return TimeSpan.FromDays(Duration.TotalDays).Humanize(2, countEmptyUnits: true, collectionSeparator: " and ");
+        }
+    }
+    private string SetPlanImage
+    {
+        get
+        {
+            string imageSrc = string.Empty;
+            if (activity is not null)
+            {
+                var image = activity.Images.FirstOrDefault(i => i.Order == 100);
+                if (image is not null)
+                {
+                    imageSrc = image.ImageSrc;
+                }
+            }
+
+            return imageSrc;
+        }
+    }
+    private async Task LoadProvider()
+    {
+        try
+        {
+            if (activity is null) return;
+
+            var result = await accountApiHandler.GetCustomerById(activity.ProviderId);
+            if (!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+            {
+                throw new ApplicationException(result.Message);
+            }
+
+            provider = mapper.Map<CustomerProfile>(result.Result.Result);
+        }
+        catch (System.Exception)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+    private async Task LoadIsInclusiveOte()
+    {
+        if (provider is null) return;
+
+        var inclusiveRes = await activityHandler.OwnerPricingInclusive(provider.Id);
+        if (inclusiveRes.Succeeded && inclusiveRes.Result is not null && inclusiveRes.Result.IsSuccess)
+        {
+            IsInclusivePricing = inclusiveRes.Result.Result.IsInclusivePricing;
+        }
+    }
+    private async Task LoadProfile()
+    {
+        ticketCount = 0;
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        if (user is not null && user.Identity.IsAuthenticated)
+        {
+            token = user.FindFirstValue("Token");
+            if (!string.IsNullOrEmpty(token))
+            {
+                var profileResult = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+                if (profileResult.Succeeded || profileResult.Result is not null && profileResult.Result.IsSuccess)
+                {
+                    currentLogin = mapper.Map<Models.Entities.CustomerProfile>(profileResult.Result.Result);
+                    ProfileHandler = profileResult.Result.Result.Handler;
+                    ProfileId = profileResult.Result.Result.Id;
+                    ProfileName = $"{profileResult.Result.Result.FirstName} {profileResult.Result.Result.LastName}";
+                    ProfileEmail = profileResult.Result.Result.Email;
+                }
+            }
+        }
+    }
+    private async Task LoadFavorite()
+    {
+        if (currentLogin is not null && activity is not null)
+        {
+            var customerFavorites = await activityHandler.GetFavoritesByCustomer(new Framework.ApiCommand.ApiCore.Favorite.Request.GetFavoritesByCustomerArgs
+                {
+                    CustomerId = currentLogin.Id
+                }, token);
+            if (customerFavorites.Succeeded && customerFavorites.Result is not null && customerFavorites.Result.IsSuccess)
+            {
+                isActivityFavorite = customerFavorites.Result.Result.Any(a => a.ActivityId == activity.Id);
+            }
+        }
+    }
+    private async Task LoadTopBooked()
+    {
+        var result = await activityHandler.TopBookedCustomers(new Framework.ApiCommand.ApiCore.Activity.Request.TopBookedCustomersArgs
+            {
+                ActivityId = activity.Id,
+                BookedDate = selectedDate.ToString("yyyyMMddhhmmss")
+            });
+        if (result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        {
+            topBookedCustomers = result.Result.Result;
+        }
+    }
+    private string SeoUrl
+    {
+        get
+        {
+            return $"/explore/ote/{Handler}";
+        }
+    }
+
+    private string SeoImage
+    {
+        get
+        {
+            if (activity is not null && activity.Images.Count() > 0) return activity.Images.First().ImageSrc;
+            else return string.Empty;
+        }
+    }
+
+    private string MapSource
+    {
+        get
+        {
+            string address = string.Empty;
+            if (activity is not null)
+            {
+                if (!string.IsNullOrEmpty(activity.PinnedLocation))
+                {
+                    address = activity.PinnedLocation;
+                }
+                else
+                {
+                    address = $"{activity.HouseNo}+{activity.BarangayName}+{activity.CityName}+{activity.RegionName}";
+                }
+            }
+            return $"https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q={address}";
+        }
+    }
+    private string CoverImage
+    {
+        get
+        {
+            string imageSrc = string.Empty;
+            if (activity is not null)
+            {
+                var image = activity.Images.FirstOrDefault(i => i.Order == 0);
+                if (image is not null)
+                {
+                    imageSrc = image.ImageSrc;
+                }
+            }
+
+            return imageSrc;
+        }
+    }
+
+    private decimal PriceSubTotal
+    {
+        get
+        {
+            return selectedTickets.Sum(t => t.Value.Count * t.Value.Price);
+        }
+    }
+
+    private decimal ServiceFee
+    {
+        get
+        {
+            if (IsInclusivePricing) return 0;
+            return 0;
+        }
+    }
+
+    private decimal HandlingFee
+    {
+        get
+        {
+            if (PriceSubTotal <= 0) return 0;
+            if (IsInclusivePricing) return 0;
+            return 15m;
+        }
+    }
+
+    private decimal TotalPayment
+    {
+        get
+        {
+            return PriceSubTotal + ServiceFee + HandlingFee;
+        }
+    }
+
+    private async Task CopyToClipboard()
+    {
+        await jsClipboard.InvokeVoidAsync("copyToClipboard", NavigationManager.Uri);
+        await NotificationService.Info("Copied to clipboard", "Copied!");
+    }
+
+    private async Task OnFavoriteClick()
+    {
+        if (activity is null) return;
+
+        if (currentLogin is null)
+        {
+            signInReturnUrl = $"/explore/ote/{Handler}";
+            if (loginModal is not null)
+            {
+                loginModal.Show();
+            }
+            return;
+        }
+
+        isActivityFavorite = !isActivityFavorite;
+        if (isActivityFavorite)
+        {
+            var createFavorite = await activityHandler.CreateFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.CreateFavoriteArgs
+                {
+                    ActivityId = activity.Id,
+                    CustomerId = currentLogin.Id
+                }, token);
+
+            await NotificationService.Success("One time event added to favorites.", "Success");
+        }
+        else
+        {
+            var removeFavorite = await activityHandler.RemoveFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.RemoveFavoriteArgs
+                {
+                    ActivityId = activity.Id,
+                    CustomerId = currentLogin.Id
+                }, token);
+
+            await NotificationService.Success("One time event removed to favorites.", "Success");
+        }
+    }
+
+    private string SelectedTicketName
+    {
+        get
+        {
+            if (selectedTickets.Count == 0) return "Select Ticket";
+            if (selectedTickets.Count == 1) return selectedTickets.First().Value.Name;
+            else return "Multiple";
+        }
+    }
+    private class TicketInfo
+    {
+        public int Id { get; set; }
+        public int Count { get; set; }
+        public decimal Price { get; set; }
+        public string Name { get; set; }
+        public bool RequiredApproval { get; set; }
+        public bool IsUnlimited { get; set; }
+    }
+    private class TicketItem
+    {
+        public int PurchaseOrderId { get; set; }
+        public string EventName { get; set; }
+    }
+    private string CustomerName(CoreDto.Customer.BasicProfileDTO profile)
+    {
+        return $"{Capitalize(profile.FirstName)} {Capitalize(profile.LastName)}";
+    }
+    private string Capitalize(string value)
+    {
+        if (string.IsNullOrEmpty(value)) return string.Empty;
+
+        var result = value
+                        .Split(" ")
+                        .Where(s => !string.IsNullOrEmpty(s.Trim()))
+                        .Select(s =>
+                        {
+                            string firsrChar = s.Substring(0, 1);
+                            return $"{firsrChar.ToUpper()}{s.Substring(1)}";
+                        });
+
+        return String.Join(" ", result);
+    }
+    private async Task MessageProvider(int providerId)
+    {
+        var messageProviderRes = await chatApiHandler.RequestMessage(new Framework.ApiCommand.ApiCore.ChatRoom.Request.RequestMessageArgs
+            {
+                ProviderId = providerId
+            }, token);
+        if (!messageProviderRes.Succeeded || messageProviderRes.Result is null || !messageProviderRes.Result.IsSuccess)
+        {
+            await NotificationService.Error("An error occured. Please try again.", "Error");
+            return;
+        }
+
+        var result = messageProviderRes.Result.Result;
+        var url = $"/messages/?guid={result.Guid}&token={result.Token}";
+
+        if (currentLogin is null)
+        {
+            signInReturnUrl = url;
+            await loginModal.Show();
+        }
+        else
+        {
+            NavigationManager.NavigateTo(url);
+        }
+    }
+    private void NavigateToReservation()
+    {
+        string paymentUrl = $"/reservation/{Handler}/?date={selectedDate}&token={token}";
+        NavigationManager.NavigateTo(paymentUrl);
+    }
+    private async Task ProceedToPayment()
+    {
+        isLoading = true;
+        StateHasChanged();
+
+        await Task.Delay(2000);
+
+        submitting = true;
+
+        if (currentLogin is null)
+        {
+            string oteDetailsUrl = $"/explore/ote/reserved/{Handler}";
+            signInReturnUrl = oteDetailsUrl;
+
+            loginModal.Show();
+            return;
+        }
+        string paymentUrl = $"/reservation/{Handler}/?date={selectedDate}&token={token}";
+
+        await Task.Delay(2000);
+
+        isLoading = false;
+        StateHasChanged();
+        NavigationManager.NavigateTo(paymentUrl);
+        
+        submitting = false;
+    }
+}

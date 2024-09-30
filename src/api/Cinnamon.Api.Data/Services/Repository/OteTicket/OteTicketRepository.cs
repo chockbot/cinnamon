@@ -19,22 +19,22 @@ public class OteTicketRepository : IOteTicketRepository
         this.dataStore = dataStore;
         this.mapper = mapper;
     }
-    
+
     public async Task<AppResult<IEnumerable<OteTicketDTO>>> CreateMany(IEnumerable<OteTicketDTO> tickets, bool includeImageAsResult = false)
     {
         try
         {
             var oteTickets = mapper.Map<IEnumerable<Entities.OteTicket>>(tickets);
             var result = await dataStore.OteTicket.AddRange(oteTickets);
-            if(!result.Succeeded || result.Result is null)
+            if (!result.Succeeded || result.Result is null)
             {
                 return AppResult<IEnumerable<OteTicketDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
             }
 
             // remove image data to make result body lighter
-            if(!includeImageAsResult)
+            if (!includeImageAsResult)
             {
-                foreach(var item in result.Result)
+                foreach (var item in result.Result)
                 {
                     item.QRImageData = string.Empty;
                 }
@@ -49,13 +49,13 @@ public class OteTicketRepository : IOteTicketRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<OteTicketDTO>>> GetByActivityId(int activityId, int dateId, string searchValue,int searchBy, int? count, int? skip, 
+    public async Task<AppResult<IEnumerable<OteTicketDTO>>> GetByActivityId(int activityId, int dateId, string searchValue, int searchBy, int? count, int? skip,
         bool includeCustomer = false, bool includeImageAsResult = false)
     {
         try
         {
-            var result = await dataStore.OteTicket.GetByActivityId(activityId, dateId, searchValue,searchBy ,count, skip, includeCustomer, includeImageAsResult);
-            if(!result.Succeeded || result.Result is null)
+            var result = await dataStore.OteTicket.GetByActivityId(activityId, dateId, searchValue, searchBy, count, skip, includeCustomer, includeImageAsResult);
+            if (!result.Succeeded || result.Result is null)
             {
                 return AppResult<IEnumerable<OteTicketDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
             }
@@ -74,7 +74,7 @@ public class OteTicketRepository : IOteTicketRepository
         try
         {
             var result = await dataStore.OteTicket.FindFirstAsync(t => t.QRCode == code);
-            if(!result.Succeeded || result.Result is null)
+            if (!result.Succeeded || result.Result is null)
             {
                 return AppResult<OteTicketDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
             }
@@ -126,22 +126,22 @@ public class OteTicketRepository : IOteTicketRepository
             {
                 var ticketDTO = new OteScheduleDTO
                 {
-                    ActivityId  = activityId,
-                    From        = s.From,
-                    To          = s.To,
+                    ActivityId = activityId,
+                    From = s.From,
+                    To = s.To,
                     Recurrences = s.Recurrences,
                     OteSchedulePricingDTO = new OteSchedulePricingDTO
                     {
-                        Id                    = s.OteSchedulePricingDTO.Id,
-                        Name                  = s.OteSchedulePricingDTO.Name,
-                        Description           = s.OteSchedulePricingDTO.Description,
-                        MaxSlots              = s.OteSchedulePricingDTO.MaxSlots,
-                        Sold                  = s.OteSchedulePricingDTO.Sold,
-                        Available             = s.OteSchedulePricingDTO.MaxSlots - s.OteSchedulePricingDTO.Sold,
-                        Price                 = s.OteSchedulePricingDTO.Price,
+                        Id = s.OteSchedulePricingDTO.Id,
+                        Name = s.OteSchedulePricingDTO.Name,
+                        Description = s.OteSchedulePricingDTO.Description,
+                        MaxSlots = s.OteSchedulePricingDTO.MaxSlots,
+                        Sold = s.OteSchedulePricingDTO.Sold,
+                        Available = s.OteSchedulePricingDTO.MaxSlots - s.OteSchedulePricingDTO.Sold,
+                        Price = s.OteSchedulePricingDTO.Price,
                         OteSchedulePricingsId = s.OteSchedulePricingDTO.OteSchedulePricingsId,
-                        RequiredApproval      = s.OteSchedulePricingDTO.RequiredApproval,
-                        IsUnlimited           = s.OteSchedulePricingDTO.IsUnlimited
+                        RequiredApproval = s.OteSchedulePricingDTO.RequiredApproval,
+                        IsUnlimited = s.OteSchedulePricingDTO.IsUnlimited
                     }
                 };
                 return ticketDTO;
@@ -159,7 +159,7 @@ public class OteTicketRepository : IOteTicketRepository
         try
         {
             var result = await dataStore.OteTicket.GetByPurchaseOrderId(purchaseOrderId, includeCustomer, includeImageAsResult);
-            if(!result.Succeeded || result.Result is null)
+            if (!result.Succeeded || result.Result is null)
             {
                 return AppResult<IEnumerable<OteTicketDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
             }
@@ -180,7 +180,7 @@ public class OteTicketRepository : IOteTicketRepository
             var entity = mapper.Map<Entities.OteSharedLink>(sharedLinkdto);
 
             var result = await dataStore.OteSharedLink.Add(entity);
-            if(!result.Succeeded || result.Result is null)
+            if (!result.Succeeded || result.Result is null)
             {
                 return AppResult<OteSharedLinkDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
             }
@@ -199,7 +199,7 @@ public class OteTicketRepository : IOteTicketRepository
         try
         {
             var result = await dataStore.OteSharedLink.FindFirstAsync(o => o.Token == token && o.Guid == guid);
-            if(!result.Succeeded || result.Result is null)
+            if (!result.Succeeded || result.Result is null)
             {
                 return AppResult<OteSharedLinkDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
             }
@@ -218,7 +218,7 @@ public class OteTicketRepository : IOteTicketRepository
         try
         {
             var result = await dataStore.OteSharedLink.FindAsync(o => o.ActivityId == activityId && o.OteDateId == dateId);
-            if(!result.Succeeded || result.Result is null)
+            if (!result.Succeeded || result.Result is null)
             {
                 return AppResult<IEnumerable<OteSharedLinkDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
             }
@@ -237,16 +237,16 @@ public class OteTicketRepository : IOteTicketRepository
         try
         {
             var sharedLinkRes = await dataStore.OteSharedLink.FindFirstAsync(s => s.Id == id);
-            if(!sharedLinkRes.Succeeded || sharedLinkRes.Result is null)
+            if (!sharedLinkRes.Succeeded || sharedLinkRes.Result is null)
             {
                 return AppResult<OteSharedLinkDTO>.CreateFailed(
                     new ApplicationException("Unable to find shared link to update."), "Unable to find shared link to update.");
             }
             var sharedLink = sharedLinkRes.Result;
-            
+
             sharedLink.Enable = status;
             var result = await dataStore.OteSharedLink.Update(sharedLink);
-            if(!result.Succeeded || result.Result is null)
+            if (!result.Succeeded || result.Result is null)
             {
                 return AppResult<OteSharedLinkDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
             }
@@ -264,7 +264,7 @@ public class OteTicketRepository : IOteTicketRepository
     {
         try
         {
-            Expression<Func<Entities.OteTicket, bool>> filter = 
+            Expression<Func<Entities.OteTicket, bool>> filter =
                 a => a.ActivityId == activityId;
 
             var result = await dataStore.OteTicket.Count(filter);
@@ -282,7 +282,7 @@ public class OteTicketRepository : IOteTicketRepository
         try
         {
             var result = await dataStore.OteTicket.BookedCustomers(activityId, dateId, limit ?? int.MaxValue, offset ?? 0);
-            if(!result.Succeeded || result.Result is null)
+            if (!result.Succeeded || result.Result is null)
             {
                 return AppResult<IEnumerable<BookedCustomerDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
             }
@@ -292,6 +292,25 @@ public class OteTicketRepository : IOteTicketRepository
         catch (Exception ex)
         {
             return AppResult<IEnumerable<BookedCustomerDTO>>.CreateFailed(ex, "An error occured when getting booked customers.");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<OteTicketDTO>>> GetAllTicketPurchased(int activityId)
+    {
+        try
+        {
+            var result = await dataStore.OteTicket.GetAllTicketPurchased(activityId);
+            if (!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<OteTicketDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var dtoTickets = mapper.Map<IEnumerable<OteTicketDTO>>(result.Result);
+            return AppResult<IEnumerable<OteTicketDTO>>.CreateSucceeded(dtoTickets, "Successfully get tickets by activity id");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteTicketDTO>>.CreateFailed(ex, "An error occured when getting tickets.");
         }
     }
 }

@@ -1,0 +1,22 @@
+@namespace Cinnamon.Web.Components.Common.SeatPlan
+@using SeatPlanModels = Cinnamon.Framework.Models.SeatPlan;
+
+<div id="seat-plan-row" class="d-flex flex-wrap">
+    @foreach (var seat in RowCategory.Seats)
+    {
+        <Seat RowSeat="seat.Value" RowNumber="@RowCategory.RowNumber" CategoryColor="@CategoryColor" Occupied="seat.Value.Occupied"
+            ViewOnly="ViewOnly"/>
+    }
+</div>
+
+@code 
+{
+    [Parameter]
+    public SeatPlanModels.Row RowCategory { get; set; }
+
+    [Parameter]
+    public string CategoryColor {get; set;}
+
+    [Parameter]
+    public bool ViewOnly { get; set; }
+}

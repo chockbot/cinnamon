@@ -8,6 +8,8 @@ using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 using System;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteTicket;
 using Npgsql;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Student;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
 
 namespace Cinnamon.Api.Data.Repository.DbSets;
 
@@ -86,7 +88,6 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
         try
         {
             var query = applicationContext.OteTickets.Where(t => t.PurchaseOrderId == purchaseOrderId);
-
             if (includeCustomer)
             {
                 query = query.Include(t => t.Customer);
@@ -96,17 +97,18 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
             {
                 query = query.Select(t => new OteTicket
                 {
-                    ActivityId = t.ActivityId,
-                    Amount = t.Amount,
-                    CustomerId = t.CustomerId,
-                    Id = t.Id,
-                    OteScheduleId = t.OteScheduleId,
+                    ActivityId           = t.ActivityId,
+                    Amount               = t.Amount,
+                    CustomerId           = t.CustomerId,
+                    Id                   = t.Id,
+                    OteScheduleId        = t.OteScheduleId,
                     OteSchedulePricingId = t.OteSchedulePricingId,
-                    PurchaseOrderId = t.PurchaseOrderId,
-                    QRCode = t.QRCode,
-                    Status = t.Status,
-                    Title = t.Title,
-                    Customer = t.Customer
+                    PurchaseOrderId      = t.PurchaseOrderId,
+                    QRCode               = t.QRCode,
+                    Status               = t.Status,
+                    Title                = t.Title,
+                    SeatNumber           = t.SeatNumber,
+                    Customer             = t.Customer,
                 });
             }
 
@@ -239,6 +241,64 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
         catch (Exception ex)
         {
             return AppResult<IEnumerable<BookedCustomerDTO>>.CreateFailed(ex, "An error occured when getting booked customers.");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<OteTicketDTO>>> GetAllTicketPurchased(int activityId)
+    {
+        try
+        {
+            string query = "SELECT a.\"Id\", a.\"ActivityId\", a.\"OteScheduleId\", a.\"OteSchedulePricingId\", a.\"CustomerId\", a.\"PurchaseOrderId\", a.\"Title\", a.\"Amount\"," +
+                " a.\"QRCode\", a.\"QRImageData\", a.\"Status\", a.\"CreatedOn\", a.\"CreatedBy\", a.\"ChangedOn\", a.\"ChangedBy\", a.\"OteDateId\", a.\"SeatNumber\", b.\"Payload\", " +
+                "c.\"FirstName\", c.\"LastName\", c.\"Email\", d.\"Date\", e.\"UnitCount\" FROM public.\"OteTickets\" AS a LEFT JOIN public.\"Customers\" AS c ON c.\"Id\" = a.\"CustomerId\" " +
+                "LEFT JOIN public.\"OteWaitList\" AS b ON b.\"OteDateId\" = a.\"OteDateId\" AND b.\"CustomerId\" = a.\"CustomerId\" LEFT JOIN public.\"OteDates\" AS d ON d.\"Id\" = a.\"OteDateId\" " +
+                "LEFT JOIN public.\"PurchaseOrders\" AS e ON e.\"Id\" = a.\"PurchaseOrderId\" WHERE a.\"ActivityId\" = " + activityId + "";
+            IList<OteTicketDTO> listResult = new List<OteTicketDTO>();
+            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = System.Data.CommandType.Text;
+
+                applicationContext.Database.OpenConnection();
+
+                using (var dr = await command.ExecuteReaderAsync())
+                {
+                    if (dr.HasRows)
+                    {
+                        var dt = new DataTable();
+                        dt.Load(dr);
+
+                        listResult = dt.AsEnumerable().Select(item => new OteTicketDTO
+                        {
+                            ActivityId           = Convert.ToInt32(item["ActivityId"]),
+                            Amount               = Convert.ToDecimal(item["Amount"]),
+                            CustomerId           = Convert.ToInt32(item["CustomerId"]),
+                            Id                   = Convert.ToInt32(item["Id"]),
+                            OteScheduleId        = Convert.ToInt32(item["OteScheduleId"]),
+                            OteSchedulePricingId = Convert.ToInt32(item["OteSchedulePricingId"]),
+                            PurchaseOrderId      = Convert.ToInt32(item["PurchaseOrderId"]),
+                            QRCode               = item["QRCode"].ToString() ?? string.Empty,
+                            Status               = item["Status"].ToString() ?? string.Empty,
+                            Title                = item["Title"].ToString() ?? string.Empty,
+                            Payload              = item["Payload"].ToString() ?? string.Empty,
+                            Date                 = Convert.ToDateTime(item["Date"]),
+                            Quantity             = Convert.ToInt32(item["UnitCount"]),
+                            Customer = new CustomerDTO
+                            {
+                                FirstName = item["FirstName"].ToString() ?? string.Empty,
+                                LastName  = item["LastName"].ToString() ?? string.Empty,
+                                Email     = item["Email"].ToString() ?? string.Empty,
+                            }
+                        }).ToList();
+                    }
+                }
+            }
+
+            return AppResult<IEnumerable<OteTicketDTO>>.CreateSucceeded(listResult, "Successfully get all ticket purchased");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteTicketDTO>>.CreateFailed(ex, "An error occured when trying to get all ticket purchased");
         }
     }
 }

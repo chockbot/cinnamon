@@ -9,6 +9,7 @@
 @inject INotificationService NotificationService
 @inject IActivityApiHandler activityApiHandler
 @inject IJSRuntime JS
+@inject Cinnamon.Framework.Providers.IJsonSerializationProvider jsonSerializationProvider
 @implements IOteComponent
 @implements IAsyncDisposable
 
@@ -66,7 +67,7 @@
                 </div>
                 <div class="effect hover1"></div>
             </div>
-            <div class="div-option-details email-box" id="hoverDiv" @onclick="() => capacityModal.Show()">
+            <div class="div-option-details email-box" id="hoverDiv" @onclick="WaitListCapacityClick">
                 <img class="option-img image-holder" src="images/ote/capacity.svg" alt="cover-photo">
                 <div class="option-name text-box">
                     <p class="registration">Waitlist Capacity</p>
@@ -74,7 +75,7 @@
                 </div>
                 <div class="effect hover2"></div>
             </div>
-            <div class="div-option-details email-box" id="hoverDiv" @onclick="() => ticketModal.Show()">
+            <div class="div-option-details email-box" id="hoverDiv" @onclick="ShowAddTicketModal">
                 <img class="option-img image-holder" src="images/ote/add-ticket.svg" alt="cover-photo">
                 <div class="option-name text-box">
                     <p class="registration">Add Tickets</p>
@@ -118,7 +119,7 @@
                             </Tooltip>
                         </div>
                         <div class="form-check form-switch">
-                            <Switch @bind-Checked="ticket.RequiredApproval" TValue="bool" class="form-check-input" />
+                            <Switch Disabled="isReservedSeats" @bind-Checked="ticket.RequiredApproval" TValue="bool" class="form-check-input" />
                         </div>
                     </div>
                 </div>
@@ -236,7 +237,7 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                 <div>
-                    <Dropdown Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
+                    <Dropdown Disabled="isReservedSeats" Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
                         <DropdownToggle Size="Size.Small" class="w-100">
                             @nameQuestion
                         </DropdownToggle>
@@ -257,7 +258,7 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                 <div>
-                    <Dropdown Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
+                    <Dropdown Disabled="isReservedSeats" Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
                         <DropdownToggle Size="Size.Small" class="w-100">
                             @emailQuestion
                         </DropdownToggle>
@@ -278,7 +279,7 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                 <div>
-                    <Dropdown Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
+                    <Dropdown Disabled="isReservedSeats" Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
                         <DropdownToggle Size="Size.Small" class="w-100">
                             @phoneQuestion
                         </DropdownToggle>
@@ -294,7 +295,7 @@
 
         <div>
             <Button Clicked="CreateQuestion" class="color-green-100 bg-white-100 font-16 mb-3 btn-question">
-                + <span class="ms-2">Add Questions</span>
+                + <span class="btn-question-text ms-2">Add Questions</span>
             </Button>
 
             @foreach (var question in FilteredQuestions)
@@ -302,6 +303,24 @@
                 <div @key="question" class="bg-white-100 mb-2 p-3 border-radius-10 d-flex justify-content-between align-items-center">
                     <p class="font-16 color-grey-100 mb-0">
                         @question.Question
+                        <br/>
+                        <span class="field-type">
+                            @switch (question.FieldType)
+                            {
+                                case "Check":
+                                    <text>&#10004;Checkboxes</text>
+                                    break;
+                                case "TextArea":
+                                    <text>&#8776;Text</text>
+                                    break;
+                                case "Dropdown":
+                                    <text>&darr;Dropdown</text>
+                                    break;
+                                default:
+                                    <text>&#8776;Text</text>
+                                break;
+                            }
+                        </span>
                     </p>
                     <div class="ms-3 d-flex">
                         <Button class="p-0" Clicked="() => UpdateQuestion(question)">
@@ -323,22 +342,53 @@
 <Modal @ref="modalCustomQuestion">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center pb-0">
-            @if(questionAction == QuestionAction.Edit)
-            {
-                <p class="font-20 font-weight-700 color-black-100 mb-0">Edit Question</p>
-            }
-            else
-            {
-                <p class="font-20 font-weight-700 color-black-100 mb-0">Add Question</p>
-            }
+            <p class="font-20 font-weight-700 color-black-100 mb-0">
+                @(questionAction == QuestionAction.Edit ? "Edit Question" : "Add Question")
+            </p>
         </ModalHeader>
         <ModalBody class="px-4">
             <Field class="mb-3">
-                <FieldLabel class="color-grey-100 mb-0">Question</FieldLabel>
+                <div class="d-flex justify-content-between">
+                    <FieldLabel class="color-grey-100 text-question">Question</FieldLabel>
+                    <Field>
+                        <FieldBody>
+                            <Select class="dropdown-type" Size="Size.Medium" @bind-SelectedValue="formQuestion.FieldType" @onchange="OnQuestionTypeChange">
+                                <SelectItem Value="0" Disabled class="text-capitalize">--Question Type--</SelectItem>
+                                <SelectItem Value="@Cinnamon.Framework.Enums.FieldType.TextArea.ToString()" class="text-capitalize">Short Text</SelectItem>
+                                <SelectItem Value="@Cinnamon.Framework.Enums.FieldType.Check.ToString()" class="text-capitalize">Checkboxes</SelectItem>
+                                <SelectItem Value="@Cinnamon.Framework.Enums.FieldType.Dropdown.ToString()" class="text-capitalize">Dropdown</SelectItem>
+                            </Select>
+                        </FieldBody>
+                    </Field>
+                </div>
                 <FieldBody>
                     <MemoEdit @bind-Text="formQuestion.Question" Rows="5" />
                 </FieldBody>
             </Field>
+           
+            @if (formQuestion.FieldType == Cinnamon.Framework.Enums.FieldType.Check.ToString() || 
+                formQuestion.FieldType == Cinnamon.Framework.Enums.FieldType.Dropdown.ToString())
+            {
+                <Field class="mb-3">
+                    <FieldBody>
+                        @for (int i = 0; i < formQuestion.Options.Count; i++)
+                        {
+                            string name = $"Option {i + 1}";
+                            var index = i;  // Capture the current index
+                            <div class="d-flex mb-2 gap-2 w-100">
+                                <TextEdit ElementId="@formQuestion.Options[i]" Placeholder="@name" Text="@formQuestion.Options[index]" TextChanged="(value) => UpdateOptionValue(value, index)" />
+                                <Button class="btn-remove-option" @onclick="() => RemoveOption(index)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M1 15L8.00002 8.00003M8.00002 8.00003L15 1M8.00002 8.00003L1 1M8.00002 8.00003L15 15" stroke="#D9D9D9" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </Button>
+                            </div>
+                        }
+                        <button class="btn-add-option" @onclick="AddOption">+ Add Option</button>
+                    </FieldBody>
+                </Field>
+            }
+
             <div class="d-flex">
                 <label class="color-black-100 font-weight-700 me-3">Required</label>
                 <div class="form-check form-switch">
@@ -357,10 +407,10 @@
             </div>
         </ModalFooter>
     </ModalContent>
-    </Modal>
+</Modal>
 
-    @*Registration Modal*@
-    <Modal @ref="registrationModal">
+@*Registration Modal*@
+<Modal @ref="registrationModal">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center pb-0">
             <p class="font-20 font-weight-700 color-black-100 mb-0">Registration</p>
@@ -387,7 +437,7 @@
     </ModalContent>
     </Modal>
 
-    <Offcanvas @ref="offcanvas" Closing="OffCanvasClosing" ShowBackdrop Placement="Placement.End">
+<Offcanvas @ref="offcanvas" Closing="OffCanvasClosing" ShowBackdrop Placement="Placement.End">
     <OffcanvasHeader class="px-0 py-4 bg-white-100">
         <div class="px-3 d-flex justify-content-between position-relative w-100">
             @if (selectedEmailTemplate == 0)
@@ -495,7 +545,7 @@
     </ModalContent>
     </Modal>
 
-    @*Add Ticket Modal*@
+@*Add Ticket Modal*@
 <Modal @ref="ticketModal">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center pb-0">
@@ -591,7 +641,7 @@
                                     Total Ticket Qty.
                                 </FieldLabel>
                                 <FieldBody>
-                                    <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="int?" Size="Size.Medium" Disabled=@(modelPricing.IsUnlimited)
+                                    <NumericPicker ReadOnly="isReservedSeats" Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="int?" Size="Size.Medium" Disabled=@(modelPricing.IsUnlimited)
                                                    class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.MaxSlots" @onkeyup="MaxSlotsChanged">
                                         <Feedback>
                                             <ValidationError />
@@ -600,7 +650,7 @@
                                     <div class="unli-flag d-flex">
                                         <p class="font-16 text-capitalize color-black-100 mb-1 m-font-16">Unlimited Ticket</p>
                                         <div class="form-check form-switch">
-                                            <Switch TValue="bool" @bind-Checked="modelPricing.IsUnlimited" @onchange="((e) => IsUnlimitedChanged(e))" class=" form-check-input" />
+                                            <Switch Disabled="isReservedSeats" TValue="bool" @bind-Checked="modelPricing.IsUnlimited" @onchange="((e) => IsUnlimitedChanged(e))" class=" form-check-input" />
                                         </div>
                                     </div>
                                 </FieldBody>
@@ -615,7 +665,7 @@
                             <div class="accept-reg">
                                 <p class="approval">Required Approval</p>
                                 <div class="form-check form-switch">
-                                    <Switch TValue="bool" @bind-Checked="modelPricing.RequiredApproval" class="form-check-input" />
+                                    <Switch Disabled="isReservedSeats" TValue="bool" @bind-Checked="modelPricing.RequiredApproval" class="form-check-input" />
                                 </div>
                             </div>
                             <p class="approval-text">If enabled, guests need to be manually approved before receiving their tickets.</p>
@@ -629,7 +679,7 @@
                             <div class="accept-reg">
                                 <p class="approval">Required Approval</p>
                                 <div class="form-check form-switch">
-                                    <Switch TValue="bool" @bind-Checked="modelPricing.RequiredApproval" class="form-check-input" />
+                                    <Switch Disabled="isReservedSeats" TValue="bool" @bind-Checked="modelPricing.RequiredApproval" class="form-check-input" />
                                 </div>
                             </div>
                             <p class="approval-text">If enabled, guests need to be manually approved before receiving their tickets.</p>
@@ -693,7 +743,7 @@
     </ModalContent>
     </Modal>
 
-    <Modal @ref="modalError">
+<Modal @ref="modalError">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center pb-0">
             <p class="font-20 font-weight-700 color-black-100 mb-0">Error Message</p>
@@ -708,7 +758,7 @@
     </ModalContent>
     </Modal>
 
-    <ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
+<ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
                OnConfirmationChanged="ConfirmDeleteChanged">
     <HeaderContent>
         <p class="m-0">Confirm Action</p>
@@ -716,7 +766,7 @@
     <BodyContent>
         <p class="m-0">Are you sure you want to remove this ticket?</p>
     </BodyContent>
-    </ConfirmDialog>
+</ConfirmDialog>
 
 @code
     {
@@ -774,18 +824,6 @@
     public Modal? modalCustomQuestion;
     private List<CustomQuestion> questions = new();
     private CustomQuestion formQuestion = new();
-    IJSObjectReference hoverEffectModule;
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-
-        await Task.Delay(2000);
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.addHoverEffect", "#hoverDiv");
-        if (IsEditRegistration)
-        {
-            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".registration-section");
-        }
-    }
-
 
     enum QuestionAction
     {
@@ -800,6 +838,21 @@
     private string nameQuestion = "Off";
     private string emailQuestion = "Off";
     private string phoneQuestion = "Off";
+
+    IJSObjectReference hoverEffectModule;
+
+    private bool isReservedSeats = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        await Task.Delay(2000);
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.addHoverEffect", "#hoverDiv");
+        if (IsEditRegistration)
+        {
+            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".registration-section");
+        }
+    }
 
     private async Task NextClick()
     {
@@ -875,39 +928,41 @@
     public ModelData GetData()
     {
         ModelData data = new ModelData
-        {
-            EventTicketLimit = ModelState.EventTicketLimit,
-            IsLimit          = ModelState.EventTicketLimit != 0 ? 2 : 1,
-            IsOpen           = ModelState.IsOpen,
-            IsCapacity       = ModelState.IsCapacity,
-            CapacityCount    = ModelState.CapacityCount,
-            ItemPrices = modelPricingList.Pricings.Select(p =>
             {
-                return new ModelData.ItemPrice
+                EventTicketLimit = ModelState.EventTicketLimit,
+                IsLimit = ModelState.EventTicketLimit != 0 ? 2 : 1,
+                IsOpen = ModelState.IsOpen,
+                IsCapacity = ModelState.IsCapacity,
+                CapacityCount = ModelState.CapacityCount,
+                ItemPrices = modelPricingList.Pricings.Select(p =>
                 {
-                    AbsorbFees       = p.AbsorbFees,
-                    MaxSlots         = p.MaxSlots,
-                    Price            = p.Price,
-                    Description      = p.Description,
-                    Id               = p.Id,
-                    Name             = p.Name,
-                    TicketSold       = p.TicketSold,
-                    RequiredApproval = p.RequiredApproval,
-                    IsUnlimited      = p.IsUnlimited
-                };
-            }).ToList(),
-            CustomAcceptedBody = customAcceptedMessageOrig,
-            CustomDeclinedBody = customDeclinedMesasgeOrig,
-            CustomPendingBody = customPendingMessageOrig,
-            NewQuestions = questions.Where(q => q.IsNew).ToList(),
-            UpdatedQuestions = questions.Where(q => !q.IsNew).ToList(),
-            DeletedQuestions = deletedQuestions.Select(q => q.Id).ToList()
-        };
+                    return new ModelData.ItemPrice
+                    {
+                        AbsorbFees = p.AbsorbFees,
+                        MaxSlots = p.MaxSlots,
+                        Price = p.Price,
+                        Description = p.Description,
+                        Id = p.Id,
+                        Name = p.Name,
+                        TicketSold = p.TicketSold,
+                        RequiredApproval = p.RequiredApproval,
+                        IsUnlimited = p.IsUnlimited,
+                        ReserveSeatUuid  = p.ReserveSeatUuid
+                    };
+                }).ToList(),
+                CustomAcceptedBody = customAcceptedMessageOrig,
+                CustomDeclinedBody = customDeclinedMesasgeOrig,
+                CustomPendingBody = customPendingMessageOrig,
+                NewQuestions = questions.Where(q => q.IsNew).ToList(),
+                UpdatedQuestions = questions.Where(q => !q.IsNew).ToList(),
+                DeletedQuestions = deletedQuestions.Select(q => q.Id).ToList()
+            };
         return data;
     }
 
     public Task SetState(ModelData data)
     {
+        isReservedSeats = data.ReserveSeat;
         foreach (var item in data.ItemPrices)
         {
             modelPricingList.Pricings.Add(new Pricing
@@ -936,9 +991,10 @@
         {
             questions.AddRange(data.UpdatedQuestions.Select(q => new CustomQuestion {
                 FieldType = q.FieldType,
-                Question = q.Question,
-                Required = q.Required,
-                Id = q.Id
+                Question  = q.Question,
+                Required  = q.Required,
+                Id        = q.Id,
+                Options   = q.Options
             }));
         }
 
@@ -991,6 +1047,7 @@
         public bool IsOpen { get; set; }
         public bool IsCapacity { get; set; }
         public int CapacityCount { get; set; }
+        public bool ReserveSeat {get; set;}
 
         public string CustomPendingBody { get; set; }
         public string CustomAcceptedBody { get; set; }
@@ -1013,6 +1070,7 @@
             public bool RequiredApproval { get; set; }
             public bool IsUnlimited { get; set; }
             public bool IsFree { get; set; }
+            public string? ReserveSeatUuid {get; set;}
         }
     }
 
@@ -1063,6 +1121,8 @@
         }
 
         public bool RequiredApproval { get; set; }
+
+        public string? ReserveSeatUuid {get; set;}
     }
 
     public class PriceIfNotFreeAttribute : ValidationAttribute
@@ -1101,7 +1161,50 @@
             return ValidationResult.Success;
         }
     }
+    private void CheckboxChanged(ChangeEventArgs e)
+    {
+        modelPricing.IsFree = !(bool)e.Value;
+        if (modelPricing.IsFree)
+        {
+            modelPricing.Price = 0;
+        }
+        else
+        {
+            modelPricing.RequiredApproval = false;
+        }
+        ValidatePricing();
+    }
+    private void IsUnlimitedChanged(ChangeEventArgs e)
+    {
+        modelPricing.IsUnlimited = (bool)e.Value;
+        modelPricing.MaxSlots = modelPricing.IsUnlimited == true ? 0 : modelPricing.MaxSlots;
+        MaxSlotsChanged(e);
+    }
 
+    private void PriceChanged(object value)
+    {
+        ValidatePricing();
+    }
+
+    private void MaxSlotsChanged(object value)
+    {
+        ValidatePricing();
+    }
+
+    private async Task ValidatePricing()
+    {
+        var validationContext = new ValidationContext(modelPricing);
+        Validator.TryValidateObject(modelPricing, validationContext, null, true);
+        await pricingFormValidation.ValidateAll();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hoverEffectModule != null)
+        {
+            await hoverEffectModule.DisposeAsync();
+        }
+    }
     private class ModalTicketPricing
     {
         public decimal TicketPrice { get; set; }
@@ -1360,18 +1463,33 @@
 
     public Task OnPendingEmailTemplateClick()
     {
+        if(isReservedSeats)
+        {
+            return NotificationService.Info("You cannot configure the email template because you have reserved seats.", "Information");
+        }
+
         selectedEmailTemplate = 0;
         return ShowOffcanvas();
     }
 
     public Task OnAcceptedTemplateClick()
     {
+        if(isReservedSeats)
+        {
+            return NotificationService.Info("You cannot configure the email template because you have reserved seats.", "Information");
+        }
+
         selectedEmailTemplate = 1;
         return ShowOffcanvas();
     }
 
     public Task OnDeclinedTemplateClick()
     {
+        if(isReservedSeats)
+        {
+            return NotificationService.Info("You cannot configure the email template because you have reserved seats.", "Information");
+        }
+
         selectedEmailTemplate = 2;
         return ShowOffcanvas();
     }
@@ -1444,6 +1562,11 @@
 
     private Task CreateQuestion()
     {
+        if(isReservedSeats)
+        {
+            return NotificationService.Info("You cannot add custom questions because you have reserved seats.", "Information");
+        }
+
         formQuestion = new CustomQuestion();
         questionAction = QuestionAction.Create;
         return modalCustomQuestion?.Show();
@@ -1462,9 +1585,10 @@
             Id = lastId + 1,
             Question = formQuestion.Question,
             Required = formQuestion.Required,
-            IsNew = true
+            IsNew = true,
+            FieldType = formQuestion.FieldType,
+            Options = formQuestion.Options
         });
-        formQuestion.Question = string.Empty;
         return CloseCustomQuestion();
     }
 
@@ -1475,6 +1599,8 @@
         {
             question.Question = formQuestion.Question;
             question.Required = formQuestion.Required;
+            question.FieldType = formQuestion.FieldType;
+            question.Options = formQuestion.Options;
         }
         return CloseCustomQuestion();
     }
@@ -1501,11 +1627,12 @@
 
     private Task UpdateQuestion(CustomQuestion question)
     {
-        formQuestion = new CustomQuestion {
+        formQuestion = new CustomQuestion{
             FieldType = question.FieldType,
             Id = question.Id,
             Question = question.Question,
-            Required = question.Required
+            Required = question.Required,
+            Options = question.Options ?? new List<string>(),
         };
         questionAction = QuestionAction.Edit;
         return modalCustomQuestion?.Show();
@@ -1555,7 +1682,7 @@
                     Question = question,
                     Required = status == "Required",
                     IsNew = true,
-                    FieldType = fieldType
+                    FieldType = fieldType,
                 });
             }
             else {
@@ -1600,56 +1727,106 @@
 
         return Task.CompletedTask;
     }
-    public class CustomQuestion 
+
+    public class CustomQuestion
     {
         public int Id {get; set;}
         public string Question {get; set;}
         public bool Required {get; set;}
         public string FieldType {get; set;} = Cinnamon.Framework.Enums.FieldType.TextArea.ToString();
         public bool IsNew {get; set;} = false;
+        public List<string> Options { get; set; } = new List<string>(); // Add this line for options
     }
-    private void CheckboxChanged(ChangeEventArgs e)
+
+    public class SeatPlan
     {
-        modelPricing.IsFree = !(bool)e.Value;
-        if (modelPricing.IsFree)
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Payload { get; set; }
+    }
+
+    public Task CreateDefaultTickets(string payload)
+    {
+        modelPricingList.Pricings.Clear();
+        var tickets = jsonSerializationProvider.Deserialize<Cinnamon.Framework.Models.SeatPlan.Format>(payload);
+        foreach(var ticket in tickets.Categories)
         {
-            modelPricing.Price = 0;
+            int maxId = modelPricingList.Pricings.Count == 0 ? 1 : modelPricingList.Pricings.Max(s => s.TempId) + 1;
+            int order = modelPricingList.Pricings.Count == 0 ? 1 : modelPricingList.Pricings.Max(s => s.Order) + 1;
+
+            var cat = ticket.Value;
+            modelPricingList.Pricings.Add(new Pricing {
+                Name = cat.Name,
+                Price = 0,
+                MaxSlots = cat.Rows.Sum(r => r.Value.Seats.Count),
+                AbsorbFees = false,
+                IsFree = true,
+                RequiredApproval = false,
+                IsUnlimited = false,
+                TempId = maxId,
+                Order = order,
+                ReserveSeatUuid = cat.Uuid,
+                IsNew = true
+            });
         }
-        else
+
+        isReservedSeats = true;
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    private Task ShowAddTicketModal()
+    {
+        if(isReservedSeats)
         {
-            modelPricing.RequiredApproval = false;
+            return NotificationService.Info("You have already added reserved seats. You will not be able to add another ticket.", "Information");
         }
-        ValidatePricing();
-    }
-    private void IsUnlimitedChanged(ChangeEventArgs e)
-    {
-        modelPricing.IsUnlimited = (bool)e.Value;
-        modelPricing.MaxSlots = modelPricing.IsUnlimited == true ? 0 : modelPricing.MaxSlots;
-        MaxSlotsChanged(e);
+
+        return ticketModal.Show();
     }
 
-    private void PriceChanged(object value)
+    private Task WaitListCapacityClick()
     {
-        ValidatePricing();
-    }
-
-    private void MaxSlotsChanged(object value)
-    {
-        ValidatePricing();
-    }
-
-    private async Task ValidatePricing()
-    {
-        var validationContext = new ValidationContext(modelPricing);
-        Validator.TryValidateObject(modelPricing, validationContext, null, true);
-        await pricingFormValidation.ValidateAll();
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (hoverEffectModule != null)
+        if(isReservedSeats)
         {
-            await hoverEffectModule.DisposeAsync();
+            return NotificationService.Info("You have already added reserved seats. You can't configure waitlist.", "Information");
+        }
+
+        return capacityModal.Show();
+    }
+    private void OnQuestionTypeChange(ChangeEventArgs e)
+    {
+        formQuestion.FieldType = e.Value.ToString();
+        if (formQuestion.FieldType != Cinnamon.Framework.Enums.FieldType.Check.ToString() ||
+            formQuestion.FieldType != Cinnamon.Framework.Enums.FieldType.Dropdown.ToString())
+        {
+            formQuestion.Options.Clear(); // Clear options if not a checkbox question
         }
     }
-}
+    private Task UpdateOptionValue(string value, int index)
+    {
+        if (index >= 0 && index < formQuestion.Options.Count) // Use < instead of <=
+        {
+            formQuestion.Options[index] = value; // Update the option in the list
+            StateHasChanged(); // Trigger UI update if necessary
+            return Task.CompletedTask; // Correctly returns a Task
+        }
+        return Task.CompletedTask; // If the index is out of bounds, still return a Task
+    }
+    private void AddOption()
+    {
+        formQuestion.Options.Add(string.Empty); // Add an empty option
+        StateHasChanged(); // Ensure the UI updatesk
+    }
+
+    private void RemoveOption(int index)
+    {
+        if (index >= 0 && index < formQuestion.Options.Count)
+        {
+            formQuestion.Options.RemoveAt(index); // Remove the selected option
+            StateHasChanged(); // Ensure the UI updates
+        }
+    }
+} 

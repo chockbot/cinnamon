@@ -7,6 +7,8 @@
 @using Cinnamon.Web.Models.Ote;
 @using Cinnamon.Web.Models;
 @using Cinnamon.Web.Utils;
+@using Cinnamon.Web.Modules.Services
+@inject QueueServices QueueServices
 @inject IAccountApiHandler accountApiHandler;
 @inject NavigationManager NavigationManager;
 @inject AuthenticationStateProvider AuthenticationStateProvider;
@@ -537,10 +539,10 @@
 </Modal>
 
 @code
-{
+    {
     [Parameter]
     public string Handler {get; set;} = string.Empty;
-    
+
     [Parameter, SupplyParameterFromQuery]
     public string Status {get; set;}
 
@@ -563,6 +565,7 @@
     private bool submitting = false;
     private IDictionary<int, TicketInfo> selectedTickets = new Dictionary<int, TicketInfo>();
     private IEnumerable<OtePricing> AvailableTickets {get; set;} = Enumerable.Empty<OtePricing>();
+    public List<string> AvailableSeats = new List<string>();
     private Modal? failedModal;
     private string selectedDate { get; set; }
     private bool IsLimit { get; set; }
@@ -570,6 +573,7 @@
     private string stringMaxTicket { get; set; }
 
     private const string TRACKER_ID = "checkout";
+    private const string RESERVEDSEAT_ID = "selected-seats";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -577,7 +581,19 @@
         {
             if(!string.IsNullOrEmpty(Status) && Status.ToLower() == "failed" && failedModal is not null)
             {
-                await failedModal.Show();   
+                await failedModal.Show();
+                string paymentQueueName = $"{Handler}-payment-queue";
+                var seats = await localStorage.GetItem<List<string>>(RESERVEDSEAT_ID);
+                if (seats is not null)
+                {
+                    //Dequeue selected seats
+                    foreach (var seat in seats)
+                    {
+                        await QueueServices.RemoveSeatInPaymentQueue(seat, paymentQueueName);
+                    }
+                    await localStorage.RemoveItem(RESERVEDSEAT_ID);
+                }
+
             }
         }
     }
@@ -1056,7 +1072,8 @@
                 Tickets = selectedTickets.Select(t => {
                     return new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs.OTeTicket {
                         Count = t.Value.Count,
-                        Id = t.Value.Id
+                        Id = t.Value.Id,
+                        SeatNumber = string.Empty
                     };
                 }),
                 Guid = Guid,

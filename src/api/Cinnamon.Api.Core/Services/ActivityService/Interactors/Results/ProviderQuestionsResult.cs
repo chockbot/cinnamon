@@ -12,5 +12,6 @@ public class ProviderQuestionsResult
         public string FieldLabel {get; set;}
         public string FieldType {get; set;}
         public bool Required {get; set;}
+        public string Options { get; set; }
     }
 }

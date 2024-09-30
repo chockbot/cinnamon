@@ -205,17 +205,19 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 }
 
                 // create selected ticket instance
+                var seatNumberList = ticket.SeatNumber.Split(",").ToList();
                 for(int i = 0; i < ticket.Count; i++)
                 {
                     var qrcode = CreateCode();
                     selectedTickets.Add(new Ticket {
-                        Id = ticketPrice.Id,
-                        Name = ticketPrice.Name,
-                        Price = ticketPrice.Price,
-                        Code = qrcode,
-                        ImageData = GenerateQRCode(qrcode),
-                        OteDateId = ticketPrice.OteDateId,
+                        Id               = ticketPrice.Id,
+                        Name             = ticketPrice.Name,
+                        Price            = ticketPrice.Price,
+                        Code             = qrcode,
+                        ImageData        = GenerateQRCode(qrcode),
+                        OteDateId        = ticketPrice.OteDateId,
                         RequiredApproval = ticketPrice.RequiredApproval,
+                        SeatNumber       = seatNumberList[i]
                     });
                 }
             }
@@ -367,7 +369,9 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             }
 
             var successUrl = applicationConfig.FrontendUrl
-                .AppendPathSegment("purchase/order/ote")
+                .AppendPathSegment(oteActivity.Schedule.ReserveSeat
+                                   ? $"purchase/order/ote/reserved/{oteActivity.Handler}"
+                                   : "purchase/order/ote")
                 .AppendPathSegment(result.Result.Result.Id);
 
             var failedUrl = applicationConfig.FrontendUrl
@@ -404,7 +408,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                                 Price = first.Price,
                                 OteDateId = first.OteDateId,
                                 Date = oteDate.DateStart,
-                                Count = t.Count()
+                                Count = t.Count(),
+                                SeatName = first.SeatNumber
                             };
                             return ticket;
                         }),
@@ -436,7 +441,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 return AppResult<OtePurchaseOrderResult>.CreateSucceeded(new OtePurchaseOrderResult {
                     Action = 1,
                     Id = result.Result.Result.Id,
-                    Url = successUrl
+                    Url = successUrl.ToString()
                 }, "Successfully request purchase order details.");
             }
 
@@ -446,7 +451,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             {
                 ActivityId = result.Result.Result.ActivityId,
                 TransactionId = result.Result.Result.Id,
-                OteQuery = ticketQueryString
+                OteQuery = ticketQueryString,
+                Url = successUrl.ToString()
             };
 
             var tokenSerializedPayload = jsonSerializationProvider.Serialize(payload);
@@ -532,5 +538,6 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         public string Code {get; set;}
         public string ImageData {get; set;}
         public bool RequiredApproval {get; set;}
+        public string SeatNumber { get; set; }
     }
 }

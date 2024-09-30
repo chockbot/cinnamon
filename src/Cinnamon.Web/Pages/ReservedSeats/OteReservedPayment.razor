@@ -1,0 +1,1410 @@
+@layout EmptyLayout
+@page "/payment/ote/reserved/{Handler}"
+@using AutoMapper;
+@using System.Security.Claims;
+@using System.ComponentModel.DataAnnotations;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Components.Pages;
+@using Cinnamon.Web.Models.Ote;
+@using Cinnamon.Web.Models;
+@using Cinnamon.Web.Utils;
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.Services
+@using Microsoft.AspNetCore.SignalR.Client;
+@inject QueueServices QueueServices
+@inject IAccountApiHandler accountApiHandler;
+@inject NavigationManager NavigationManager;
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject INotificationService NotificationService;
+@inject IActivityApiHandler activityHandler;
+@inject ITransactionApiHandler transactionApiHandler;
+@inject ISeatPlanApiHandler seatplanApiHandler;
+@inject IMapper mapper;
+@inject ILocalStorage localStorage;
+@inject Cinnamon.Framework.Providers.IJsonSerializationProvider jsonSerializationProvider
+
+<PageTitle>Checkout Payment | CinnamonPH</PageTitle>
+<SeoMeta Title="Checkout Payment" Subject="Checkout Payment">
+    <ExtraMeta>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    </ExtraMeta>
+</SeoMeta>
+
+@if(activity is not null && !string.IsNullOrEmpty(token))
+{
+    <div class="top-row desktop">
+        <!--App Name-->
+        <div class="app-name">
+            <a href="/explore" class="app-name">@Resources.App.appName</a>
+        </div>
+        <!--Timer-->
+        <div class="timer-section">
+            <p class="ticket-text">Tickets Reserved in Cart for</p>
+            <p class="timer-value">@RemainingTime</p>
+        </div>
+        <div class="secured-section">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="18" viewBox="0 0 16 18" fill="none">
+                <path d="M15.0055 8.53979C14.7668 8.30113 14.4772 8.18189 14.1361 8.18189H13.7273V5.72721C13.7273 4.15905 13.1649 2.81258 12.0399 1.68758C10.9149 0.562525 9.56857 0 8.00019 0C6.43185 0 5.08525 0.562525 3.96038 1.68753C2.83533 2.81258 2.27298 4.15901 2.27298 5.72721V8.18189H1.86395C1.52316 8.18189 1.23332 8.30113 0.994661 8.53979C0.756003 8.77827 0.636719 9.0681 0.636719 9.40921V16.7728C0.636719 17.1136 0.756048 17.4035 0.994661 17.6422C1.23332 17.8806 1.52316 18 1.86395 18H14.1364C14.4775 18 14.7671 17.8808 15.0059 17.6422C15.2443 17.4035 15.3638 17.1136 15.3638 16.7728V9.40908C15.364 9.06824 15.2443 8.77845 15.0055 8.53979ZM11.2728 8.18189H4.72753V5.72721C4.72753 4.82384 5.04719 4.05248 5.68637 3.41339C6.32564 2.77421 7.09687 2.45468 8.00032 2.45468C8.90386 2.45468 9.67491 2.77416 10.3142 3.41339C10.9532 4.05244 11.2728 4.82384 11.2728 5.72721V8.18189Z" fill="#343D4C" />
+            </svg>
+            <p class="secure-text">Secure Checkout</p>
+        </div>
+    </div>
+    <div class="top-row mobile">
+        <div class="row-holder">
+            <!--App Name-->
+            <div class="app-name">
+                <a href="/explore" class="app-name">@Resources.App.appName</a>
+            </div>
+            <div class="secured-section">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="18" viewBox="0 0 16 18" fill="none">
+                    <path d="M15.0055 8.53979C14.7668 8.30113 14.4772 8.18189 14.1361 8.18189H13.7273V5.72721C13.7273 4.15905 13.1649 2.81258 12.0399 1.68758C10.9149 0.562525 9.56857 0 8.00019 0C6.43185 0 5.08525 0.562525 3.96038 1.68753C2.83533 2.81258 2.27298 4.15901 2.27298 5.72721V8.18189H1.86395C1.52316 8.18189 1.23332 8.30113 0.994661 8.53979C0.756003 8.77827 0.636719 9.0681 0.636719 9.40921V16.7728C0.636719 17.1136 0.756048 17.4035 0.994661 17.6422C1.23332 17.8806 1.52316 18 1.86395 18H14.1364C14.4775 18 14.7671 17.8808 15.0059 17.6422C15.2443 17.4035 15.3638 17.1136 15.3638 16.7728V9.40908C15.364 9.06824 15.2443 8.77845 15.0055 8.53979ZM11.2728 8.18189H4.72753V5.72721C4.72753 4.82384 5.04719 4.05248 5.68637 3.41339C6.32564 2.77421 7.09687 2.45468 8.00032 2.45468C8.90386 2.45468 9.67491 2.77416 10.3142 3.41339C10.9532 4.05244 11.2728 4.82384 11.2728 5.72721V8.18189Z" fill="#343D4C" />
+                </svg>
+                <p class="secure-text">Secure Checkout</p>
+            </div>
+        </div>
+        <!--Timer-->
+        <div class="timer-section">
+            <p class="ticket-text">Tickets Reserved in Cart for</p>
+            <p class="timer-value">@RemainingTime</p>
+        </div>
+    </div>
+    <div class="xp-ote-payment-wrapper pb-5">
+        <Container>
+            <div class="d-flex align-items-center mt-3">
+                <button class="button-back">
+                    <img class="cursor-pointer me-3" src="/images/payment/back-icon.png" alt="icon" @onclick="NavigateToTicketReservation" />
+                </button>
+                <h4 class="fw-bold px-3 mb-0 color-grey-100 font-24 text-capitalize m-font-18">Pricing & Checkout</h4>
+            </div>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12.OnTablet.Is12.OnWidescreen.Is5.OnFullHD" class="right-order order-first order-xl-last">
+                        <div class="booking-total-container sticky-top mb-3" style="top:80px;">
+                        <Card class="border-radius-20 overflow-hidden">
+                            <CardBody>
+                                <div class="d-flex" style="font-size:1.125rem">
+                                    <div class="activity-img me-3">
+                                        <img src="@GetActivityFirstImage" alt="Activity Image">
+                                    </div>
+                                    <div>
+                                        <p class="font-16 font-weight-700 color-black-100 mb-1 line-h-1-1">@activity.EventName</p>
+                                        <p class="font-14 color-grey-100 mb-1 line-h-1-1">@ActivityLocation</p>
+                                        @if (!string.IsNullOrEmpty(selectedDate))
+                                        {
+                                            <p class="font-14 color-grey-100 mb-1 line-h-1-1">
+                                                @selectedDate
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p class="font-14 color-grey-100 mb-1 line-h-1-1">
+                                                @activity.ScheduleFrom.ToString("dd MMMM yyyy") | @activity.ScheduleFrom.ToString("hh:mm tt").ToUpper()
+                                            </p>
+                                        }
+                                    </div>
+                                </div>
+                                <Divider />
+                                <div class="price-details">
+                                    <span class="font-16 font-weight-700 color-black-100">Price Details</span>
+                                    @if(selectedTickets.Count > 0)
+                                    {
+                                        @foreach (var item in selectedTickets)
+                                        {
+                                            <div class="d-flex justify-content-between py-1 price-per-head">
+                                                <div>
+                                                    @item.Value.Price.ToString("#,##0") x @item.Value.Count @(item.Value.Count > 1 ? "Tickets" : "Ticket")
+                                                </div>
+                                                <div>
+                                                    PHP @((item.Value.Price * item.Value.Count).ToString("#,##0.00"))
+                                                </div>
+                                            </div>   
+                                        }
+                                    }
+                                    else 
+                                    {
+                                        <div class="d-flex justify-content-between py-1 price-per-head">
+                                            <div>
+                                                0 x 0 Ticket
+                                            </div>
+                                            <div>
+                                                PHP 0.00
+                                            </div>
+                                        </div>   
+                                    }
+                                    @if(!IsInclusivePricing)
+                                    {
+                                        <div class="d-flex justify-content-between py-1 price-per-head">
+                                            <div>
+                                                Service Fee <span class="">@(ServiceFeePercent != 0 ? ServiceFeePercent + "%" : "")</span>
+                                            </div>
+                                            <div>
+                                                @(string.IsNullOrEmpty(SelectedPaymentCode) ? "Depends on payment method" : "PHP " + GetConvinienceFee.ToString("#,##0.00"))
+                                            </div>
+                                        </div>
+                                    }
+                                    @if(!IsInclusivePricing)
+                                    {
+                                        <div class="d-flex justify-content-between py-1 price-per-head service-fee">
+                                            <div class="d-flex align-items-center">
+                                                <CustomTooltip MarginLeft="0">
+                                                    <TextContent>
+                                                        <span class="rounded-circle service-fee-info">i</span>
+                                                    </TextContent>
+                                                    <TooltipContent>
+                                                        <span class="color-grey-100">
+                                                            This helps Cinnamon run its services and protects your payment in case the experience provider does 
+                                                            something illegal or against our policy. They won't get paid until after the sessions or work have been done.
+                                                        </span>
+                                                    </TooltipContent>
+                                                </CustomTooltip> 
+                                                <span class="ms-1">Handling Fee</span>
+                                            </div>
+                                            <div>
+                                                PHP @(GetServiceFee.ToString("#,##0.00"))
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="d-flex justify-content-between py-1 price-per-head">
+                                        <div class="d-flex position-relative">
+                                            <div class="position-relative" style="width: 150px;">
+                                                <TextEdit class='@(Coupon.IsCouponApplied && !Coupon.IsValid ? "is-invalid" : "")' 
+                                                    style='@(Coupon.IsCouponApplied ? "background-color: #F3F6FC; padding-right: 25px" : "background-color: #F3F6FC;")' 
+                                                    required Placeholder="Add coupon" Size="Size.ExtraSmall" @bind-Text="Coupon.CouponCode" />
+                                                @if(Coupon.IsCouponApplied && Coupon.IsValid)
+                                                {
+                                                    <img @onclick="RemoveAppliedCoupon" class="remove-coupon-icon" src="images/payment/close.png" alt="remove">
+                                                }
+                                            </div>
+                                            <Button Type="ButtonType.Button" Clicked="ValidateCouponCode"
+                                                class="btn-primary font-12" Border="Border.Is0" Loading="Coupon.IsValidating" Disabled="Coupon.IsValidating"
+                                                style="border-radius: 0; padding-top: 3px; padding-bottom: 3px; margin-left: 3px;">
+                                                <LoadingTemplate>
+                                                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                                                </LoadingTemplate>
+                                                <ChildContent>
+                                                    Apply
+                                                </ChildContent>
+                                            </Button>
+                                            @if(Coupon.IsCouponApplied && !Coupon.IsValid)
+                                            {
+                                                <div class="coupon-error-message font-12">
+                                                    <b style="color: #AD0C0C;">@Coupon.ErrorTitle</b>
+                                                    <br>
+                                                    <span class="color-grey-100">
+                                                        @Coupon.ErrorDescription
+                                                    </span>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div>
+                                            <span style='@(GetAppliedCoupon > 0 ? "color: #AD0C0C" : "")'>
+                                                @(GetAppliedCoupon > 0 ? "-" : "") PHP @(GetAppliedCoupon.ToString("#,##0.00"))
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between py-1 price-per-head">
+                                        <div class="apply-credits">
+                                            <span>Apply credits</span>
+                                        </div>
+                                        <div>
+                                            PHP @(GetTotalCredit.ToString("#,##0.00"))
+                                        </div>
+                                    </div>
+                                    <Divider />
+                                    <div class="d-flex justify-content-between py-1 total-payments">
+                                        <div>
+                                            TOTAL PAYMENT
+                                        </div>
+                                        <div>
+                                        PHP @(GetTotalPrice.ToString("#,##0.00"))
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardBody>
+                        </Card>
+                    </div>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.OnTablet.Is12.OnWidescreen.Is7.OnFullHD" class="left-order">
+                    <section class="mt-5 item-pricings">
+                        <div class="selected-ticket-table">
+                            <div class="ticket-header">
+                                <p class="header-name">Tickets</p>
+                                <p class="header-name">Price</p>
+                                <p class="header-name">Quantity</p>
+                                <p class="header-name">Seat Number</p>
+                            </div>
+                            @foreach (var item in selectedTickets)
+                            {
+                                <div class="ticket-column">
+                                    <p class="header-name">@item.Value.Name</p>
+                                    <p class="header-name">@item.Value.Price</p>
+                                    <p class="header-name"> @item.Value.Count</p>
+                                    <p class="header-name">@item.Value.SeatNumber</p>
+                                </div>
+                            }
+                        </div>
+                    </section>
+                    <section class="mt-5">
+                        <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-0">Important Information</h5>
+                        <p class="text-center mt-4">
+                            <span class="color-grey-100">
+                                The cinnamon platform guarantees:
+                            </span> 
+                        </p>
+                        <Row class="mt-5 m-margin-top-20">
+                            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                <div class="d-flex w-100 h-100 align-items-center">
+                                    <img class="mx-auto" src="images/payment/new-security-guranted.png" alt="icon">
+                                </div>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop" class="m-margin-top-20">
+                                <p class="font-16 color-grey-100">The cinnamon platform guarantees: </p>
+                                <ul class="font-16 color-grey-100 ">
+                                    <li>
+                                        <p class="mb-0">Money-back guarantee if you're not satisfied.</p>
+                                    </li>
+                                    <li>
+                                        <p class="mb-0">Anti-scam protection.</p>
+                                    </li>
+                                    <li>
+                                        <p class="mb-0">Secure payment.</p>
+                                    </li>
+                                    <li>
+                                        <p class="mb-0">Accidental support (for outdoor activities).<span class="text-danger">*</span></p> 
+                                        <p class="font-12 mb-0"><span class="text-danger">*</span> To follow function</p>
+                                    </li>
+                                </ul>
+                            </Column>
+                        </Row>
+                        <p class="font-16 color-black-100">What will happen after I purchase?</p>
+                        <ol class="font-16 color-grey-100" style="padding-left: 1rem;">
+                            <li class="mb-3">A purchase confirmation email including your e-ticket will be sent to your email.</li>
+                            <li class="mb-3">You can access the event you purchased/joined by going to your Account from the menu.</li>
+                        </ol>
+                    </section>
+                    <section>
+                        <Divider class="my-4" />
+                        <p class="font-20 color-black-100 font-weight-700">Pay with</p>
+                        <div class="payment-card mb-4">
+                            <label class="font-16 color-black-100 mb-1 m-font-12">Cards</label>
+                            <label @onclick='() => cardModal.Show()' class="cursor-pointer d-flex justify-content-between border-1-solid border-color-grey-200 px-3 py-2 border-radius-15 overflow-hidden">
+                                <div class="d-flex align-items-center">
+                                    <span class="me-3 me-md-4">
+                                        <span class='@(SelectedPaymentCode == "CARD" ? "cursor-pointer checkbox-round span-radio selected" : "cursor-pointer checkbox-round span-radio")' />
+                                    </span>
+                                    <span class="me-2 me-md-4">
+                                        <img src="images/ote/visa.png" alt="visa-card">
+                                    </span>
+                                    <span class="me-2 me-md-4">
+                                        <img src="images/ote/master-card.png" alt="master-card">
+                                    </span>
+                                    <span class="me-2 me-md-4">
+                                        <img src="images/ote/jcb.png" alt="jcb-card">
+                                    </span>
+                                    <span class="me-2 me-md-4">
+                                        <img src="images/ote/american-express.png" alt="american-express-card">
+                                    </span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="font-16 color-black-100 me-4 cursor-pointer m-font-12">Credit or Debit Card</span>
+                                    <img src="images/payment/credit-card-arrow.svg" alt="arrow">
+                                </div>
+                            </label>
+                        </div>
+                        <div class="payment-ewallets">
+                            <label class="font-16 color-black-100 mb-1 m-font-12">E-wallets</label>
+                            <div class="d-flex justify-content-between border-1-solid border-color-grey-200 px-3 py-2 border-radius-15 overflow-hidden">
+                                <RadioGroup Name="ewallets" TValue="string" @bind-CheckedValue="SelectedPaymentCode">
+                                    <ul class="list-inline d-flex flex-column mb-0">
+                                        <li class="list-inline-item mb-3">
+                                            <label for="gcash-ewallet" class="d-flex align-items-center cursor-pointer">
+                                                <div class="me-3 me-md-4">
+                                                    <Radio id="gcash-ewallet" Checked='SelectedPaymentCode == "GCASH"' class="cursor-pointer checkbox-round" Value='@("GCASH")' />
+                                                </div>
+                                                <div class="me-2 me-md-4 ewallet-item-img">
+                                                    <img src="images/payment/gcash.svg" alt="gcash">
+                                                </div>
+                                                <div class="me-2 me-md-4">
+                                                    <span class="text-capitalize font-16 color-black-100">gcash</span>
+                                                    <p class="mb-0 font-10 color-grey-100">
+                                                        Payment should be completed within 30 mins. Accessible 24/7 and may entail additional fees.
+                                                    </p>
+                                                </div>
+                                            </label>
+                                        </li>
+                                        <li class="list-inline-item mb-3">
+                                            <label for="grabpay-ewallet" class="d-flex align-items-center cursor-pointer">
+                                                <div class="me-3 me-md-4">
+                                                    <Radio id="grabpay-ewallet" Checked='SelectedPaymentCode == "GRABPAY"' class="cursor-pointer checkbox-round" Value='@("GRABPAY")' />
+                                                </div>
+                                                <div class="me-2 me-md-4 ewallet-item-img">
+                                                    <img src="images/payment/grabpay.svg" alt="grabpay">
+                                                </div>
+                                                <div class="me-2 me-md-4">
+                                                    <span class="text-capitalize font-16 color-black-100">grab pay</span>
+                                                    <p class="mb-0 font-10 color-grey-100">
+                                                        Payment should be completed within 30 mins. Accessible 24/7 and may entail additional fees.
+                                                    </p>
+                                                </div>
+                                            </label>
+                                        </li>
+                                        <li class="list-inline-item mb-3">
+                                            <label for="shopee-pay-ewallet" class="d-flex align-items-center cursor-pointer">
+                                                <div class="me-3 me-md-4">
+                                                    <Radio id="shopee-pay-ewallet" Checked='SelectedPaymentCode == "SHOPEEPAY"' class="cursor-pointer checkbox-round" Value='@("SHOPEEPAY")' />
+                                                </div>
+                                                <div class="me-2 me-md-4 ewallet-item-img">
+                                                    <img src="images/payment/shoppepay.svg" alt="shopee-pay">
+                                                </div>
+                                                <div class="me-2 me-md-4">
+                                                    <span class="text-capitalize font-16 color-black-100">Shopee Pay</span>
+                                                    <p class="mb-0 font-10 color-grey-100">
+                                                        Payment should be completed within 30 mins. Accessible 24/7 and may entail additional fees.
+                                                    </p>
+                                                </div>
+                                            </label>
+                                        </li>
+                                        <li class="list-inline-item">
+                                            <label for="maya-ewallet" class="d-flex align-items-center cursor-pointer">
+                                                <div class="me-3 me-md-4">
+                                                    <Radio id="maya-ewallet" Checked='SelectedPaymentCode == "PAYMAYA"' class="cursor-pointer checkbox-round" Value='@("PAYMAYA")' />
+                                                </div>
+                                                <div class="me-2 me-md-4 ewallet-item-img">
+                                                    <img src="images/payment/maya.svg" alt="maya">
+                                                </div>
+                                                <div class="me-2 me-md-4">
+                                                    <span class="text-capitalize font-16 color-black-100">maya</span>
+                                                    <p class="mb-0 font-10 color-grey-100">
+                                                        Payment should be completed within 30 mins. Accessible 24/7 and may entail additional fees.
+                                                    </p>
+                                                </div>
+                                            </label>
+                                        </li>
+                                    </ul>
+                                </RadioGroup>
+                            </div>
+                        </div>
+                    </section>
+                    <p class="font-12 color-grey-100 mt-3">By selecting the button below, I agree to the Cinnamon Maker’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</p>
+                    <Button Loading="submitting" Disabled="DisableProceed || submitting || someoneAlreadyBooked" Clicked="ProceedToPayment"
+                        class="btn-primary border-radius-10 m-d-none btn-payment" Border="Border.Is0" >
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Confirm and Pay
+                        </ChildContent>
+                    </Button>
+                </Column>
+            </Row>
+        </Container>
+
+        <div class='mobile-calculator-wrapper'>
+            <div class="mobile-calculator-wrapper-container border-radius-10 mobile-footer-shadow
+                position-fixed left-0 right-0 bg-white-100">
+                <div>
+                    <div class="p-3 d-flex justify-content-between align-items-center">
+                        <Button Type="ButtonType.Button" Clicked="ProceedToPayment" Disabled="DisableProceed || submitting" Loading="submitting"
+                            class="btn-primary font-14 border-radius-10 px-4"
+                            Border="Border.Is0">
+                            <LoadingTemplate>
+                                <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
+                            </LoadingTemplate>
+                            <ChildContent>
+                                Confirm and Pay
+                            </ChildContent>
+                        </Button>
+                        <div class="d-flex align-items-center">
+                            <div class="prevent-select text-end" style="width: 160px;">
+                                <span class="font-20 font-weight-700 color-black-100 total-price" tabindex="-1">₱ @(GetTotalPrice.ToString("#,##0.00"))</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <Modal @ref="cardModal">
+            <ModalContent Centered>
+                <ModalHeader Border="Border.Is0" class="d-flex justify-content-between align-items-center">
+                    <p class="modal-title">Add Card Details</p>
+                    <button type="button" class="btn-close " @onclick="() => cardModal.Hide()" />
+                </ModalHeader>
+                <ModalBody Padding="Padding.Is0.FromTop">
+                    <Divider Margin="Margin.Is0.FromTop.Is2.FromBottom" />
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <img class="me-3" src="images/payment/visa-card.svg" alt="icon">
+                            <img src="images/payment/master-card.svg" alt="icon">
+                        </div>
+                        <img src="images/payment/security-guranteed.png" alt="icon">
+                    </div>
+                    <div class="mt-2">
+                        <Validations @ref="paymentValidation" Model="cardPaymentModel" Mode="ValidationMode.Manual">
+                            <Validation>
+                                <Field class="mb-3">
+                                    <FieldLabel class="font-16 color-grey-100">Card Number</FieldLabel>
+                                    <TextEdit @bind-Text="cardPaymentModel.CardNumber">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                            <Validation>
+                                <Field class="mb-3">
+                                    <FieldLabel class="font-16 color-grey-100">Name on Card</FieldLabel>
+                                    <TextEdit @bind-Text="cardPaymentModel.CardHolder">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                            <div class="row">
+                                <div class="col">
+                                    <Validation>
+                                        <Field class="mb-3">
+                                            <FieldLabel class="font-16 color-grey-100">Expiration</FieldLabel>
+                                            <TextEdit @bind-Text="cardPaymentModel.Expiration" Placeholder="Ex. 03/28">
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </TextEdit>
+                                        </Field>
+                                    </Validation>
+                                </div>
+                                <div class="col">
+                                    <Validation>
+                                    <Field class="mb-3">
+                                        <FieldLabel class="font-16 color-grey-100">CVV</FieldLabel>
+                                        @if (cardPaymentModel.IsRevealPassword)
+                                            {
+                                                <TextEdit Role="TextRole.Text" Placeholder="Ex.123" @bind-Text="cardPaymentModel.CVV">
+                                                    <Feedback>
+                                                        <ValidationError TextAlignment="TextAlignment.Start" />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            }
+                                            else
+                                            {
+                                                <TextEdit Role="TextRole.Password" Placeholder="Ex.123" @bind-Text="cardPaymentModel.CVV">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            }
+                                            <span class="fa fa-fw fa-eye field-icon toggle-password" @onclick="() => cardPaymentModel.IsRevealPassword = !cardPaymentModel.IsRevealPassword"></span>
+                                        </Field>
+                                    </Validation>
+                                </div>
+                            </div>
+                            <div>
+                                <Button Clicked="SelectCardPayment" class="btn-primary w-100 border-radius-5" Border="Border.Is0">
+                                    <LoadingTemplate>
+                                        <i class="fa fa-spinner fa-spin"></i> Please Wait
+                                    </LoadingTemplate>
+                                    <ChildContent>
+                                        Submit
+                                    </ChildContent>
+                                </Button>
+                            </div>
+                        </Validations>
+                    </div>
+                </ModalBody>
+            </ModalContent>
+        </Modal>
+    </div>
+}
+
+<Modal @ref="failedModal">
+    <ModalContent Centered class="border-radius-20">
+        <ModalHeader class="justify-content-center border-bottom-1-solid border-color-grey-200">
+            <p class="modal-title font-20 color-black-100 font-weight-700">Payment Unsuccesful</p>
+        </ModalHeader>
+        <ModalBody class="text-center py-4">
+            <img src="images/payment-failed-icon.png" class="mx-auto my-2" alt="error-icon">
+            <p class="my-4 color-grey-100 font-16">
+                We're sorry, but there's an issue with your payment. 
+                Click the chat support button at the bottom right and we'll assist you promptly.
+            </p>
+            <Button Clicked="() => failedModal.Close(CloseReason.UserClosing)" class="rounded-pill bg-orange-100 color-white-100 hover-color-white px-5">Try Again</Button>
+            <p class="font-12 color-black-100 my-4">Email us here: <a href="mailto:support@cinnamon.ph">support@cinnamon.ph</a></p>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+<Modal @ref="modaltime">
+    <ModalContent Centered>
+        <ModalBody>
+            <div class="queue-up d-flex">
+                <img class="img-logo" src="images/ote/timeout.svg" />
+                <div class="queue-up-text">
+                    <p class="expired-text">Your reservation has expired!</p>
+                </div>
+            </div>
+            <p class="congratulations-text">Unfortunately, you've lost your chance to purchase tickets. Please start a new reservation.</p>
+            <button class="btn-try" @onclick="NavigateToOteReserved">Try Again</button>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+<Modal @ref="modalUnAvailable">
+    <ModalContent Centered>
+        <ModalBody>
+            <div class="queue-up d-flex">
+                <img class="img-logo" src="images/ote/information.svg" />
+                <div class="queue-up-text">
+                    <p class="expired-text">Seats Unavailable</p>
+                </div>
+            </div>
+            <p class="congratulations-text">Unfortunately, the seats (@unavailableSeats) you selected have already been purchased by another customer. Please choose different seats to continue with your booking.</p>
+            <button class="btn-try" @onclick="NavigateToTicketReservation">Select other ticket</button>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@code
+{
+    [Parameter]
+    public string Handler {get; set;} = string.Empty;
+
+    [Parameter, SupplyParameterFromQuery]
+    public string Status {get; set;}
+
+    [Parameter, SupplyParameterFromQuery]
+    public string Guid {get; set;}
+
+    [Parameter, SupplyParameterFromQuery]
+    public string Token {get; set;}
+
+    private Modal modaltime { get; set; }
+
+    private Modal modalUnAvailable { get; set; }
+
+    private OteActivity? activity;
+    private int selectedTicketId = 0;
+    private int ticketCount = 1;
+    private bool IsInclusivePricing {get; set;}
+    private CouponDetails Coupon {get; set;} = new();
+    private string token = string.Empty;
+    private string SelectedPaymentCode {get; set;}
+    private Modal? cardModal;
+    private Validations paymentValidation;
+    private Models.Forms.CardPaymentModel cardPaymentModel = new();
+    private bool submitting = false;
+    private CustomerProfile? currentLogin { get; set; }
+    private IDictionary<int, TicketInfo> selectedTickets = new Dictionary<int, TicketInfo>();
+    private IEnumerable<OtePricing> AvailableTickets {get; set;} = Enumerable.Empty<OtePricing>();
+    private List<string> Seats = new List<string>();
+    private DateTime SelectedDate { get; set; }
+    private Modal? failedModal;
+    private string selectedDate { get; set; }
+    private bool IsLimit { get; set; }
+    private int ticketLimit { get; set; }
+    private string stringMaxTicket { get; set; }
+    public TimeSpan RemainingTime { get; set; }
+    private string? selectedPayload { get; set; }
+    private const string TRACKER_ID = "checkout";
+    private const string RESERVEDSEAT_ID = "selected-seats";
+    private Timer _countdownTimer;
+    private bool _isProcessing;
+    private string unavailableSeats { get; set; }
+    public bool IsExpired { get; set; } = false;
+    public string paymentQueueName { get; set; }
+    public List<string> AvailableSeats = new List<string>();
+    [Inject] HubConnection hubConnection { get; set; }
+    private int userId { get; set; }
+    private bool someoneAlreadyBooked = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            await LoadOteDetails();
+            await LoadProvideDetails();
+            await LoadSelectedTickets();
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            token = user.FindFirstValue("Token");
+            if(string.IsNullOrEmpty(token))
+            {
+                NavigationManager.NavigateTo("/explore");
+                return;
+            }
+            else
+            {
+                //Create payment queue
+                paymentQueueName = $"{Handler}-payment-queue";
+                await QueueServices.EnsureQueueExistsAsync(paymentQueueName);
+                //Load Profile
+                await LoadProfile();
+                //Check if user is in queue
+                string activeQueueName = $"{Handler}-active-queue";
+                //Remove all user in active queue w/ negative time
+                await QueueServices.RemoveExpiredUsersFromActiveQueueAsync(activeQueueName);
+                //Check user if is in the active-queue
+                var activeQueueUserInfo = await QueueServices.GetUserInActiveQueueAsync(activeQueueName, currentLogin.Handler);
+                if (activeQueueUserInfo.HasValue)
+                {
+                    var (insertionTime, remainingTime) = activeQueueUserInfo.Value;
+                    if (remainingTime >= TimeSpan.Zero)
+                    {
+                        // Return the remaining processing time to the user
+                        _isProcessing = true;
+                        RemainingTime = remainingTime;
+                        await MonitorQueue(currentLogin.Handler, RemainingTime);
+                        StateHasChanged();
+                    }
+                    else
+                    {
+                        await OnTimeout();
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
+    private async Task MonitorQueue(string userId, TimeSpan time)
+    {
+        try
+        {
+            while (true)
+            {
+                // Fetch the user's reserved queue info
+                var reservedQueueInfo = await QueueServices.GetReservedQueueUserInfoAsync(
+                    $"{Handler}-reserved-queue",
+                    $"{Handler}-active-queue",
+                    userId
+                );
+                // Check if the user is in the active queue
+                if (reservedQueueInfo.numberAhead == -1) // Assume -1 indicates the user is in the active queue
+                {
+                    _isProcessing = true;
+                    StartCountdownTimer(time);
+                    StateHasChanged();
+                    break; // Exit the loop once the user is in the active queue
+                }
+                else
+                {
+                    _isProcessing = false;
+                    StateHasChanged();
+                }
+
+                // Wait for 10 seconds before checking again
+                await Task.Delay(10000);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log the exception for debugging (if needed) and show an error notification
+            Console.WriteLine($"Error in MonitorQueue: {ex.Message}");
+            await NotificationService.Error("An error occurred while monitoring the queue. Please try again later.", "Error");
+        }
+    }
+
+    private async void StartCountdownTimer(TimeSpan span)
+    {
+        // Set the countdown timer to 10 minutes
+        RemainingTime = span;
+        _countdownTimer = new Timer(TimerCallback, null, 0, 1000); // Update every second
+    }
+
+    private void TimerCallback(object state)
+    {
+        if (RemainingTime.TotalSeconds > 0)
+        {
+            RemainingTime = RemainingTime.Subtract(TimeSpan.FromSeconds(1));
+            InvokeAsync(StateHasChanged); // Notify Blazor to update the UI
+        }
+        else
+        {
+            // Time's up
+            _countdownTimer.Dispose();
+            OnTimeout();
+        }
+    }
+
+    public async Task OnTimeout()
+    {
+        // Handle user timeout logic
+        _isProcessing = false;
+        NavigateToOteReserved();
+    }
+
+    private async Task LoadProfile()
+    {
+        if (!string.IsNullOrEmpty(Token))
+        {
+            var profileResult = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+            if (profileResult.Succeeded && profileResult.Result is not null && profileResult.Result.IsSuccess)
+            {
+                userId = profileResult.Result.Result.Id;
+                currentLogin = mapper.Map<CustomerProfile>(profileResult.Result.Result);
+            }
+        }
+    }
+
+    private async Task LoadOteDetails()
+    {
+        try
+        {
+            var result = await activityHandler.FindOteByHandler(new Framework.ApiCommand.ApiCore.Activity.Request.OteActivityArgs {
+                IncludeAddress = true,
+                IncludeDescription = true,
+                IncludePricing = true,
+                IncludeSchedule = true,
+                IncludeImages = true
+            }, Handler);
+            if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+            {
+                throw new ApplicationException(result.Message);
+            }
+            var act = result.Result.Result;
+
+            if(!act.IsPublished)
+            {
+                NavigationManager.NavigateTo("not-found");
+                return;
+            }
+
+            activity = mapper.Map<OteActivity>(act);
+            activity.Pricings = activity.Pricings.OrderBy(t => t.Id);
+            activity.EventTicketLimit = act.OteSchedule.EventTicketLimit;
+            IsLimit = act.OteSchedule.EventTicketLimit != 0 ? true : false;
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
+    private async Task LoadSelectedTickets()
+    {
+        var trackerDetails = await transactionApiHandler.GetRequestPayment(new Framework.ApiCommand.ApiCore.Transaction.Request.GetRequestPaymentArgs {
+            Guid = Guid,
+            Token = Token
+        }, token);
+        if(!trackerDetails.Succeeded || trackerDetails.Result is null || !trackerDetails.Result.IsSuccess)
+        {
+            NavigationManager.NavigateTo($"/explore/ote/{Handler}");
+            return;
+        }
+        var tracker = trackerDetails.Result.Result;
+
+        if(tracker.Used)
+        {
+            NavigationManager.NavigateTo("/not-found");
+            return;
+        }
+
+        // invalid selected activity
+        if(activity.Id != tracker.ActivityId)
+        {
+            NavigationManager.NavigateTo($"/explore/ote/{Handler}");
+            return;
+        }
+        //set selected date
+        selectedDate = $"{tracker.SelectedDate.ToString("MMMM dd, yyyy")} | {tracker.SelectedDate.ToString("hh:mm tt").ToUpper()}";
+        SelectedDate = tracker.SelectedDate;
+
+
+        var defaultDatePricing = activity.OteDates.FirstOrDefault(d => d.Date.Date == tracker.SelectedDate.Date);
+        if(defaultDatePricing is null)
+        {
+            NavigationManager.NavigateTo($"/explore/ote/{Handler}");
+            return;
+        }
+
+        // load selected tickets if any
+        AvailableTickets = activity.Pricings.Where(p => p.OteDateId == defaultDatePricing.Id);
+
+        foreach (var ticket in tracker.SelectedTickets)
+        {
+            for(int i = 0; i < ticket.TicketCount; i++)
+            {
+                var sTicket = AvailableTickets.FirstOrDefault(t => t.Id == ticket.TicketId);
+                var otePricing = new OtePricing {
+                    Description      = sTicket.Description,
+                    Id               = sTicket.Id,
+                    IsAbsorbFees     = sTicket.IsAbsorbFees,
+                    MaxSlots         = sTicket.MaxSlots,
+                    Name             = sTicket.Name,
+                    OteScheduleId    = sTicket.OteScheduleId,
+                    Price            = sTicket.Price,
+                    TicketSold       = sTicket.TicketSold,
+                    RequiredApproval = sTicket.RequiredApproval,
+                    IsUnlimited      = sTicket.IsUnlimited,
+                    SeatNumber       = ticket.SeatNumber,
+                    CategoryUUID     = ticket.CategoryUUID,
+                    SeatUUID         = ticket.SeatUUID,
+                    RowUUID          = ticket.RowUUID
+                };
+                await AddSelectedTicket(otePricing);
+            }
+        }
+    }
+
+    private Task AddSelectedTicket(OtePricing pricing)
+    {
+        if(selectedTickets.ContainsKey(pricing.Id))
+        {
+            selectedTickets[pricing.Id].Count++;
+        }
+        else 
+        {
+            selectedTickets.Add(pricing.Id, new TicketInfo
+            {
+                Count            = 1,
+                Id               = pricing.Id,
+                Name             = pricing.Name,
+                Price            = pricing.Price,
+                SeatNumber       = pricing.SeatNumber,
+                RequiredApproval = pricing.RequiredApproval,
+                CategotyUUID     = pricing.CategoryUUID,
+                RowUUID          = pricing.RowUUID,
+                SeatUUID         = pricing.SeatUUID
+            });
+        }
+        return Task.CompletedTask;
+    }
+
+    private void NavigateToOteReserved()
+    {
+        IsExpired = true;
+        NavigationManager.NavigateTo($"/explore/ote/reserved/{Handler}/{IsExpired}");
+    }
+
+    private void NavigateToTicketReservation()
+    {
+        string paymentUrl = $"/reservation/{Handler}/?date={SelectedDate}&token={token}";
+        NavigationManager.NavigateTo(paymentUrl);
+    }
+
+    private async Task LoadProvideDetails()
+    {
+        try
+        {
+            var inclusiveCheckRes = await activityHandler.OwnerPricingInclusive(activity.ProviderId);
+            if(inclusiveCheckRes.Succeeded && inclusiveCheckRes.Result is not null && inclusiveCheckRes.Result.IsSuccess)
+            {
+                IsInclusivePricing = inclusiveCheckRes.Result.Result.IsInclusivePricing;
+            }
+        }
+        catch (System.Exception)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
+    private string GetActivityFirstImage
+    {
+        get
+        {
+            if(activity is null)  return string.Empty;
+
+            string result = string.Empty;
+            var image = activity.Images.OrderBy(i => i.Order).ThenBy(i => i.Id).FirstOrDefault();
+            if(image is not null)
+            {
+                result = image.ImageSrc;
+            }
+            return result;
+        }
+    }
+
+    private string ActivityLocation
+    {
+        get
+        {
+            if(activity is null) return string.Empty;
+
+            string result = string.Empty;
+            if(activity.ExperienceTypeId == 1)
+            {
+                if (!string.IsNullOrEmpty(activity.PinnedLocation))
+                {
+                    result = activity.PinnedLocation;
+                }
+                else
+                {
+                    result = $"{activity.HouseNo}, {activity.BarangayName}, {activity.CityName}, {activity.RegionName}";
+                }
+            }
+            else 
+            {
+                result = "Online";
+            }
+            return result;
+        }
+    }
+
+
+    private int ServiceFeePercent 
+    {
+        get
+        {
+            if(string.IsNullOrEmpty(SelectedPaymentCode)) return 0;
+            if(SelectedPaymentCode == "CARD") return 5;
+            else return 3;
+        }
+    }
+
+    private decimal GetSubTotal 
+    {
+        get
+        {
+            return selectedTickets.Sum(t => t.Value.Price * t.Value.Count);
+        }
+    }
+
+    private decimal GetConvinienceFee
+    {
+        get
+        {
+            decimal result = 0;
+
+            if(string.IsNullOrEmpty(SelectedPaymentCode)) return 0;
+
+            if (selectedTickets.Count > 0 && !IsInclusivePricing)
+            {
+                result = GetSubTotal * ((decimal)ServiceFeePercent / 100); //.05m;
+            }
+
+            return result;
+        }
+    }
+
+    private decimal GetServiceFee 
+    {
+        get
+        {
+            if(selectedTickets.Sum(t => t.Value.Price) == 0) return 0;
+
+            if(selectedTickets.Count > 0 && !IsInclusivePricing) return 15;
+
+            return 0;
+        }
+    }
+
+    private decimal GetAppliedCoupon
+    {
+        get
+        {
+            decimal result = 0;
+
+            if(Coupon.IsCouponApplied && Coupon.IsValid)
+            {
+                // fixed amount
+                if(Coupon.DiscountType == 1)
+                {
+                    result = Coupon.Amount;
+                }
+                // percentage
+                else if(Coupon.DiscountType == 0)
+                {
+                    decimal percentage = Coupon.Amount / 100;
+                    decimal subTotal = 0;
+                    if(IsInclusivePricing)
+                    {
+                        subTotal = GetSubTotal;
+                    }
+                    else 
+                    {
+                        subTotal = GetSubTotal + GetConvinienceFee;
+                    }
+                    result = subTotal * percentage;
+                }
+            }
+
+            return result;
+        }
+    }
+
+    private decimal GetTotalCredit
+    {
+        get
+        {
+            decimal result = 0;
+
+            return result;
+        }
+    }
+
+    private decimal GetTotalPrice
+    {
+        get
+        {
+            decimal result = 0;
+
+            if (ticketCount > 0)
+            {
+                decimal discount = 0;
+                result = ((GetSubTotal + GetConvinienceFee + GetServiceFee) - GetAppliedCoupon) - GetTotalCredit;
+                result = result < 0 ? 0 : result;
+            }
+
+            return result;
+        }
+    }
+
+    private Task AddTicket(int ticketId)
+    {
+        if(selectedTicketId != ticketId)
+        {
+            ticketCount = 1;
+            selectedTicketId = ticketId;
+        }
+        else 
+        {
+            ticketCount ++;
+        }
+        return Task.CompletedTask;
+    }
+
+    private async Task ValidateCouponCode()
+    {
+        Coupon.ErrorDescription = string.Empty;
+        Coupon.ErrorTitle = string.Empty;
+
+        if(ticketCount == 0)
+        {
+            Coupon.IsCouponApplied = true;
+            Coupon.IsValid = false;
+            Coupon.ErrorTitle = "Wrong Application of Code";
+            Coupon.ErrorDescription = "Please make sure you have selected an ticket first";
+
+            RemoveCouponError();
+            return;
+        }
+
+        if(!string.IsNullOrEmpty(Coupon.CouponCode) && ticketCount > 0)
+        {
+            Coupon.IsValidating = true;
+
+            decimal subTotal = GetSubTotal;
+            decimal paymentProviderFee = GetConvinienceFee;
+            decimal serviceFee = GetServiceFee;
+            decimal total = subTotal + paymentProviderFee + serviceFee;
+
+            var validateRes = await activityHandler.ValidateCouponCode(new Framework.ApiCommand.ApiCore.Activity.Request.ValidateCouponCodeArgs {
+                ActivityId = activity.Id,
+                Amount = total,
+                CouponCode = Coupon.CouponCode
+            }, token);
+
+            if(!validateRes.Succeeded || validateRes.Result == null)
+            {
+                Coupon.IsCouponApplied = true;
+                Coupon.IsValid = false;
+                Coupon.ErrorTitle = "External Error Occured";
+                Coupon.ErrorDescription = "An error occured when trying to validate coupon code";
+
+                RemoveCouponError();
+            }
+            else if (validateRes.Succeeded && validateRes.Result != null && !validateRes.Result.IsSuccess)
+            {
+                Coupon.IsCouponApplied = true;
+                Coupon.IsValid = false;
+                Coupon.ErrorTitle = validateRes.Result.ErrorInfo.Message;
+                Coupon.ErrorDescription = validateRes.Result.ErrorInfo.Description;
+
+                RemoveCouponError();
+            }
+            else 
+            {
+                var result = validateRes.Result.Result;
+
+                Coupon.IsCouponApplied = true;
+                Coupon.IsValid = true;
+                Coupon.Amount = result.Amount;
+                Coupon.DiscountType = result.DiscountType;
+                Coupon.MaximumSpend = result.MaximumSpend;
+            }
+
+            Coupon.IsValidating = false;
+        }
+    }
+
+    private async Task RemoveCouponError()
+    {
+        await Task.Delay(3000);
+        ClearCouponDetails();
+        StateHasChanged();
+    }
+
+    private void ClearCouponDetails()
+    {
+        Coupon.IsCouponApplied = false;
+        Coupon.IsValid = false;
+        Coupon.Amount = 0;
+        Coupon.DiscountType = -1;
+        Coupon.MaximumSpend = 0;
+        Coupon.CouponCode = string.Empty;
+    }
+
+    private Task RemoveAppliedCoupon()
+    {
+        ClearCouponDetails();
+        return Task.CompletedTask;
+    }
+
+    private async Task SelectCardPayment()
+    {
+        if (await paymentValidation.ValidateAll())
+        {
+            cardModal.Close(CloseReason.UserClosing);
+            SelectedPaymentCode = "CARD";
+        }
+    }
+
+
+
+    private Task RemoveSelectedTicket(OtePricing pricing)
+    {
+        if(pricing.TicketSold >= pricing.MaxSlots)
+        {
+            return Task.CompletedTask;
+        }
+
+        if(selectedTickets.ContainsKey(pricing.Id) && selectedTickets[pricing.Id].Count > 0)
+        {
+            selectedTickets[pricing.Id].Count--;
+            if(selectedTickets[pricing.Id].Count == 0) selectedTickets.Remove(pricing.Id);
+        }
+        return Task.CompletedTask;
+    }
+
+    private async Task ProceedToPayment()
+    {
+        if(string.IsNullOrEmpty(SelectedPaymentCode))
+        {
+            await NotificationService.Error("Please select payment method.", "Payment Method");
+            return;
+        }
+        if(selectedTickets.Count == 0)
+        {
+            await NotificationService.Error("Please select ticket to purchase.", "Ticket");
+            return;
+        }
+
+        //Add to payment queue
+        var selectedSeats = selectedTickets.SelectMany(t => t.Value.SeatUUID.Split(',').Zip(t.Value.SeatNumber.Split(','), (uuid, name) => new
+        {
+            SeatUUID = uuid,
+            SeatNumber = name
+        }))
+        .ToList();
+
+        // Initialize the list for unavailable seats
+        var unavailableSeatsList = new List<string>();
+        AvailableSeats.Clear();
+
+        foreach (var ticket in selectedSeats)
+        {
+            var isUserInQueue = await QueueServices.IsUserInQueueAsync(paymentQueueName, ticket.SeatUUID);
+            if (isUserInQueue)
+            {
+                // Add to the unavailable seats list
+                unavailableSeatsList.Add(ticket.SeatNumber);
+                //Remove seat in selectedTickets
+                var ticketToRemove = selectedTickets.FirstOrDefault(a => a.Value.SeatUUID.Contains(ticket.SeatUUID));
+                var ticketSeatUUID = ticketToRemove.Value?.SeatUUID.Split(",");
+                if (ticketSeatUUID.Length > 1)
+                {
+                    // Decrease the ticket count
+                    ticketToRemove.Value.Count -= 1;
+                    // Remove Seatnumner
+                    var seatList = ticketToRemove.Value.SeatNumber.Split(",").ToList();
+                    seatList.Remove(ticket.SeatNumber);
+                    ticketToRemove.Value.SeatNumber = string.Join(",",seatList);
+
+
+                    // Remove SeatUUID
+                    var seatUUIDList = ticketToRemove.Value.SeatUUID.Split(",").ToList();
+                    seatUUIDList.Remove(ticket.SeatUUID); // Ensure UUID is removed
+                    ticketToRemove.Value.SeatUUID = string.Join(",", seatUUIDList);
+                }
+                else
+                {
+                    selectedTickets.Remove(ticketToRemove.Key);
+                }
+            }
+            else
+            {
+                AvailableSeats.Add(ticket.SeatUUID);
+            }
+        }
+
+        unavailableSeats = string.Join(", ", unavailableSeatsList);
+
+        if (!string.IsNullOrEmpty(unavailableSeats))
+        {
+            await modalUnAvailable.Show();
+            return;
+        }
+        else
+        {
+            //Save selected ticket to the local storage
+            await localStorage.SetItem(RESERVEDSEAT_ID, AvailableSeats);
+            // Queue the available seats if any
+            foreach (var seatUUID in AvailableSeats)
+            {
+                await QueueServices.EnqueueUserInPaymentAsync(paymentQueueName, seatUUID);
+            }
+            await SubmitTransaction();
+        }
+    }
+
+    private async Task SubmitTransaction()
+    {
+        try
+        {
+            submitting = true;
+
+            StateHasChanged();
+
+            var submit = await transactionApiHandler.SubmitOtePurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs {
+                ActivityId = activity.Id,
+                CardInformation = SelectedPaymentCode == "CARD" ? new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs.OteCardDetails {
+                    AccountHolder = cardPaymentModel.CardHolder ?? string.Empty,
+                    CardNumber = cardPaymentModel.CardNumber ?? string.Empty,
+                    CVV = cardPaymentModel.CVV ?? string.Empty,
+                    ExpireMonthYear = cardPaymentModel.Expiration ?? string.Empty
+                } : null,
+                CouponCode = Coupon.IsCouponApplied && Coupon.IsValid ? Coupon.CouponCode : string.Empty,
+                IsCreditsApplied = false,
+                PaymentChannel = SelectedPaymentCode,
+                PaymentMethod = SelectedPaymentCode == "CARD" ? "CARD" : "EWALLET",
+                Tickets = selectedTickets.Select(t => {
+                    return new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs.OTeTicket {
+                        Count = t.Value.Count,
+                        Id = t.Value.Id,
+                        SeatNumber = t.Value.SeatNumber
+                    };
+                }),
+                Guid = Guid,
+                Token = Token
+            }, token);
+
+            if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
+            {
+                submitting = false;
+                await NotificationService.Error(submit.Result?.ErrorInfo?.Message ?? submit.Message, "Error");
+            }
+            else
+            {
+                //Update seat payload occupied selected seat
+                foreach (var ticket in selectedTickets)
+                {
+                    Seats = ticket.Value.SeatUUID.Split(",").ToList();
+                    foreach (var seat in Seats)
+                    {
+                        var updateSeatPlan = await seatplanApiHandler.UpdateSeatStatus(new Framework.ApiCommand.ApiCore.SeatPlan.Request.UpdateSeatStatusArgs
+                            {
+                                ActivityId = activity.Id,
+                                EventDate  = SelectedDate,
+                                CategoryId = ticket.Value.CategotyUUID,
+                                RowId      = ticket.Value.RowUUID,
+                                SeatId     = seat,
+                                Occupied   = true
+                            }, token);
+                        if (!updateSeatPlan.Succeeded || updateSeatPlan.Result is null || !updateSeatPlan.Result.IsSuccess)
+                        {
+                            await NotificationService.Error("An error occured. Please contact support.", "Error");
+                        }
+                    }
+                }
+                submitting = false;
+                await localStorage.RemoveItem(TRACKER_ID);
+                if (submit.Result.Result.Action == 1)
+                {
+                    NavigationManager.NavigateTo(submit.Result.Result.Url);
+                }
+                else if(submit.Result.Result.Action == 0)
+                {
+                    NavigationManager.NavigateTo(submit.Result.Result.Url);
+                }
+                else
+                {
+                    NavigationManager.NavigateTo($"/purchase/order/reserved/?purchaseid={submit.Result.Result.Id}");
+                }
+            }
+        }
+        catch (System.Exception ex)
+        {
+            await NotificationService.Error("An error occured. Contact Cinnamon support.", "Error");
+        }
+    }
+
+    private bool DisableProceed
+    {
+        get
+        {
+            if(activity is null) return true;
+
+            if(selectedTickets.Count > 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+    }
+    private class CouponDetails 
+    {
+        public string CouponCode {get; set;}
+        public bool IsValid {get; set;}
+        public bool IsCouponApplied {get; set;}
+        public int DiscountType {get; set;}
+        public decimal Amount {get; set;}
+        public decimal MaximumSpend {get; set;}
+        public bool IsValidating {get; set;}
+
+        public string ErrorTitle {get; set;}
+        public string ErrorDescription { get; set; }
+    }
+
+    private class TicketInfo
+    {
+        public int Id {get; set;}
+        public int Count {get; set;}
+        public decimal Price {get; set;}
+        public string Name { get; set; }
+        public string SeatNumber { get; set; }
+        public bool RequiredApproval {get; set;}
+        public string CategotyUUID { get; set; }
+        public string RowUUID { get; set; }
+        public string SeatUUID { get; set; }
+    }
+
+    private async Task StartConnection()
+    {
+        try
+        {
+            if(hubConnection.State == HubConnectionState.Disconnected)
+            {
+                await hubConnection.StartAsync();
+                var status = hubConnection.State;
+            }
+        }
+        catch (System.Exception)
+        {
+            await Task.Delay(500);
+            StartConnection();
+        }
+    }
+}
