@@ -166,6 +166,7 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
                         QRCode = qrcode,
                         QRImageData = GenerateQRCode(qrcode),
                         Status = "UNVERIFIED",
+                        SeatNumber = string.Empty,
                         Title = item.Name
                     });
                 }

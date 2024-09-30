@@ -36,12 +36,14 @@ public class DashboardController : ControllerBase
     private readonly IGetDisbursementByProviderId getDisbursementByProviderId;
     private readonly IGetEnrolledStudentsByProviderHandler getEnrolledStudentsByProviderHandler;
     private readonly ICreateDirectStudentsHandler createDirectStudentsHandler;
+    private readonly IGetAllTicketPurchasedHandler getAllTicketPurchasedHandler;
     private readonly IMapper mapper;
     public DashboardController(IGetActivitySchedulesHandler getActivitySchedulesHandler, IGetCurrentDateAttendanceHandler getCurrentDateAttendanceHandler,
         IUpdateStudentAttendanceCurrentDateHandler updateStudentAttendanceHandler,IGetStudentAttendanceHandler getStudentAttendanceHandler, IGetAllStudentAttendanceByIdHandler getAllStudentAttendanceByIdHandler, 
         ICreateStudentAttendanceHandler createStudentAttendanceHandler,IUpdateAttendanceHandler updateAttendanceHandler, IGetAllBadgesHandler getAllBadgesHandler, IGetAllStudentsAttendanceHandler getAllStudentsAttendanceHandler,
         IGetCompletedStudentsHandler getCompletedStudentsHandler, IGetOTEByProviderHandler getOTEByProviderHandler, IGetOTEByActivityIdHandler getOTEByActivityIdHandler, IGetTicketDetailsHandler getTicketDetailsHandler,
-        IUpdateOTETicketHandler updateOTETicketHandler, IGetDisbursementByProviderId getDisbursementByProviderId, IGetEnrolledStudentsByProviderHandler getEnrolledStudentsByProviderHandler, ICreateDirectStudentsHandler createDirectStudentsHandler, IMapper mapper)
+        IUpdateOTETicketHandler updateOTETicketHandler, IGetDisbursementByProviderId getDisbursementByProviderId, IGetEnrolledStudentsByProviderHandler getEnrolledStudentsByProviderHandler, ICreateDirectStudentsHandler createDirectStudentsHandler, 
+        IGetAllTicketPurchasedHandler getAllTicketPurchasedHandler, IMapper mapper)
     {
         this.getActivitySchedulesHandler          = getActivitySchedulesHandler;
         this.getCurrentDateAttendanceHandler      = getCurrentDateAttendanceHandler;
@@ -60,7 +62,8 @@ public class DashboardController : ControllerBase
         this.getDisbursementByProviderId          = getDisbursementByProviderId;
         this.getEnrolledStudentsByProviderHandler = getEnrolledStudentsByProviderHandler;
         this.createDirectStudentsHandler          = createDirectStudentsHandler;
-        this.mapper = mapper;
+        this.getAllTicketPurchasedHandler         = getAllTicketPurchasedHandler;
+        this.mapper                               = mapper;
     }
 
     [Route("GetActivitySchedules")]
@@ -814,6 +817,52 @@ public class DashboardController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new CreateDirectStudentsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetAllTicketPurchased")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetAllTicketPurchasedResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllTicketPurchased([FromQuery] GetAllTicketPurchasedArgs args)
+    {
+        try
+        {
+            var result = await getAllTicketPurchasedHandler.ExecuteAsync(new Services.DashboardService.Interactors.GetAllTicketPurchasedArgs
+            {
+                ActivityId = args.ActivityId,
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllTicketPurchasedResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new GetAllTicketPurchasedResult
+            {
+                Result = result.Result.OTEDetails.Select(s =>
+                {
+                    return new Framework.ApiCommand.ApiCore.DTO.Activity.OteTicketDTO
+                    {
+                        Id         = s.Id,
+                        ActivityId = s.ActivityId,
+                        Title      = s.Title,
+                        Amount     = s.Amount,
+                        QRCode     = s.QRCode,
+                        Status     = s.Status,
+                        Payload    = s.Payload,
+                        Date       = s.Date,
+                        Quantity   = s.Quantity,
+                        Customer = new Framework.ApiCommand.ApiCore.DTO.Customer.CustomerDTO
+                        {
+                            FirstName = s.Customer.FirstName,
+                            LastName  = s.Customer.LastName,
+                            Email     = s.Customer.Email
+                        }
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetOTEByActivityIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

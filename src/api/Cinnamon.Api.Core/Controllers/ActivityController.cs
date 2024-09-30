@@ -2723,9 +2723,9 @@ public class ActivityController : ControllerBase
                 Questions = args.Questions is not null ? args.Questions.Select(s => new Services.ActivityService.Interactors.OteCreateArgs.CustomQuestion
                 {
                     FieldType = s.FieldType,
-                    Question  = s.Question,
-                    Required  = s.Required,
-                    Options   = s.Options
+                    Question = s.Question,
+                    Required = s.Required,
+                    Options = s.Options
                 }) : null,
             });
 
@@ -2846,17 +2846,17 @@ public class ActivityController : ControllerBase
                 NewQuestions = args.NewQuestions is not null ? args.NewQuestions.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.CustomQuestion
                 {
                     FieldType = s.FieldType,
-                    Question  = s.Question,
-                    Required  = s.Required,
-                    Options   = s.Options
+                    Question = s.Question,
+                    Required = s.Required,
+                    Options = s.Options
                 }) : null,
                 UpdatedQuestions = args.UpdatedQuestions is not null ? args.UpdatedQuestions.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.CustomQuestion
                 {
                     FieldType = s.FieldType,
-                    Question  = s.Question,
-                    Required  = s.Required,
-                    Options   = s.Options,
-                    Id        = s.Id
+                    Question = s.Question,
+                    Required = s.Required,
+                    Options = s.Options,
+                    Id = s.Id
                 }) : null,
                 DeletedQuestions = args.DeletedQuestions
             });
@@ -3712,6 +3712,7 @@ public class ActivityController : ControllerBase
     [Route("ApprovedWaitList")]
     [HttpPost]
     [ProducesResponseType(typeof(ApproveWaitListResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
     public async Task<IActionResult> ApprovedWaitList([FromBody] ApprovedWaitListArgs args)
     {
         try
