@@ -77,7 +77,14 @@
 
     private void NavigateToDetails()
     {
-        NavigationManager.NavigateTo($"/explore/ote/{Activity.Handler}");
+        if (!Activity.ReserveSeat) 
+        {
+            NavigationManager.NavigateTo($"/explore/ote/reserved/{Activity.Handler}");
+        } 
+        else 
+        {
+            NavigationManager.NavigateTo($"/explore/ote/{Activity.Handler}");
+        }  
     }
     
     private void NavigateToEvents()
