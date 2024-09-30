@@ -961,7 +961,7 @@
                 {
                     _isProcessing                  = false;
                     queueInfo.QueueId              = reservedQueueInfo.QueueId;
-                    queueInfo.UsersAhead           = reservedQueueInfo.numberAhead + 10;
+                    queueInfo.UsersAhead           = reservedQueueInfo.numberAhead + 5;
                     queueInfo.LastUpdated          = reservedQueueInfo.lastStatusUpdate;
                     queueInfo.EstimatedWaitingTime = reservedQueueInfo.estimatedWaitingTime;
                     queueInfo.ExpectedTimeArrival  = reservedQueueInfo.expectedTimeOfArrival;
@@ -969,7 +969,7 @@
                 }
 
                 // Wait for 10 seconds before checking again
-                await Task.Delay(20000);
+                await Task.Delay(10000);
             }
         }
         catch (Exception ex)
@@ -988,7 +988,7 @@
         }
 
         // Calculate percentage based on users ahead and the estimated waiting time.
-        double totalUsers = queueInfo.UsersAhead + 10; // Adding 2 to include users in the active queue
+        double totalUsers = queueInfo.UsersAhead + 5; // Adding 5 to include users in the active queue
         double progress = (totalUsers - queueInfo.UsersAhead) / totalUsers * 100;
         return (int)progress;
     }
