@@ -694,15 +694,14 @@
         if (scheduleFormValidation is not null)
         {
             bool scheduleValid = await scheduleFormValidation.ValidateAll();
-            bool valid = scheduleValid;
-            showErrors = true;
-            StateHasChanged();
-            await Task.Delay(300); // add delay to populate is-invalid class
-            if (!valid)
+            if (!scheduleValid)
             {
+                showErrors = true;
+                StateHasChanged();
+                await Task.Delay(300); // add delay to populate is-invalid class
                 await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-pricing-wrapper .is-invalid");
             }
-            return valid;
+            return scheduleValid;
         }
         return false;
     }
