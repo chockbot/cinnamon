@@ -22,8 +22,6 @@ public class SeatPlanTemplateEntity : GenericEntity<SeatPlanTemplate>, ISeatPlan
         {
             var seatPlanTemplate = await applicationContext.SeatPlanTemplates
                 .Where(filter)
-                .Skip((page - 1) * limit)
-                .Take(limit)
                 .Select(spt => new SeatPlanTemplate
                 {
                     Name = spt.Name,
