@@ -355,7 +355,7 @@
                                         <img src="images/messages/personal-message.svg" class="personal-message-icon" @onclick="(() => CreatePrivateMessage(details))" />
                                     </span>
                                 }
-                                <img class="message-info" src="images/messages/chat-profile-info.svg" @onclick="(() => DisplayInfo(profileSectionDisplayStyle))" />
+                                <img class="message-info" src="images/messages/chat-profile-info.svg" @onclick="ToggleProfileSection" />
                             </div>
                             <div class="col-lg-12 d-block d-sm-none d-md-none d-lg-none d-xl-none" style="padding: 0px;">
                                 <table>
@@ -550,7 +550,6 @@
                 <div class="send-message-section">
                     <table>
                         <tr>
-                            <td class="attachment-section"><img src="images/messages/send-attachment.svg" /></td>
                             <td class="input-section">
                                 <div class="input-group border p-1 rounded-pill-section">
                                     <div id="chat-message-input" contenteditable="true" role="textbox" spellcheck="true" tabindex="0" style="" data-lexical-editor="true" data-text="Aa">
@@ -573,7 +572,7 @@
     }
     else
     {
-        <div class="sidebar-messages profile-section messages-section d-xl-block d-lg-block d-md-block d-sm-block @profileSectionDisplayStyle">
+        <div class="sidebar-messages profile-section messages-section d-xl-block @ProfileSectionDisplayStyle">
             <div class="row" style="@SetPlaceholderStyle(isLoading)">
                 <div class="row justify-content-center placeholder-glow">
                     <div class="col-lg-12 text-center">
@@ -773,6 +772,7 @@
     private string chatMateProfileLink = string.Empty;
     private string chatMateGroupName = string.Empty;
     private string chatMateChatName = string.Empty;
+    private string ProfileSectionDisplayStyle = "d-none";
     private bool chatMateHasTemporaryChatRoomId = false;
     private Framework.Enums.Enums.ChatType chatMateChatType;
     private Framework.Enums.Enums.ChatHistoryType chatHistoryType;
@@ -1054,6 +1054,11 @@
         await hubConnection.SendAsync("SendMessage", message);
 
         messageInput = string.Empty;
+    }
+
+    private void ToggleProfileSection()
+    {
+        ProfileSectionDisplayStyle = ProfileSectionDisplayStyle == "d-none" ? "d-block" : "d-none";
     }
 
     private async Task GetChatRoomsByUserId()
@@ -1508,8 +1513,8 @@
 
     private string DisplayInfo(string isDisplayed)
     {
-        if (isDisplayed == "d-block") return "d-none";
-        return "d-block";
+        if (isDisplayed == "d-none") return "d-block";
+        return "d-none";
     }
 
     void LocationChanged(object sender, LocationChangedEventArgs e)
