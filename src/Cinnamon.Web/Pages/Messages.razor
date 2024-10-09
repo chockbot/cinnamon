@@ -55,10 +55,10 @@
             <div class="modal-body">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                     <div class="input-group border rounded-pill p-1">
-                        <div id="add-members-input" contenteditable="true" role="textbox" spellcheck="true" tabindex="0" style="" data-lexical-editor="true" data-text="Search Members">
-                        </div>
                         <div class="input-group-append border-0">
                             <button id="button-addon3" type="button" class="btn btn-link text-success" style="border-radius:50%"><i class="fa fa-search"></i></button>
+                        </div>
+                        <div id="add-members-input" contenteditable="true" role="textbox" spellcheck="true" tabindex="0" style="" data-lexical-editor="true" data-text="Search Members">
                         </div>
                     </div>
                 </div>
@@ -122,7 +122,7 @@
     } 
     else 
     {
-        <div class="sidebar-messages left-sidebar messages-section d-xl-block d-lg-block d-md-block d-sm-block @messagesSectionDisplayStyle">
+        <div class="sidebar-messages left-sidebar messages-section d-xl-block d-lg-block  @messagesSectionDisplayStyle">
             <div class="message-title-section">
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-6 col-6">
@@ -213,7 +213,7 @@
             </div>
         </div>
     }
-    <div class="center-messages chat-section d-xl-block d-lg-block d-md-block d-sm-block @chatSectionDisplayStyle">
+    <div class="center-messages chat-section d-xl-block @chatSectionDisplayStyle">
         <div class="row" style="@SetPlaceholderStyle(isLoading)">
             <div class="chat-profile-section">
                 <div class="row">
@@ -290,6 +290,9 @@
                             <div class="d-flex">
                                 @if (chatMateChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
                                 {
+                                    <button type="button" class="border-0 bg-transparent back-button" @onclick="DisplayChatRooms">
+                                        <img src="images/messages/back-arrow.svg" class="back-to-chatroom" />
+                                    </button>
                                     <div class="chatmate-profile-picture-section me-3">
                                         <img src="@chatMateProfilePicture" class="chatmate-profile-picture" />
                                         @if (!string.IsNullOrEmpty(chatMateConnectionId))
@@ -315,6 +318,9 @@
                                 }
                                 else
                                 {
+                                    <button type="button" class="border-0 bg-transparent back-button" @onclick="DisplayChatRooms">
+                                        <img src="images/messages/back-arrow.svg" class="back-to-chatroom" />
+                                    </button>
                                     <div class="chatmate-profile-picture-section">
                                         <img src="@chatMateProfilePicture" class="chatmate-profile-picture me-3" />
                                         @if (!string.IsNullOrEmpty(chatMateGroupName))
@@ -572,7 +578,7 @@
     }
     else
     {
-        <div class="sidebar-messages profile-section messages-section d-xl-block @ProfileSectionDisplayStyle">
+        <div class="sidebar-messages profile-section messages-section d-xl-block @profileSectionDisplayStyle">
             <div class="row" style="@SetPlaceholderStyle(isLoading)">
                 <div class="row justify-content-center placeholder-glow">
                     <div class="col-lg-12 text-center">
@@ -600,7 +606,7 @@
                 </div>
                 @if (chatRooms.Count > 0)
                 {
-                    <div class="col-lg-12 d-block d-sm-none d-md-none d-lg-none d-xl-none">
+                    <div class="col-lg-12 d-block d-sm-none d-md-block d-lg-block d-xl-none">
                         <div class="row">
                             <div class="col-lg-12 profile-back-button-section">
                                 <button type="button" class="border-0 bg-transparent back-button" @onclick="DisplayConversations">
@@ -782,6 +788,8 @@
 
     private bool isLoadingIndicator = true;
     [Inject] HubConnection hubConnection { get; set; }
+
+    private string customChatSectionDisplayStyle = string.Empty;
     private string messagesSectionDisplayStyle = string.Empty;
     private string chatSectionDisplayStyle = string.Empty;
     private string profileSectionDisplayStyle = string.Empty;
@@ -1058,7 +1066,8 @@
 
     private void ToggleProfileSection()
     {
-        ProfileSectionDisplayStyle = ProfileSectionDisplayStyle == "d-none" ? "d-block" : "d-none";
+        profileSectionDisplayStyle = profileSectionDisplayStyle == "d-none" ? "d-block" : "d-none";
+        chatSectionDisplayStyle = chatSectionDisplayStyle == "d-none" ? "d-block" : "d-none";
     }
 
     private async Task GetChatRoomsByUserId()

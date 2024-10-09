@@ -1,4 +1,16 @@
-﻿.messages-container {
+﻿body {
+  background-color: #343d4c;
+}
+
+.display-none {
+  display: none !important;
+}
+
+.display-block {
+  display: block !important;
+}
+
+.messages-container {
   height: 92vh;
 }
 ::deep button:focus {
@@ -843,6 +855,11 @@ input[type="text"] {
 }
 
 @media (min-width: 992px) and (max-width: 1199.98px) {
+
+  .sidebar-messages.profile-section {
+    width: 63%;
+  }
+
   .chat-profile-name {
     width: 200px;
   }
@@ -855,6 +872,9 @@ input[type="text"] {
 }
 
 @media  (min-width: 1000px) {
+  .back-to-chatroom {
+    display: none !important;
+  }
   .center-messages {
     margin: 20px;
     border-radius: 8px;
@@ -869,6 +889,10 @@ input[type="text"] {
 .sidebar-messages {
   width: 350px;
   padding: 20px;
+  margin: 10px;
+  border-radius: 8px;
+  background: #FFF;
+  box-shadow: 0px 4px 5px 2px #E7E7E7;
 }
 
 .center-messages {
@@ -879,6 +903,16 @@ input[type="text"] {
 
 @media screen and (max-width: 575px) and (orientation: portrait) {
   .sidebar-messages.left-sidebar {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .sidebar-messages.left-sidebar {
+    width: 100%;
+  }
+
+  .sidebar-messages.profile-section {
     width: 100%;
   }
 }
