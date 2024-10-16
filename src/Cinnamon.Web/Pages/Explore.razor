@@ -66,7 +66,7 @@
                 {
                     <div class="dropdown">
                         <button class="creation-dropdown" @onclick="ToggleDropdown">
-                            <a class="cinnamon-link create-experience">Create Experience <i class="fas fa-caret-down"></i></a>
+                            <a class="cinnamon-link create-experience">Create New Experience</a>
                         </button>
                         @if (IsDropdownVisible)
                         {
@@ -83,7 +83,7 @@
                 } else {
                     <div class="dropdown">
                         <button class="creation-dropdown" @onclick="ToggleDropdown">
-                            <a class="cinnamon-link create-experience">Create Experience <i class="fas fa-caret-down"></i></a>
+                            <a class="cinnamon-link create-experience">Create New Experience</a>
                         </button>
                         @if (IsDropdownVisible)
                         {
@@ -374,47 +374,14 @@
     <!-- Header -->
     @if (!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
     {
-<div class="top-section" style="position:relative;display:flex">
-    <Carousel @bind-SelectedSlide="@selectedSlide" Crossfade Interval="10000" ShowControls="false">
-        <CarouselSlide Name="1">
-        <div class="mobile-wrapper">
-            <Image Source="images/explore-page-images/carousel-images/carousel-slide-image-1.webp" class="section-1-image"/>
-        </div>
-        </CarouselSlide>
-        <CarouselSlide Name="2">
-        <div class="image-wrapper">
-            <Image Source="images/explore-page-images/carousel-images/carousel-slide-image-2.webp" class="section-1-image"/>
-        </div>
-        </CarouselSlide>
-    </Carousel>
-    
-    @if (selectedSlide == "1")
-    {
-        <div class="provider-section">
-            <p class="provider-text">Dua Lipa Radical Optimism Tour</p>
-            <p class="provider-sub-text">November 13, 2024</p>
-            <p class="provider-sub-text">Philippine Arena</p>
-            <div class="provider-buttons">
-                <button type="button" class="buy-tickets-button" @onclick="RedirectToCarousel1">
-                    <span>Buy Tickets</span>
-                </button>
+        <div class="top-section" style="position:relative;display:flex">
+            <div class="discover-section">
+                <div class="discover-title">
+                    <p class="discover-text">Discover your</p>
+                    <p class="discover-text sub-discover">experience</p>
+                </div>
             </div>
         </div>
-    }
-    else if (selectedSlide == "2")
-    {
-        <div class="provider-section">
-            <p class="provider-text">Wicker Jam</p>
-            <p class="provider-sub-text">November 26, 2024</p>
-            <p class="provider-sub-text">Handuraw Pizza Mandaue</p>
-            <div class="provider-buttons">
-                <button type="button" class="buy-tickets-button" id="btnBrowse" @onclick="RedirectToCarousel2">
-                    <span>Buy Tickets</span>
-                </button>
-            </div>
-        </div>
-    }
-</div>
     } else 
     {
 
