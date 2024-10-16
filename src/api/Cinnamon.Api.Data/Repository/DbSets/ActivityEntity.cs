@@ -1,4 +1,4 @@
-﻿﻿using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Api.Data.Repository.Interfaces;
@@ -925,7 +925,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 							DateStart = item["DateStart"] != DBNull.Value ? Convert.ToDateTime(item["DateStart"]) : DateTime.MinValue,
 							DateEnd = item["DateEnd"] != DBNull.Value ? Convert.ToDateTime(item["DateEnd"]) : DateTime.MinValue,
 							StartTime = item["StartTime"].ToString() ?? string.Empty,
-							IsReservedSeating	     = Convert.ToBoolean(item["ReserveSeat"]),
+							IsReservedSeating = item["ReserveSeat"] != DBNull.Value ? Convert.ToBoolean(item["ReserveSeat"]) : false,
 							Address = new ActivityFeedDTO.Location
 							{
 								City           = item["CityName"].ToString() ?? string.Empty,
