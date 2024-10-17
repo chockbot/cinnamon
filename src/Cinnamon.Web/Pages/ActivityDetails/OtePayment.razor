@@ -265,16 +265,16 @@
                                     <div>
                                         <p class="font-16 font-weight-700 color-black-100 mb-1 line-h-1-1">@activity.EventName</p>
                                         <p class="font-14 color-grey-100 mb-1 line-h-1-1">@ActivityLocation</p>
-                                        @if (!string.IsNullOrEmpty(selectedDate))
+                                        @if (selectedDate != null)
                                         {
                                             <p class="font-14 color-grey-100 mb-1 line-h-1-1">
-                                                @selectedDate
+                                                @selectedDate.Value.ToString("dd MMMM yyyy") | @activity.ScheduleFrom.ToString("hh:mm tt").ToUpper()
                                             </p>
                                         }
                                         else
                                         {
                                             <p class="font-14 color-grey-100 mb-1 line-h-1-1">
-                                                @activity.ScheduleFrom.ToString("MMMM dd, yyyy") | @activity.ScheduleFrom.ToString("hh:mm tt").ToUpper()
+                                                @activity.ScheduleFrom.ToString("dd MMMM yyyy") | @activity.ScheduleFrom.ToString("hh:mm tt").ToUpper()
                                             </p>
                                         }
                                     </div>
@@ -539,7 +539,7 @@
 </Modal>
 
 @code
-    {
+{
     [Parameter]
     public string Handler {get; set;} = string.Empty;
 
@@ -567,7 +567,7 @@
     private IEnumerable<OtePricing> AvailableTickets {get; set;} = Enumerable.Empty<OtePricing>();
     public List<string> AvailableSeats = new List<string>();
     private Modal? failedModal;
-    private string selectedDate { get; set; }
+    public DateTime? selectedDate { get; set; }
     private bool IsLimit { get; set; }
     private int ticketLimit { get; set; }
     private string stringMaxTicket { get; set; }
@@ -689,6 +689,8 @@
             NavigationManager.NavigateTo($"/explore/ote/{Handler}");
             return;
         }
+
+        selectedDate = tracker.SelectedDate.Date;
 
         var defaultDatePricing = activity.OteDates.FirstOrDefault(d => d.Date.Date == tracker.SelectedDate.Date);
         if(defaultDatePricing is null)
