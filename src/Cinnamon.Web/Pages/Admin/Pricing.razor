@@ -21,7 +21,10 @@
         <div class="mt-0 mt-md-0">
             <div class="searchbar-holder ml-md-auto mt-3 mt-md-0">
                 <div class="searchBar">
-                    <input type="search" id="searchBar" class="form-control search-input" placeholder="Search">
+                    <form @onsubmit="Search">
+                        <input type="search" id="searchBar" class="form-control search-input" placeholder="Search" 
+                            autocomplete="new-password" @bind-value="searchValue" aria-describedby="button-addon3">
+                    </form>
                 </div>
             </div>
         </div>
@@ -147,6 +150,7 @@
     private string currentPage = "1";
     private int pageItems = 1;
     string token = string.Empty;
+    public string searchValue = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -163,6 +167,7 @@
     {
         var result = await accountApiHandler.GetAllCustomer(new Framework.ApiCommand.ApiCore.Account.Request.GetAllCustomersArgs
             {
+                SearchValue = searchValue,
                 CountPerPage = 20,
                 PageIndex = pageIndex,
                 IsOfficialPartner = true
@@ -286,5 +291,23 @@
     {
         bool isChecked = (bool)e.Value;
         customer.Pricing.InclusivePricing = isChecked;
+    }
+
+    public async Task Search()
+    {
+        if (string.IsNullOrEmpty(searchValue))
+        {
+            await Clear();
+        }
+        else
+        {
+        await GetAllCustomers(1);
+        }
+    }
+
+    public async Task Clear()
+    {
+        searchValue = string.Empty;
+        await GetAllCustomers(1);
     }
 }
