@@ -845,7 +845,6 @@ public class DashboardController : ControllerBase
                         ActivityId = s.ActivityId,
                         Title      = s.Title,
                         Amount     = s.Amount,
-                        QRCode     = s.QRCode,
                         Status     = s.Status,
                         Payload    = s.Payload,
                         Date       = s.Date,
