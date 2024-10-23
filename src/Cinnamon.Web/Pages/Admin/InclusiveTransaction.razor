@@ -92,7 +92,10 @@
                      <div></div> <!--Empty div to keep search bar sa left-->
                     <div class="searchbar-holder ml-md-auto mt-0 mt-md-0 mb-3">
                         <div class="searchBar">
-                            <input type="search" id="searchBar" class="form-control search-input" placeholder="Search">
+                            <form @onsubmit="Search">
+                                <input type="search" id="searchBar" class="form-control search-input" placeholder="Search" 
+                                autocomplete="new-password" @bind-value="searchValue" aria-describedby="button-addon3">
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -223,6 +226,7 @@
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
     private string currentPage = "1";
     string token = string.Empty;
+    public string searchValue = string.Empty;
 
     private Filters selectedValue = Filters.All;
 
@@ -266,26 +270,53 @@
         {
             IsFetchingTransactions = false;
         }
-
-        if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
+    
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
         {
-                transactions = result.Result.Result.Select(t => new InclusiveTransactionDto {
-                ConvinienceFee = t.ConvinienceFee,
-                CreditAmount = t.CreditAmount,
-                OverallTotal = t.OverallTotal,
-                PurchaseDate = t.PurchaseDate,
-                PurchaseOrderId = t.PurchaseOrderId,
-                Status = t.Status,
-                Total = t.Total,
-                UnitCount = t.UnitCount,
-                UnitPrice = t.UnitPrice,
-                Provider = new InclusiveTransactionDto.ProviderDto {
-                    Email = t.Provider.Email,
-                    FirstName = t.Provider.FirstName,
-                    LastName = t.Provider.LastName
-                }
-            });
+            transactions = result.Result.Result
+            .Where(t => string.IsNullOrEmpty(searchValue)
+                || (t.Provider.Email != null && t.Provider.Email.Contains(searchValue, StringComparison.OrdinalIgnoreCase))
+                || (t.Provider.FirstName != null && t.Provider.FirstName.Contains(searchValue, StringComparison.OrdinalIgnoreCase))
+                || (t.Provider.LastName != null && t.Provider.LastName.Contains(searchValue, StringComparison.OrdinalIgnoreCase))
+                || (t.PurchaseOrderId.ToString().Contains(searchValue))
+                || (t.Status.ToString().Contains(searchValue)))
+                .Select(t => new InclusiveTransactionDto
+                {
+                    ConvinienceFee = t.ConvinienceFee,
+                    CreditAmount = t.CreditAmount,
+                    OverallTotal = t.OverallTotal,
+                    PurchaseDate = t.PurchaseDate,
+                    PurchaseOrderId = t.PurchaseOrderId,
+                    Status = t.Status,
+                    Total = t.Total,
+                    UnitCount = t.UnitCount,
+                    UnitPrice = t.UnitPrice,
+                    Provider = new InclusiveTransactionDto.ProviderDto
+                    {
+                        Email = t.Provider.Email,
+                        FirstName = t.Provider.FirstName,
+                        LastName = t.Provider.LastName
+                    }
+                }).ToList();
         }
+    }
+
+    private async Task Search()
+    {
+        if (string.IsNullOrEmpty(searchValue))
+        {
+            await Clear();
+        }
+        else
+        {
+            await GetAllTransactions(1, false);
+        }
+    }
+
+    public async Task Clear()
+    {
+        searchValue = string.Empty;
+        await GetAllTransactions(1, false);
     }
 
     private string ShowMenu()

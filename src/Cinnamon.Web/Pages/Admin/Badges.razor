@@ -241,7 +241,14 @@
     }
     public async Task Search()
     {
+        if (string.IsNullOrEmpty(searchValue))
+        {
+            await Clear();
+        }
+        else
+        {
         await GetAllCustomers(1);
+        }
     }
 
     public async Task Clear()
