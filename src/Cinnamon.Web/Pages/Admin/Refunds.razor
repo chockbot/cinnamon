@@ -33,7 +33,10 @@
         </label>
         <div class="searchbar-holder ml-md-auto mt-0 mt-md-0">
             <div class="searchBar">
-                <input type="search" id="searchBar" class="form-control search-input" placeholder="Search">
+                    <form @onsubmit="Search">
+                        <input type="search" id="searchBar" class="form-control search-input" placeholder="Search" 
+                        autocomplete="new-password" @bind-value="searchValue" aria-describedby="button-addon3">
+                    </form>
             </div>
         </div>
     </div>
@@ -154,6 +157,7 @@
     private int pageItems = 1;
     string token = string.Empty;
     private int refundStatus = 0;
+    public string searchValue = string.Empty;
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
@@ -178,9 +182,14 @@
 
         if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
         {
-            refundRequests = result.Result.Result
-            .Select(r => new Requested
-            {
+        refundRequests = result.Result.Result
+        .Where(r => string.IsNullOrEmpty(searchValue)
+            || r.Email.Contains(searchValue, StringComparison.OrdinalIgnoreCase)
+            || r.FirstName.Contains(searchValue, StringComparison.OrdinalIgnoreCase)
+            || r.LastName.Contains(searchValue, StringComparison.OrdinalIgnoreCase)
+            || r.ActivityTitle.Contains(searchValue, StringComparison.OrdinalIgnoreCase))
+        .Select(r => new Requested
+        {
                 Id                = r.Id,
                 Email             = r.Email,
                 ExperienceTitle   = r.ActivityTitle,
@@ -196,6 +205,24 @@
         }
 
         Pagination = result.Result.Pagination;
+    }
+
+    private async Task Search()
+    {
+        if (string.IsNullOrEmpty(searchValue))
+        {
+            await Clear();
+        }
+        else
+        {
+            await GetAllRefundRequests(1, 1);
+        }
+    }
+
+    public async Task Clear()
+    {
+        searchValue = string.Empty;
+        await GetAllRefundRequests(1, 1);
     }
 
     private string ShowMenu()
