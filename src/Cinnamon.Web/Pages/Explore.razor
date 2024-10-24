@@ -373,22 +373,39 @@
             </div>
         </form>
     <!-- Header -->
+
+    @{
+        //eto yung 15
+         var carouselActivities = activityFeeds
+        .Where(act => act.ExperienceCreationTypeId == 3)
+        .Take(15)
+        .ToList();
+    }
+
+    @{
+        //eto yung isa lang
+        var activitiesTest = activityFeeds.FirstOrDefault(act => act.ExperienceCreationTypeId == 3);
+    }
+
     @if (!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
     {
-        <div class="top-section" style="position:relative;display:flex">
-            <div class="discover-section">
-                <div class="discover-title">
-                    <p class="discover-text">Discover your</p>
-                    <p class="discover-text sub-discover">experience</p>
+        @if (activitiesTest != null)
+        {
+            <div class="top-section" style="position:relative;display:flex">
+                <div class="discover-section">
+                    <div class="discover-title">
+                        <p class="discover-text">Discover your</p>
+                        <p class="discover-text sub-discover">experience</p>
+                    </div>
+                </div>
+                <div class="image-container">
+                    <img src="@activitiesTest.SummaryDetails.ImageSrc" alt="img">
+                    <div class="gradient-rectangle"></div>
                 </div>
             </div>
-            <div class="image-container">
-                <img src="images/Activities/Violin2.jpg" alt="img">
-                <div class="gradient-rectangle"></div>
-            </div>
-        </div>
-
-    } else 
+        }
+    } 
+    else 
     {
 
     }
