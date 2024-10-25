@@ -35,7 +35,7 @@
                     <Validation>
                         <Field>
                             <FieldLabel>Birth Date</FieldLabel>
-                            <DatePicker DisplayFormat="MMMM-yyyy" @bind-Date=viewModel.Birthdate Placeholder="Your birthday" TValue="DateTime">
+                            <DatePicker DisplayFormat="MMMM dd, yyyy" @bind-Date=viewModel.Birthdate Placeholder="Your birthday" TValue="DateTime">
                                 <Feedback>
                                     <ValidationError />
                                 </Feedback>
@@ -165,10 +165,10 @@
 
     IReadOnlyList<DateTime?> selectedDates;
 
-    protected override void OnInitialized()
-    {
-        viewModel.Birthdate = DateTime.Today.AddYears(-25);
-    }
+    //protected override void OnInitialized()
+    //{
+    //    viewModel.Birthdate = DateTime.Today.AddYears(-25);
+    //}
 
     public void OpenModal(string Email)
     {
