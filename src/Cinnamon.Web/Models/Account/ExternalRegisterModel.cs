@@ -27,8 +27,8 @@ public class ExternalRegisterModel
         public string Email { get; set; }
 
         [Required]
-        [DateAgeRange(MinAge = 18, MaxAge = 120, ErrorMessage = "Please provide valid birthdate. Age must between 18 to 120 yrs old")]
-        public DateTime Birthdate { get; set; }
+        [DateAgeRange(MinAge = 13, MaxAge = 120, ErrorMessage = "Please provide valid birthdate. Age must between 18 to 120 yrs old")]
+        public DateTime Birthdate { get; set; } = DateTime.Now.AddYears(-13);
 
         [Required(ErrorMessage = "Required mobile number field.")]
         [RegularExpression("^(09|\\+639)\\d{9}$", ErrorMessage = "Please provide valid phone number.")]

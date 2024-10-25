@@ -41,7 +41,7 @@
             <Validation>
                 <Field>
                     <FieldLabel>Birth Date</FieldLabel>
-                    <DatePicker DisplayFormat="MMMM-yyyy" Placeholder="Birth Date" TValue="DateTime" @bind-Date="Model.Model.Birthdate">
+                    <DatePicker DisplayFormat="MMMM dd, yyyy" Placeholder="Birth Date" TValue="DateTime" @bind-Date="Model.Model.Birthdate">
                         <Feedback>
                             <ValidationError />
                         </Feedback>
@@ -149,10 +149,10 @@
 
     private bool IsShowCheckboxError {get; set;}
 
-    protected override void OnInitialized()
-    {
-        Model.Model.Birthdate = DateTime.Today.AddYears(-25);
-    }
+    //protected override void OnInitialized()
+    //{
+    //    Model.Model.Birthdate = DateTime.Today.AddYears(-25);
+    //}
 
     protected override async Task OnParametersSetAsync()
     {
