@@ -375,12 +375,12 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                 FromUserId = purchaseOrder.CustomerId,
                 ToConnectionId = string.Empty,
                 ToUserId = 0,
-                IsViewed = false,
+                IsViewed = true,
                 Message = $"{customer.FirstName} {customer.LastName} has joined the group.",
                 ChatHistoryType = Framework.Enums.Enums.ChatHistoryType.Notification
             });
 
-            if(!createChatHistoryRes.Succeeded || createChatHistoryRes.Result is null)
+            if (!createChatHistoryRes.Succeeded || createChatHistoryRes.Result is null)
             {
                 return AppResult<OteFinishTransactionResult>.CreateFailed(
                     new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
