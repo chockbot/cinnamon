@@ -54,7 +54,7 @@
 
 <input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
     <!--Search-->
-    <div class="top-row px-8">
+    <div class="top-row px-4">
         <!--App Name-->
         <div class="app-name col-lg-2 col-md-2">
             <a href="" class="app-name">@Resources.App.appName</a>
@@ -389,27 +389,59 @@
 
     @if (!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
     {
-        @if (activitiesTest != null)
-        {
             <div class="top-section" style="position:relative;display:flex">
                 <div class="discover-section">
                     <div class="discover-title">
                         <p class="discover-text">Discover your</p>
-                        <p class="discover-text sub-discover">experience</p>
+                        <p class="discover-text sub-discover">experience.</p>
                     </div>
+                <div class="discover-info">
+                    @foreach (var activities in carouselActivities)
+                    {
+                        string formattedDate = activities.DateStart.ToString("MMM dd, yyyy ● h:mm tt");
+
+                        @if (selectedSlide == activities.Handler)
+                        {
+                            <div class="discover-exp-info">
+                                <p class="discover-exp-text">@activities.Title</p>
+                                <p class="discover-exp-text">@formattedDate</p>
+                                @if (@activities.ExperienceTypeId == 1)
+                                {
+                                    var address = string.IsNullOrEmpty(activities.Address.PinnedLocation) ? activities.Address.City + ", " + activities.Address.Region : activities.Address.PinnedLocation;
+                                    <p class="discover-exp-text">@address</p>
+                                }
+                                else
+                                {
+                                    <p class="discover-exp-text">@(activities.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                                }
+                                <div class="provider-buttons">
+                                    <a class="buy-tickets-button" id="btnBrowse" href="@DetailsUrl(activities.Handler, (int)activities.ExperienceCreationTypeId, activities.IsReservedSeating)" target="_blank">
+                                        <span class="button-provider-text">Buy Tickets</span>
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
                 </div>
                 <div class="main-container">
                     <div class="carousel">
                         <div class="carousel-track">
                             <div class="image-container">
-                                <img src="@activitiesTest.SummaryDetails.ImageSrc" alt="img">
+                                <Carousel @bind-SelectedSlide="selectedSlide" Crossfade Interval="10000" ShowControls="false">
+                                    @foreach (var activities in carouselActivities)
+                                    {
+                                        <CarouselSlide Name="@activities.Handler">
+                                            <img src="@activities.SummaryDetails.ImageSrc" alt="img">
+                                        </CarouselSlide>
+                                    }
+                                </Carousel>
                             </div>  
                         </div>
                     </div>
                     <div class="gradient-rectangle"></div>
                 </div>
             </div>
-        }
     } 
     else 
     {
@@ -2190,8 +2222,6 @@
     private ModalLogin signinModal;
     private ModalFBUpdate fbUpdateModal;
     private UpdatePasswordModal updatePasswordModal;
-    private string selectedSlide = "1";
-
 
     bool IsSearchPerformed { get; set; } = false;
     string SearchQuery { get; set; }
@@ -2271,7 +2301,8 @@
     private string subscriptionResultClass;
     private string subscriptionResultTitle;
     private bool showModal;
-
+    public string selectedSlide;
+    public List<ActivityFeed> carouselActivities { get; set; } = new List<ActivityFeed>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -2349,6 +2380,15 @@
                 }
             }
         } 
+
+        // Populate carouselActivities with the filtered data
+        carouselActivities = activityFeeds
+            .Where(act => act.ExperienceCreationTypeId == 3)
+            .Take(15)
+            .ToList();
+
+        // Initialize selectedSlide to the first Handler if available
+        selectedSlide = carouselActivities.FirstOrDefault()?.Handler;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
