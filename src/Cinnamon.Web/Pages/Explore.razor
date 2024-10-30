@@ -2380,15 +2380,6 @@
                 }
             }
         } 
-
-        // Populate carouselActivities with the filtered data
-        carouselActivities = activityFeeds
-            .Where(act => act.ExperienceCreationTypeId == 3)
-            .Take(15)
-            .ToList();
-
-        // Initialize selectedSlide to the first Handler if available
-        selectedSlide = carouselActivities.FirstOrDefault()?.Handler;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -2459,6 +2450,13 @@
         {
             e.Message.ToString();
         }
+
+        carouselActivities = activityFeeds
+            .Where(act => act.ExperienceCreationTypeId == 3)
+            .Take(15)
+            .ToList();
+            
+        selectedSlide = carouselActivities.FirstOrDefault()?.Handler;
     }
 
     private async Task SendChatStatus()

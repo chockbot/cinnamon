@@ -34,6 +34,17 @@
   overflow: visible !important;
 }
 
+::deep .carousel-item.active {
+  animation: slideIn 0.5s ease-in-out forwards;
+}
+
+::deep .carousel-item:not(.active) {
+  animation: slideOut 0.5s ease-in-out forwards;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
 .button-provider-text {
   color: #FFF;
   font-family: "Nunito Sans";
@@ -106,7 +117,7 @@
 
 .image-container {
   position: absolute;
-  top: -395px; 
+  top: -315px; 
   right: -120px; 
   height: 964px;
   width: 886px;
@@ -128,7 +139,7 @@
 
 .gradient-rectangle {
   position: absolute;
-  top: -430px; 
+  top: -330px; 
   right: -64px;
   height: 964px; 
   width: 886px; 
@@ -1873,6 +1884,7 @@ button:focus {
   align-items: center;
   z-index: 1000;
   position: fixed;
+  background: white;
 }
 
 .top-row ::deep a {
@@ -2359,6 +2371,40 @@ img.img-icon {
 /* Extra small devices (portrait phones, less than 576px) */
 @media (min-width: 0px) and (max-width: 426px) {
 
+  .discover-title {
+    margin-left: 30px;
+  }
+
+  .discover-text {
+    margin-bottom: 0px;
+    font-size: 40px;
+    line-height: 45px;
+  }
+
+  .discover-exp-text {
+    font-size: 14px;
+    margin-bottom: 0px;
+  }
+
+  .discover-exp-info {
+    margin-top: 0px;
+    margin-left: 35px;
+  }
+
+  .discover-section {
+    margin-top: 315px;
+  }
+
+  .gradient-rectangle {
+    top: -580px;
+    right: -480px;
+  }
+
+  .image-container {
+    top: -610px;
+    right: -450px;
+  }
+
   .wordpress-tablet-mobile-toggle {
     display: block;
   }
@@ -2776,6 +2822,7 @@ img.img-icon {
 	border-radius: 50px;
 	border: 1px solid #D9D9D9;
 	background: #FFF;
+  box-shadow: 0px 0px 47px 0px #D9D9D9;
 	z-index: 0;
 	width: 90%;
 	margin: 0px;
@@ -3140,6 +3187,41 @@ img.img-icon {
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 426px) and (max-width: 766px) {
+
+
+  .discover-title {
+    margin-left: 30px;
+  }
+
+  .discover-text {
+    margin-bottom: 0px;
+    font-size: 40px;
+    line-height: 45px;
+  }
+
+  .discover-exp-text {
+    font-size: 14px;
+    margin-bottom: 0px;
+  }
+
+  .discover-exp-info {
+    margin-top: 0px;
+    margin-left: 35px;
+  }
+
+  .discover-section {
+    margin-top: 315px;
+  }
+
+  .gradient-rectangle {
+    top: -580px;
+    right: -480px;
+  }
+
+  .image-container {
+    top: -610px;
+    right: -450px;
+  }
 
   .partners-logo-container {
     display: flex;
@@ -5014,12 +5096,12 @@ img.img-icon {
   }
   
   .image-container {
-    top: -495px; 
+    top: -375px; 
     right: -260px; 
   }
   
   .gradient-rectangle {
-    top: -530px; 
+    top: -390px; 
     right: -224px;
   }
 
@@ -5380,6 +5462,29 @@ img.img-icon {
 	-webkit-box-shadow: 0 0 0 0 rgba(52, 168, 83, 0);
   }
 }
+
+@keyframes slideIn {
+  from {
+      transform: translateX(100%);
+      opacity: 0;
+  }
+  to {
+      transform: translateX(0);
+      opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+      transform: translateX(0);
+      opacity: 1;
+  }
+  to {
+      transform: translateX(-100%);
+      opacity: 0;
+  }
+}
+
 
 @keyframes pulse-complete {
   0% {
