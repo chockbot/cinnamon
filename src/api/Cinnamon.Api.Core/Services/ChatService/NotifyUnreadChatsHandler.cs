@@ -35,37 +35,41 @@ public class NotifyUnreadChatsHandler : INotifyUnreadChatsHandler
             }
 
             var unreadMessages = unreadMessagesRes.Result.Result;
-            foreach (var message in unreadMessages)
+            for (int i = 0; i < unreadMessages.Count(); i++)
             {
-                string repeated = message.Repeated ?? "first";
-                DateTime currentDate = DateTime.Now;
+                var message = unreadMessages.ElementAt(i);
+                string repeated = "first";
 
-                // Notification conditions based on time intervals
-                if (repeated.Equals("first", StringComparison.CurrentCultureIgnoreCase))
+                // skip messages less than 1hr
+                if (string.IsNullOrEmpty(message.Repeated))
                 {
-                    // First notification: only if message is at least 1 hour old
-                    if (currentDate < message.ChatDate.AddHours(1)) continue;
-                    repeated = "second"; // Set up for the next interval
+                    var currentDate = DateTime.Now.AddHours(-1);
+                    if (currentDate < message.ChatDate) continue;
                 }
-                else if (repeated.Equals("second", StringComparison.CurrentCultureIgnoreCase))
+
+                // skip messages less than 24 hrs
+                if (message.Repeated.Equals("first", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    // Second notification: only if message is at least 24 hours old
-                    if (currentDate < message.ChatDate.AddHours(24)) continue;
-                    repeated = "third"; // Set up for the next interval
+                    var currentDate = DateTime.Now.AddHours(-24);
+                    if (currentDate < message.ChatDate) continue;
+
+                    repeated = "second";
                 }
-                else if (repeated.Equals("third", StringComparison.CurrentCultureIgnoreCase))
+
+                // skip message less than 2 days.
+                if (message.Repeated.Equals("second", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    // Third notification: only if message is at least 2 days old
-                    if (currentDate < message.ChatDate.AddDays(2)) continue;
-                    repeated = "done"; // Mark as done after third notification
+                    var currentDate = DateTime.Now.AddDays(-2);
+                    if (currentDate < message.ChatDate) continue;
+
+                    repeated = "third";
                 }
-                else
+
+                if (message.Repeated.Equals("third", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    // If repeated is "done" or any other value, skip further notifications
                     continue;
                 }
 
-                // Send notification
                 var notifyRes = await chatUnreadNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.ChatUnreadNotificationArgs
                 {
                     Emails = new List<string> { message.CustomerEmail }
@@ -75,7 +79,6 @@ public class NotifyUnreadChatsHandler : INotifyUnreadChatsHandler
                     return AppResult<NotifyUnreadChatsResult>.CreateFailed(new ApplicationException(notifyRes.Message), notifyRes.Message);
                 }
 
-                // Log the notification with updated repetition status
                 var createUnreadLogRes = await chatHistoryData.CreateUnreadNotification(new Framework.ApiCommand.ApiData.ChatConnection.Request.CreateUnreadNotificationArgs
                 {
                     ChatDate = message.ChatDate,
