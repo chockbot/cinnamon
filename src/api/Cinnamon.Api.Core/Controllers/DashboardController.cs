@@ -563,6 +563,10 @@ public class DashboardController : ControllerBase
                             FirstName = s.Customer.FirstName,
                             LastName = s.Customer.LastName,
                             Email = s.Customer.Email
+                        },
+                        PurchaseOrder = new Framework.ApiCommand.ApiCore.DTO.PurchaseOrder.PurchaseOrderDTO
+                        {
+                            Payload = s.PurchaseOrder.Payload,
                         }
                     };
                 })

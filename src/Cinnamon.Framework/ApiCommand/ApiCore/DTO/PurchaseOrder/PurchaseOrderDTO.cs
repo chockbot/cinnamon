@@ -18,6 +18,7 @@ public class PurchaseOrderDTO
     public decimal AppliedCredit {get; set;}
     public bool IsInclusivePayment {get; set;}
     public decimal AddOnsAmount { get; set; }
+    public string Payload { get; set; }
     public IEnumerable<AddOnDetail> AddOnsDetails { get; set; }
 
     public class AddOnDetail

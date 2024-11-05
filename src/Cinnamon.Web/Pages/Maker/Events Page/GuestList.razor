@@ -1,8 +1,10 @@
 ﻿@layout EmptyLayout;
+@using Newtonsoft.Json;
 @using ClosedXML.Excel;
 @using Cinnamon.Web.Models.Entities
 @using Cinnamon.Web.Models.Ote
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using NuGet.Packaging;
 @inject IDashboardApiHandler dashboardApiHandler
 @inject IJSRuntime jsRuntime
 
@@ -192,7 +194,7 @@
                 PageIndex = pageIndex,
                 DateId = dateId
             }, Token);
-        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess) 
         {
             oteCustomer = result.Result.Result.Select(e => new OteTicket
                 {
@@ -207,8 +209,13 @@
                         FirstName = e.Customer.FirstName,
                         LastName = e.Customer.LastName,
                         Email = e.Customer.Email
+                    },
+                    PurchaseOrder = new PurchaseOrder
+                    {
+                        Payload = e.PurchaseOrder.Payload
                     }
                 }).ToList();
+
             Pagination = result.Result.Pagination;
             FilteredCustomer = oteCustomer.OrderBy(s => s.Id).ToList();
         }
@@ -264,7 +271,13 @@
             }, Token);
         if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
         {
-            ExportCustomer = result.Result.Result.Select(e => new OteTicket
+            ExportCustomer = result.Result.Result.Select(e =>
+            {
+                // Deserialize Payload (assuming Payload is a JSON string)
+                var payload = JsonConvert.DeserializeObject<PayloadData>(e.PurchaseOrder.Payload);
+                // Get Registration from QuestionDetails
+                var registration = string.Join(", ", payload?.Questions?.Select(q => $"{q.Question}: {q.Answer}") ?? new List<string>());
+                return new OteTicket
                 {
                     Id = e.Id,
                     ActivityId = e.ActivityId,
@@ -277,8 +290,10 @@
                         FirstName = e.Customer.FirstName,
                         LastName = e.Customer.LastName,
                         Email = e.Customer.Email
-                    }
-                }).OrderBy(a => a.Id).ToList();
+                    },
+                    Registration = registration
+                };
+            }).OrderBy(a => a.Id).ToList();
         }
         using (var workbook = new XLWorkbook("wwwroot/Template/CustomerList.xlsx"))
         {
@@ -286,13 +301,14 @@
             int startRow = 3;
             foreach (var item in ExportCustomer)
             {
-                worksheet.Cell(1, 6).Value = $"Date: {DateTime.Today.ToString("MMMM dd, yyyy")}";
+                worksheet.Cell(1, 7).Value = $"Date: {DateTime.Today.ToString("MMMM dd, yyyy")}";
                 worksheet.Cell(startRow, 1).Value = item.Id;
                 worksheet.Cell(startRow, 2).Value = $"{item.Customer.FirstName} {item.Customer.LastName}";
                 worksheet.Cell(startRow, 3).Value = item.Customer.Email;
                 worksheet.Cell(startRow, 4).Value = item.Title;
                 worksheet.Cell(startRow, 5).Value = item.Amount;
                 worksheet.Cell(startRow, 6).Value = item.Status;
+                worksheet.Cell(startRow, 7).Value = item.Registration;
                 startRow++;
             }
             using (var memoryStream = new MemoryStream())
@@ -371,5 +387,29 @@
     {
         currentPage = page;
         await GetCustomerList(int.Parse(page));
+    }
+    public class PayloadData
+    {
+        public IEnumerable<Ticket> Tickets { get; set; }
+        public IEnumerable<Questions> Questions { get; set; }
+    }
+
+    public class Ticket
+    {
+        public int Id { get; set; }
+        public int OteDateId { get; set; }
+        public decimal Price { get; set; }
+        public string Name { get; set; }
+        public string Code { get; set; }
+        public string ImageData { get; set; }
+        public bool RequiredApproval { get; set; }
+        public string SeatNumber { get; set; }
+    }
+
+    public class Questions
+    {
+        public int Id { get; set; }
+        public string Question { get; set; }
+        public string Answer { get; set; }
     }
 }

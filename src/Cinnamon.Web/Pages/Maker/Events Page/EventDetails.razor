@@ -330,6 +330,10 @@
                         FirstName = e.Customer.FirstName,
                         LastName = e.Customer.LastName,
                         Email = e.Customer.Email
+                    },
+                    PurchaseOrder = new PurchaseOrder
+                    {
+                        Payload = e.PurchaseOrder.Payload
                     }
                 }).ToList();
             Pagination = result.Result.Pagination;
@@ -409,6 +413,10 @@
                         FirstName = e.Customer.FirstName,
                         LastName  = e.Customer.LastName,
                         Email     = e.Customer.Email
+                    },
+                    PurchaseOrder = new PurchaseOrder
+                    {
+                        Payload = e.PurchaseOrder.Payload
                     }
                 }).OrderBy(a => a.Id).ToList();
         }
