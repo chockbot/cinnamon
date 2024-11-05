@@ -223,6 +223,20 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     });
                 }
             }
+            //Check if there's a waitlist question
+            var waitlistQuestion = new List<Questions>();
+            if (args.Questions is not null)
+            {
+                foreach (var question in args.Questions)
+                {
+                    waitlistQuestion.Add(new Questions
+                    {
+                        Id = question.Id,
+                        Answer = question.Answer,
+                        Question = question.Question
+                    });
+                }
+            }
 
             decimal subTotal = selectedTickets.Sum(t => t.Price);
             decimal providerFeePercent = args.PaymentMethod == "CARD" ? 5 : 3;
@@ -333,7 +347,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 Waitlisted = requestedPayment.Waitlisted,
                 WaitListId = requestedPayment.WaitListId,
                 PaymentRequestToken = requestedPayment.Token, // to be used for ote finish transaction
-                PaymentRequestGuid = requestedPayment.Guid,   // to invalidate requested payment token
+                PaymentRequestGuid = requestedPayment.Guid, // to invalidate requested payment token
+                Questions = waitlistQuestion
             };
             var serializedPayload = jsonSerializationProvider.Serialize(payloadData);
 
@@ -541,5 +556,11 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         public string ImageData {get; set;}
         public bool RequiredApproval {get; set;}
         public string SeatNumber { get; set; }
+    }
+    private class Questions
+    {
+        public int Id { get; set; }
+        public string Question { get; set; }
+        public string Answer { get; set; }
     }
 }

@@ -22,7 +22,7 @@ public class PurchaseOrder
     public decimal AppliedCreditAmount {get; set;}
     public decimal AddOnsAmount { get; set; }
     public IList<AddOnDetail> AddOnDetails { get; set;}
-
+    public string Payload { get; set; }
     public class AddOnDetail
     {
         public int Id { get; set;}  

@@ -20,4 +20,13 @@ public class OteTicket
     public string Registration { get; set; }
     public string CustomerName { get; set; }
     public CustomerProfile Customer { get; set; }
+    public PurchaseOrder PurchaseOrder { get; set; }
+
+    public List<RegistrationQuestion> Registrations = new List<RegistrationQuestion>();
+
+    public class RegistrationQuestion
+    {
+        public string Question { get; set; }
+        public string Answer { get; set; }
+    }
 }
