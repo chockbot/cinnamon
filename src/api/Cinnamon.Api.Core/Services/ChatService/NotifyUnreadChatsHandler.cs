@@ -35,51 +35,49 @@ public class NotifyUnreadChatsHandler : INotifyUnreadChatsHandler
             }
 
             var unreadMessages = unreadMessagesRes.Result.Result;
-
-            for(int i =0; i < unreadMessages.Count(); i++)
+            foreach (var message in unreadMessages)
             {
-                var message = unreadMessages.ElementAt(i);
-                string repeated = "first";
+                string repeated = message.Repeated ?? "first";
+                DateTime currentDate = DateTime.Now;
 
-                // skip messages less than 1hr
-                if(string.IsNullOrEmpty(message.Repeated))
+                // Notification conditions based on time intervals
+                if (repeated.Equals("first", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    var currentDate = DateTime.Now.AddHours(-1);
-                    if(currentDate < message.ChatDate) continue;
+                    // First notification: only if message is at least 1 hour old
+                    if (currentDate < message.ChatDate.AddHours(1)) continue;
+                    repeated = "second"; // Set up for the next interval
                 }
-
-                // skip messages less than 24 hrs
-                if(message.Repeated.Equals("first", StringComparison.CurrentCultureIgnoreCase))
+                else if (repeated.Equals("second", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    var currentDate = DateTime.Now.AddHours(-24);
-                    if(currentDate < message.ChatDate) continue;
-
-                    repeated = "second";
+                    // Second notification: only if message is at least 24 hours old
+                    if (currentDate < message.ChatDate.AddHours(24)) continue;
+                    repeated = "third"; // Set up for the next interval
                 }
-
-                // skip message less than 2 days.
-                if(message.Repeated.Equals("second", StringComparison.CurrentCultureIgnoreCase))
+                else if (repeated.Equals("third", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    var currentDate = DateTime.Now.AddDays(-2);
-                    if(currentDate < message.ChatDate) continue;
-
-                    repeated = "third";
+                    // Third notification: only if message is at least 2 days old
+                    if (currentDate < message.ChatDate.AddDays(2)) continue;
+                    repeated = "done"; // Mark as done after third notification
                 }
-
-                if(message.Repeated.Equals("third", StringComparison.CurrentCultureIgnoreCase))
+                else
                 {
+                    // If repeated is "done" or any other value, skip further notifications
                     continue;
                 }
 
-                var notifyRes = await chatUnreadNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.ChatUnreadNotificationArgs {
-                    Emails = new List<string> {message.CustomerEmail}
+                // Send notification
+                var notifyRes = await chatUnreadNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.ChatUnreadNotificationArgs
+                {
+                    Emails = new List<string> { message.CustomerEmail }
                 });
-                if(!notifyRes.Succeeded || notifyRes.Result is null)
+                if (!notifyRes.Succeeded || notifyRes.Result is null)
                 {
                     return AppResult<NotifyUnreadChatsResult>.CreateFailed(new ApplicationException(notifyRes.Message), notifyRes.Message);
                 }
 
-                var createUnreadLogRes = await chatHistoryData.CreateUnreadNotification(new Framework.ApiCommand.ApiData.ChatConnection.Request.CreateUnreadNotificationArgs {
+                // Log the notification with updated repetition status
+                var createUnreadLogRes = await chatHistoryData.CreateUnreadNotification(new Framework.ApiCommand.ApiData.ChatConnection.Request.CreateUnreadNotificationArgs
+                {
                     ChatDate = message.ChatDate,
                     ChatHistoryId = message.ChatHistoryId,
                     CustomerEmail = message.CustomerEmail,
