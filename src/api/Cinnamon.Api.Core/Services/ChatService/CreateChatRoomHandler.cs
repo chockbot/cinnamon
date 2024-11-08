@@ -36,7 +36,7 @@ namespace Cinnamon.Api.Core.Services.ChatService
             try
             {
                 // prevent user from creating chat room with themselves
-                if(args.ToUserId == args.FromUserId)
+                if (args.ToUserId == args.FromUserId)
                 {
                     return AppResult<CreateChatRoomResult>.CreateFailed(new ApplicationException("ToUserId and FromUserId cannot be the same"), "ToUserId and FromUserId cannot be the same");
                 }
