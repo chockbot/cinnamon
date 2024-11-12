@@ -1,15 +1,12 @@
 using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Api.Data.Repository.Interfaces;
-using Cinnamon.Framework.Common;
-using Entities = Cinnamon.Api.Data.Repository.Entities;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
-using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
-using System;
-using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteTicket;
-using Npgsql;
-using Cinnamon.Framework.ApiCommand.ApiData.DTO.Student;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteTicket;
+using Cinnamon.Framework.Common;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
+using System.Data;
 
 namespace Cinnamon.Api.Data.Repository.DbSets;
 
@@ -54,23 +51,25 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
             if (includeCustomer)
             {
                 query = query.Include(t => t.Customer);
+                query = query.Include(t => t.PurchaseOrder);
             }
 
             if (!includeImageData)
             {
                 query = query.Select(t => new OteTicket
                 {
-                    ActivityId = t.ActivityId,
-                    Amount = t.Amount,
-                    CustomerId = t.CustomerId,
-                    Id = t.Id,
-                    OteScheduleId = t.OteScheduleId,
+                    ActivityId           = t.ActivityId,
+                    Amount               = t.Amount,
+                    CustomerId           = t.CustomerId,
+                    Id                   = t.Id,
+                    OteScheduleId        = t.OteScheduleId,
                     OteSchedulePricingId = t.OteSchedulePricingId,
-                    PurchaseOrderId = t.PurchaseOrderId,
-                    QRCode = t.QRCode,
-                    Status = t.Status,
-                    Title = t.Title,
-                    Customer = t.Customer
+                    PurchaseOrderId      = t.PurchaseOrderId,
+                    QRCode               = t.QRCode,
+                    Status               = t.Status,
+                    Title                = t.Title,
+                    Customer             = t.Customer,
+                    PurchaseOrder        = t.PurchaseOrder
                 });
             }
 
@@ -248,16 +247,67 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
     {
         try
         {
-            string query = "SELECT a.\"Id\", a.\"ActivityId\", a.\"OteScheduleId\", a.\"OteSchedulePricingId\", a.\"CustomerId\", a.\"PurchaseOrderId\", a.\"Title\", a.\"Amount\"," +
-                " a.\"QRCode\", a.\"QRImageData\", a.\"Status\", a.\"CreatedOn\", a.\"CreatedBy\", a.\"ChangedOn\", a.\"ChangedBy\", a.\"OteDateId\", a.\"SeatNumber\", b.\"Payload\", " +
-                "c.\"FirstName\", c.\"LastName\", c.\"Email\", d.\"Date\", e.\"UnitCount\" FROM public.\"OteTickets\" AS a LEFT JOIN public.\"Customers\" AS c ON c.\"Id\" = a.\"CustomerId\" " +
-                "LEFT JOIN public.\"OteWaitList\" AS b ON b.\"OteDateId\" = a.\"OteDateId\" AND b.\"CustomerId\" = a.\"CustomerId\" LEFT JOIN public.\"OteDates\" AS d ON d.\"Id\" = a.\"OteDateId\" " +
-                "LEFT JOIN public.\"PurchaseOrders\" AS e ON e.\"Id\" = a.\"PurchaseOrderId\" WHERE a.\"ActivityId\" = " + activityId + "";
+            string query = @"
+            SELECT 
+                cr.TicketId,
+                cr.TicketName,
+                cr.Quantity,
+                cr.Amount,
+                cr.Payload,
+                cr.Id,
+                cr.DateId,
+                c.""FirstName"",
+                c.""LastName"",
+                c.""Email"",
+                d.""Date"",
+                cr.Status
+            FROM (
+                SELECT  
+                    w.""Id"" AS TicketId,
+                    NULL AS TicketName,
+                    NULL AS Quantity,
+                    NULL AS Amount,
+                    w.""Payload"" AS Payload,
+                    w.""CustomerId"" AS Id,
+                    w.""OteDateId"" AS DateId,
+                    CASE 
+                        WHEN w.""Status"" = 1 THEN 'PENDING WAITLIST'
+                        WHEN w.""Status"" = 2 THEN 'APPROVED WAITLIST'
+                        WHEN w.""Status"" = 3 THEN 'DECLINED WAITLIST'
+                        ELSE 'Unknown'
+                    END AS Status
+                FROM public.""OteWaitList"" AS w 
+                WHERE w.""ActivityId"" = @activityId AND w.""Status"" != 4
+                
+                UNION ALL
+                
+                SELECT 
+                    t.""Id"" AS TicketId,
+                    t.""Title"" AS TicketName,
+                    1 AS Quantity,
+                    t.""Amount"",
+                    NULL AS Payload,
+                    t.""CustomerId"" AS Id,
+                    t.""OteDateId"" AS DateId,
+                    t.""Status"" AS Status
+                FROM public.""OteTickets"" AS t
+                WHERE t.""ActivityId"" = @activityId
+            ) AS cr
+            JOIN public.""Customers"" AS c ON cr.Id = c.""Id"" 
+            JOIN public.""OteDates"" AS d ON cr.DateId = d.""Id"";";
+
             IList<OteTicketDTO> listResult = new List<OteTicketDTO>();
+
             using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
             {
                 command.CommandText = query;
                 command.CommandType = System.Data.CommandType.Text;
+
+                // Add the parameter to avoid SQL injection
+                var activityIdParam = command.CreateParameter();
+                activityIdParam.ParameterName = "@activityId";
+                activityIdParam.Value = activityId;
+                command.Parameters.Add(activityIdParam);
 
                 applicationContext.Database.OpenConnection();
 
@@ -270,35 +320,29 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
 
                         listResult = dt.AsEnumerable().Select(item => new OteTicketDTO
                         {
-                            ActivityId           = Convert.ToInt32(item["ActivityId"]),
-                            Amount               = Convert.ToDecimal(item["Amount"]),
-                            CustomerId           = Convert.ToInt32(item["CustomerId"]),
-                            Id                   = Convert.ToInt32(item["Id"]),
-                            OteScheduleId        = Convert.ToInt32(item["OteScheduleId"]),
-                            OteSchedulePricingId = Convert.ToInt32(item["OteSchedulePricingId"]),
-                            PurchaseOrderId      = Convert.ToInt32(item["PurchaseOrderId"]),
-                            QRCode               = item["QRCode"].ToString() ?? string.Empty,
-                            Status               = item["Status"].ToString() ?? string.Empty,
-                            Title                = item["Title"].ToString() ?? string.Empty,
-                            Payload              = item["Payload"].ToString() ?? string.Empty,
-                            Date                 = Convert.ToDateTime(item["Date"]),
-                            Quantity             = Convert.ToInt32(item["UnitCount"]),
+                            Id       = Convert.IsDBNull(item["TicketId"]) ? 0 : Convert.ToInt32(item["TicketId"]),
+                            Amount   = Convert.IsDBNull(item["Amount"]) ? 0m : Convert.ToDecimal(item["Amount"]),
+                            Status   = Convert.IsDBNull(item["Status"]) ? string.Empty : item["Status"].ToString(),
+                            Title    = Convert.IsDBNull(item["TicketName"]) ? string.Empty : item["TicketName"].ToString(),
+                            Payload  = Convert.IsDBNull(item["Payload"]) ? string.Empty : item["Payload"].ToString(),
+                            Date     = Convert.IsDBNull(item["Date"]) ? DateTime.MinValue : Convert.ToDateTime(item["Date"]),
+                            Quantity = Convert.IsDBNull(item["Quantity"]) ? 0 : Convert.ToInt32(item["Quantity"]),
                             Customer = new CustomerDTO
                             {
-                                FirstName = item["FirstName"].ToString() ?? string.Empty,
-                                LastName  = item["LastName"].ToString() ?? string.Empty,
-                                Email     = item["Email"].ToString() ?? string.Empty,
+                                FirstName = Convert.IsDBNull(item["FirstName"]) ? string.Empty : item["FirstName"].ToString(),
+                                LastName  = Convert.IsDBNull(item["LastName"]) ? string.Empty : item["LastName"].ToString(),
+                                Email     = Convert.IsDBNull(item["Email"]) ? string.Empty : item["Email"].ToString(),
                             }
                         }).ToList();
                     }
                 }
             }
 
-            return AppResult<IEnumerable<OteTicketDTO>>.CreateSucceeded(listResult, "Successfully get all ticket purchased");
+            return AppResult<IEnumerable<OteTicketDTO>>.CreateSucceeded(listResult, "Successfully retrieved all tickets purchased");
         }
         catch (Exception ex)
         {
-            return AppResult<IEnumerable<OteTicketDTO>>.CreateFailed(ex, "An error occured when trying to get all ticket purchased");
+            return AppResult<IEnumerable<OteTicketDTO>>.CreateFailed(ex, "An error occurred when trying to retrieve all tickets purchased");
         }
     }
 }

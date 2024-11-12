@@ -1,4 +1,5 @@
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.PurchaseOrder;
 
 namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.OteTicket;
 
@@ -21,4 +22,5 @@ public class OteTicketDTO
     public int OteDateId {get; set;}
     public string SeatNumber { get; set; }
     public CustomerDTO Customer {get; set;}
+    public PurchaseOrderDTO PurchaseOrder { get; set; }
 }

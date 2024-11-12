@@ -1,5 +1,6 @@
 ﻿using Cinnamon.Framework.ApiCommand.ApiCore;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.PurchaseOrder;
 
 namespace Cinnamon.Api.Core.Services.DashboardService.Interactors.Results;
 public class GetOTEByActivityIdResult
@@ -20,7 +21,7 @@ public class GetOTEByActivityIdResult
         public string QRCode { get; set; }
         public string QRImageData { get; set; }
         public string Status { get; set; }
-
         public CustomerDTO Customer { get; set; }
+        public PurchaseOrderDTO PurchaseOrder { get; set; }
     }
 }

@@ -66,6 +66,10 @@ public class GetOTEByActivityIdHandler : IGetOTEByActivityIdHandler
                             LastName  = e.Customer.LastName,
                             Email     = e.Customer.Email,   
                         },
+                        PurchaseOrder = new Framework.ApiCommand.ApiData.DTO.PurchaseOrder.PurchaseOrderDTO
+                        {
+                            Payload = e.PurchaseOrder.Payload,
+                        }
                     };
                 }),
                 ErrorInfo = new Framework.ApiCommand.ApiCore.ErrorInfo

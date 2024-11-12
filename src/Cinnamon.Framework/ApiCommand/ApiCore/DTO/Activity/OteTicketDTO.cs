@@ -1,4 +1,5 @@
 ﻿using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Customer;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.PurchaseOrder;
 
 namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
 
@@ -19,4 +20,5 @@ public class OteTicketDTO
     public DateTime Date { get; set; }
     public int Quantity { get; set; }
     public CustomerDTO Customer { get; set; }
+    public PurchaseOrderDTO PurchaseOrder { get; set; }
 }
