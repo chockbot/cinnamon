@@ -395,34 +395,34 @@
                         <p class="discover-text">Discover your</p>
                         <p class="discover-text sub-discover">experience.</p>
                     </div>
-                <div class="discover-info">
-                    @foreach (var activities in carouselActivities)
-                    {
-                        string formattedDate = activities.DateStart.ToString("MMM dd, yyyy ● h:mm tt");
-
-                        @if (selectedSlide == activities.Handler)
+                    <div class="discover-info">
+                        @foreach (var activities in carouselActivities)
                         {
-                            <div class="discover-exp-info">
-                                <p class="discover-exp-text">@activities.Title</p>
-                                <p class="discover-exp-text">@formattedDate</p>
-                                @if (@activities.ExperienceTypeId == 1)
-                                {
-                                    var address = string.IsNullOrEmpty(activities.Address.PinnedLocation) ? activities.Address.City + ", " + activities.Address.Region : activities.Address.PinnedLocation;
-                                    <p class="discover-exp-text">@address</p>
-                                }
-                                else
-                                {
-                                    <p class="discover-exp-text">@(activities.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
-                                }
-                                <div class="provider-buttons">
-                                    <a class="buy-tickets-button" id="btnBrowse" href="@DetailsUrl(activities.Handler, (int)activities.ExperienceCreationTypeId, activities.IsReservedSeating)" target="_blank">
-                                        <span class="button-provider-text">Buy Tickets</span>
-                                    </a>
+                            string formattedDate = activities.DateStart.ToString("MMM dd, yyyy ● h:mm tt");
+
+                            @if (selectedSlide == activities.Handler)
+                            {
+                                <div class="discover-exp-info">
+                                    <p class="discover-exp-text">@activities.Title</p>
+                                    <p class="discover-exp-text">@formattedDate</p>
+                                    @if (@activities.ExperienceTypeId == 1)
+                                    {
+                                        var address = string.IsNullOrEmpty(activities.Address.PinnedLocation) ? activities.Address.City + ", " + activities.Address.Region : activities.Address.PinnedLocation;
+                                        <p class="discover-exp-text">@address</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="discover-exp-text">@(activities.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                                    }
+                                    <div class="provider-buttons">
+                                        <a class="buy-tickets-button" id="btnBrowse" href="@DetailsUrl(activities.Handler, (int)activities.ExperienceCreationTypeId, activities.IsReservedSeating)" target="_blank">
+                                            <span class="button-provider-text">Buy Tickets</span>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
+                            }
                         }
-                    }
-                </div>
+                    </div>
                 </div>
                 <div class="main-container">
                     <div class="carousel">
