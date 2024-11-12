@@ -8,6 +8,7 @@
 @inject IDashboardApiHandler dashboardApiHandler
 @inject IAccountApiHandler accountApiHandler
 @inject IActivityApiHandler activityApiHandler
+@inject IJSRuntime jsRuntime
 
 <div class="customer-list">
     <div class="ticket-table">
@@ -20,7 +21,14 @@
             }
             else
             {
-                <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
+                <LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
+                    <div class="excel-section">
+                        <button class="btn-export" @onclick="ExportToExcel">
+                            Export to Excel
+                            <img class="excel-icon" src="images/xls-icon.svg" />
+                        </button>
+                    </div>
+                    <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
                 <TableHeader>
                     <TableRow>
                         <TableHeaderCell class="th-id">
@@ -81,6 +89,7 @@
                         }
                     </TableBody>
                 </Table>
+                </LoadingIndicator>
             }
         </div>
     </div>
@@ -239,6 +248,8 @@
     [Parameter]
     public int DateId { get; set; }
 
+    public List<OteTicket> ExportCustomer = new List<OteTicket>();
+
     public List<OteWaitlist> OteWaitlist = new List<OteWaitlist>();
 
     public OteWaitlist WaitlistDetails { get; set; }
@@ -248,6 +259,10 @@
     private Offcanvas? offcanvas;
 
     private bool approving = false;
+
+    LoadingIndicator loadingIndicator;
+
+    IJSObjectReference module;
 
     protected override async Task OnInitializedAsync()
     {
@@ -284,6 +299,14 @@
         }
     } 
 
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/exportToExcel.js");
+        }
+    }
     public class Payload
     {
         public IEnumerable<TicketDetails> Tickets { get; set; }
@@ -370,7 +393,7 @@
             await NotificationService.Success("Successfully approved waitlist.", "Success");
         }
     }
-    
+
     public async Task DeclineWaitlist()
     {
         var approveWaitlist = await activityApiHandler.UpdateOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteWaitlistArgs
@@ -418,5 +441,87 @@
                 CreatedOn    = e.CreatedOn
             }).OrderByDescending(a => a.CreatedOn).ToList();
         }
+    }
+    private async Task ExportToExcel()
+    {
+        await loadingIndicator.Show();
+        await Task.Delay(1000);
+        var waitlists = await activityApiHandler.GetOteWaitlistByProvider(new Framework.ApiCommand.ApiCore.Activity.Request.GetOteWaitlistByProviderArgs
+            {
+                ProviderId = ProviderId,
+                ActivityId = ActivityId,
+                Status = new[] { 1, 2, 3 },
+                OteDateId = DateId
+            }, Token);
+        if (waitlists.Succeeded && waitlists.Result is not null && waitlists.Result.IsSuccess)
+        {
+            ExportCustomer = waitlists.Result.Result.Select(e =>
+            {
+                // Deserialize Payload (assuming Payload is a JSON string)
+                var payload = JsonConvert.DeserializeObject<Payload>(e.Payload);
+
+                // Get Registration from QuestionDetails
+                var registration = string.Join(", ", payload?.Questions?.Select(q => $"{q.Question}: {q.Answer}") ?? new List<string>());
+
+                // Get ticket count
+                var ticketCount = payload?.Tickets?.Sum(a => a.Count) ?? 0;
+
+                // Get Ticket Name
+                var ticketName = string.Join(", ", payload?.Tickets?.Select(a => a.Name) ?? Enumerable.Empty<string>()) ?? "Unnamed Ticket";
+
+                // Get Amount
+                var ticketAmount = payload?.Tickets?.Sum(a => a.Price) ?? 0;
+
+                // Get Date, ensure it's not null
+                var ticketDate = payload?.Tickets?.FirstOrDefault()?.Date ?? DateTime.MinValue; // Use DateTime.MinValue as a default
+
+                return new OteTicket
+                    {
+                        Id           = e.Id,
+                        Title        = ticketName,
+                        Amount       = Convert.ToDecimal(ticketAmount),
+                        Status       = e.Status == 1 ? "Pending" : e.Status == 2 ? "Approved" : e.Status == 3 ? "Declined" : "Unknown", 
+                        Payload      = e.Payload,
+                        CustomerName = e.CustomerName,
+                        Date         = Convert.ToDateTime(ticketDate),
+                        Quantity     = ticketCount,
+                        Registration = registration
+                    };
+            }).OrderBy(a => a.Id).ToList();
+        }
+        using (var workbook = new XLWorkbook("wwwroot/Template/WaitListTemplate.xlsx"))
+        {
+            var worksheet = workbook.Worksheet(1);
+            int startRow = 3;
+            foreach (var item in ExportCustomer)
+            {
+                worksheet.Cell(1, 1).Value = EventName;
+                worksheet.Cell(1, 8).Value = $"Date: {DateTime.Today.ToString("MMMM dd, yyyy")}";
+                worksheet.Cell(startRow, 1).Value = item.Id;
+                worksheet.Cell(startRow, 2).Value = $"{item.CustomerName}";
+                worksheet.Cell(startRow, 3).Value = $"{item.Date}";
+                worksheet.Cell(startRow, 4).Value = $"{item.Title}";
+                worksheet.Cell(startRow, 5).Value = $"{item.Quantity}";
+                worksheet.Cell(startRow, 6).Value = $"{item.Amount}";
+                worksheet.Cell(startRow, 7).Value = $"{item.Status}";
+                worksheet.Cell(startRow, 8).Value = $"{item.Registration}";
+                startRow++;
+            }
+            using (var memoryStream = new MemoryStream())
+            {
+                workbook.SaveAs(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                var currentDate = DateTime.Now.ToString("yyyyMMddHHmmss");
+                var fileName = $"WaitList_{currentDate}.xlsx";
+                byte[] bytes = memoryStream.ToArray();
+
+                var bytesBase64 = Convert.ToBase64String(bytes);
+
+                // Download the saved memorystream file
+                await Task.Run(() => module.InvokeVoidAsync("saveAsFile", fileName, bytesBase64));
+            }
+        }
+        await loadingIndicator.Hide();
     }
 }

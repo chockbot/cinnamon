@@ -306,6 +306,7 @@ public class OteTicketController : ControllerBase
     [Route("GetAllTicketPurchased")]
     [HttpGet]
     [ProducesResponseType(typeof(GetAllTicketPurchasedResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAllTicketPurchased([FromQuery] GetAllTicketPurchasedArgs args)
     {
         try

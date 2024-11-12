@@ -24,6 +24,7 @@ using ReminderFlagAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.OteReminderF
 using ProviderCustomQuestionAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.ProviderCustomQuestion;
 using SeatPlanAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.SeatPlan;
 using SeatPlanReqAlias = Cinnamon.Framework.ApiCommand.ApiData.SeatPlan.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.PurchaseOrder;
 
 namespace Cinnamon.Api.Data.Models;
 
@@ -61,8 +62,11 @@ public class MappingProfile : Profile
         CreateMap<ActivityImage, ActivityImageDTO>();
         CreateMap<Customer, CustomerDTO>();
         CreateMap<OteDate, OteScheduleDateDTO>();
+        CreateMap<PurchaseOrder, PurchaseOrderDTO>();
 
-        CreateMap<OteTicket, OteTicketDTO>();
+        CreateMap<OteTicket, OteTicketDTO>()
+              .ForMember(dest => dest.Customer, opt => opt.MapFrom(src => src.Customer))
+              .ForMember(dest => dest.PurchaseOrder, opt => opt.MapFrom(src => src.PurchaseOrder)); ;
         CreateMap<OteTicketDTO, OteTicket>();
         CreateMap<OteTicketAlias.Request.CreateOteTicketArgs, OteTicketDTO>();
 

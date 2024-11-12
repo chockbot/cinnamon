@@ -1042,15 +1042,16 @@ else
                 var payload = JsonConvert.DeserializeObject<Payload>(e.Payload);
                 // Get Registration from QuestionDetails
                 var registration = string.Join(", ", payload?.Questions?.Select(q => $"{q.Question}: {q.Answer}") ?? new List<string>());
-            
+                 // Get ticket count
+                var ticketCount = payload?.Tickets?.Sum(a => a.Count) ?? 0;
+                // Get Ticket Name 
+                var ticketName = string.Join(", ", payload?.Tickets?.Select(a => a.Name) ?? Enumerable.Empty<string>()) ?? "Unnamed Ticket";
                 return new OteTicket
                     {
-                        Id = e.Id,
-                        ActivityId = e.ActivityId,
-                        Title = e.Title,
-                        Amount = e.Amount,
-                        QRCode = e.QRCode,
-                        Status = e.Status,
+                        Id      = e.Id,
+                        Title   = string.IsNullOrEmpty(e.Title) ? ticketName : e.Title,
+                        Amount  = e.Amount,
+                        Status  = e.Status,
                         Payload = e.Payload,
                         Customer = new CustomerProfile
                         {
@@ -1058,8 +1059,8 @@ else
                             LastName = e.Customer.LastName,
                             Email = e.Customer.Email
                         },
-                        Date = e.Date,
-                        Quantity = e.Quantity,
+                        Date         = e.Date,
+                        Quantity     = ticketCount != 0 ? ticketCount : e.Quantity,
                         Registration = registration
                     };
             }).OrderBy(a => a.Id).ToList();
@@ -1070,7 +1071,7 @@ else
             int startRow = 3;
             foreach (var item in ExportCustomer)
             {
-                worksheet.Cell(1, 6).Value = $"Date: {DateTime.Today.ToString("MMMM dd, yyyy")}";
+                worksheet.Cell(1, 9).Value = $"Date: {DateTime.Today.ToString("MMMM dd, yyyy")}";
                 worksheet.Cell(startRow, 1).Value = item.Id;
                 worksheet.Cell(startRow, 2).Value = $"{item.Customer.FirstName} {item.Customer.LastName}";
                 worksheet.Cell(startRow, 3).Value = item.Customer.Email;

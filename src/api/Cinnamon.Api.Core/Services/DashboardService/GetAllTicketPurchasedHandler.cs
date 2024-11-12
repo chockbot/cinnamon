@@ -53,7 +53,6 @@ public class GetAllTicketPurchasedHandler : IGetAllTicketPurchasedHandler
                         Id       = e.Id,
                         Title    = e.Title,
                         Amount   = e.Amount,
-                        QRCode   = e.QRCode,
                         Status   = e.Status,
                         Payload  = e.Payload,
                         Date     = e.Date,

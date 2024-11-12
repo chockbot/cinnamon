@@ -563,6 +563,10 @@ public class DashboardController : ControllerBase
                             FirstName = s.Customer.FirstName,
                             LastName = s.Customer.LastName,
                             Email = s.Customer.Email
+                        },
+                        PurchaseOrder = new Framework.ApiCommand.ApiCore.DTO.PurchaseOrder.PurchaseOrderDTO
+                        {
+                            Payload = s.PurchaseOrder.Payload,
                         }
                     };
                 })
@@ -845,7 +849,6 @@ public class DashboardController : ControllerBase
                         ActivityId = s.ActivityId,
                         Title      = s.Title,
                         Amount     = s.Amount,
-                        QRCode     = s.QRCode,
                         Status     = s.Status,
                         Payload    = s.Payload,
                         Date       = s.Date,
