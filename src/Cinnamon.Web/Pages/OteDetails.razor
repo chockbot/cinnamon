@@ -855,6 +855,12 @@
         try
         {
             await LoadOteDetails();
+            if (!activity.IsPublished || activity.ForceDisable)
+            {
+                NavigationManager.NavigateTo("page-not-found");
+                await Task.Delay(1);
+                return;
+            }
             await LoadProvider();
             await LoadIsInclusiveOte();
             await LoadProfile();
@@ -966,12 +972,6 @@
                 return;
             }
             var act = result.Result.Result;
-
-            if (!act.IsPublished || act.ForceDisable)
-            {
-                NavigationManager.NavigateTo("page-not-found");
-                return;
-            }
             activity = mapper.Map<OteActivity>(act);
             activity.Pricings = activity.Pricings.OrderBy(t => t.Id).ToList();
             activity.OteDates = activity.OteDates.OrderBy(d => d.Date);
