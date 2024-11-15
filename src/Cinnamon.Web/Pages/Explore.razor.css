@@ -37,6 +37,11 @@
   animation: slideIn 0.5s ease-in-out forwards;
 }
 
+.top-section {
+  margin-bottom: 10%;
+  gap: 20%;
+}
+
 .button-provider-text {
   color: #FFF;
   font-family: "Nunito Sans";
@@ -90,6 +95,8 @@
 }
 
 .main-container {
+  display: flex;
+  justify-content: center;
   margin-top: 20px; 
   position: relative;
   width: 100%;
@@ -99,8 +106,8 @@
 .carousel {
   position: relative;
   z-index: 2;
-  width: 100%;
-  height: 100vh; 
+  width: fit-content;
+  height: fit-content; 
   display: flex;
   justify-content: center; 
   align-items: center; 
@@ -108,9 +115,7 @@
 }
 
 .image-container {
-  position: absolute;
-  top: 50px;
-  right: 100px;
+  position: inherit;
   width: 490px;
   height: 690px;
   z-index: 10;
@@ -135,7 +140,7 @@
   height: 690px;
   border-radius: 50px;
   background: linear-gradient(153deg, #FDC830 29.02%, #F37335 90.43%);
-  z-index: 1;
+  z-index: 0;
   transform: rotate(-11.867deg);
 }
 
@@ -1113,12 +1118,12 @@
 .sub-header {
   margin-top: 2%;
 }
+
 .sub-header-container {
   display: flex;
   justify-content: space-evenly;
   gap: 5%;
   margin-bottom: 32px;
-  margin-top: 100px;
 }
 
 .event-organizer-join-desktop-title {
@@ -2367,14 +2372,8 @@ img.img-icon {
   }
 
   .gradient-rectangle {
-    top: 230px !important;
     right: 35px !important;
   }
-
-  .sub-header-container {
-    margin-top: 200px !important;
-    }
-
 }
 
 @media only screen and (min-width: 375px) and (max-width: 424px) {
@@ -2384,7 +2383,6 @@ img.img-icon {
   }
 
   .gradient-rectangle {
-    top: 230px !important;
     right: 70px !important;
   }
 }
@@ -2392,12 +2390,17 @@ img.img-icon {
 /* Extra small devices (portrait phones, less than 576px) */
 @media (min-width: 0px) and (max-width: 426px) {
 
+  .top-section {
+    flex-direction: column;
+  }
+
   .discover-section {
     margin-top: 20px;
   }
 
   .main-container {
-    margin-top: 100px;
+    margin-top: 15%;
+    margin-left: 10%;
   }
 
   .discover-title {
@@ -2422,8 +2425,7 @@ img.img-icon {
   }
 
   .gradient-rectangle {
-    top: 230px;
-    right: 100px;
+    right: 25%;
     width: 240px;
     height: 370px;
     border-radius: 20px;
@@ -2689,7 +2691,7 @@ img.img-icon {
   .sub-header-container {
 	flex-direction: column;
 	align-items: center;
-  margin-top: 0px;
+  margin-top: 30%;
   }
   
 
@@ -3248,13 +3250,13 @@ img.img-icon {
 @media (min-width: 426px) and (max-width: 766px) {
 
   .main-container {
-    margin-top: -200px;
-    margin-bottom: 80px;
+    margin-left: 15%;
   }
-
+  
   .sub-header-container {
     margin-top: 0px;
   }
+
   .discover-title {
     margin-left: 30px;
   }
@@ -3281,7 +3283,6 @@ img.img-icon {
   }
 
   .gradient-rectangle {
-    top: 230px;
     right: 100px;
     width: 240px;
     height: 370px;
