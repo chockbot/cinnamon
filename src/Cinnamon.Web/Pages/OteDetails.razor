@@ -784,7 +784,7 @@
     </Modal>
 
 @code
-{
+    {
     [Parameter]
     public string Handler { get; set; } = string.Empty;
     private OteActivity? activity;
@@ -971,11 +971,11 @@
                 NavigationManager.NavigateTo("page-not-found");
                 return;
             }
-            var act = result.Result.Result;
-            activity = mapper.Map<OteActivity>(act);
-            activity.Pricings = activity.Pricings.OrderBy(t => t.Id).ToList();
-            activity.OteDates = activity.OteDates.OrderBy(d => d.Date);
-            activity.Sold = activity.Pricings.Sum(a => a.TicketSold);
+            var act                   = result.Result.Result;
+            activity                  = mapper.Map<OteActivity>(act);
+            activity.Pricings         = activity.Pricings.OrderBy(t => t.Id).ToList();
+            activity.OteDates         = activity.OteDates.OrderBy(d => d.Date);
+            activity.Sold             = activity.Pricings.Sum(a => a.TicketSold);
             activity.EventTicketLimit = act.OteSchedule.EventTicketLimit;
             IsLimit                   = act.OteSchedule.EventTicketLimit != 0 ? true : false;
             activity.IsOpen           = act.OteSchedule.IsOpen;
@@ -983,12 +983,33 @@
             activity.CapacityCount    = act.OteSchedule.CapacityCount;
             int soldLimitedTickets    = activity.Pricings.Where(a => !a.IsUnlimited).Sum(a => a.TicketSold);
             activity.IsEventSoldOut   = activity.Pricings.Sum(a => a.MaxSlots) <= soldLimitedTickets ? true : false;
-            selectedDate              = SelectedDates.Where(a => a >= DateTime.Now).FirstOrDefault();
-            IsExpiredEvent            = selectedDate == DateTime.MinValue;
-            if (IsExpiredEvent)
+            // Current Date
+            DateTime currentDate = DateTime.Now;
+
+            // Event Start
+            selectedDate = SelectedDates.FirstOrDefault();
+
+            // Check if selectedDate is valid
+            if (selectedDate != default)
             {
-                selectedDate = SelectedDates.FirstOrDefault();
+                // Event End
+                DateTime eventEnd = selectedDate.Add(SelectedDuration);
+
+                // Check if the event is expired
+                IsExpiredEvent = currentDate > eventEnd;
+
+                // If the event is ongoing, override IsExpiredEvent to false
+                if (currentDate >= selectedDate && currentDate <= eventEnd)
+                {
+                    IsExpiredEvent = false; // Event is ongoing
+                }
             }
+            else
+            {
+                // No valid event dates found
+                IsExpiredEvent = true;
+            }
+
             ViewAvailableDates();
         }
         catch (System.Exception)
@@ -1561,9 +1582,18 @@
             IList<DateTime> dates = new List<DateTime>();
             if (activity is not null)
             {
-                dates = activity.OteDates.Select(d => d.DateEnd).ToList();
+                dates = activity.OteDates.Select(d => d.DateStart).ToList();
             }
             return dates;
+        }
+    }
+    private TimeSpan SelectedDuration
+    {
+        get
+        {
+            var oteDate = activity.OteDates.FirstOrDefault();
+            TimeSpan eventDuration = oteDate.DateEnd - oteDate.DateStart;
+            return eventDuration;
         }
     }
 
