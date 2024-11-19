@@ -119,7 +119,7 @@
                                     <Column class="schedule-header-left" ColumnSize="ColumnSize.Is12.Is5.OnDesktop">
                                         <div class="calendar-section">
                                             <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()"
-                                                SelectedDates="SelectedDates" ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" />
+                                                SelectedDates="SelectedDates" ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" Duration="SelectedDuration" />
                                         </div>
                                         </Column>
                                         <Column class="schedule-header-right" ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
@@ -431,7 +431,7 @@
                                     <Column class="schedule-header-left" ColumnSize="ColumnSize.Is12.Is5.OnDesktop">
                                         <div class="calendar-section">
                                             <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()"
-                                                SelectedDates="SelectedDates" ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" />
+                                                SelectedDates="SelectedDates" ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" Duration="SelectedDuration" />
                                         </div>
                                         </Column>
                                         <Column class="schedule-header-right" ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
@@ -1010,6 +1010,20 @@
                 IsExpiredEvent = true;
             }
 
+            if (IsExpiredEvent)
+            {
+                //Get second date
+                if(SelectedDates.Count > 1)
+                {
+                    var getNotExpiredDate = SelectedDates.Where(a => a.Add(SelectedDuration) >= currentDate);
+                    selectedDate = getNotExpiredDate.FirstOrDefault();
+                    IsExpiredEvent = false;
+                }
+                else
+                {
+                    IsExpiredEvent = true;
+                }
+            }
             ViewAvailableDates();
         }
         catch (System.Exception)
@@ -1602,7 +1616,7 @@
         AvailablePriceList = Enumerable.Empty<OtePricing>();
         if (activity is not null)
         {
-            var oteDate = activity.OteDates.FirstOrDefault(d => d.Date.Date == selectedDate.Date);
+            var oteDate = activity.OteDates.FirstOrDefault(d => d.Date == selectedDate.Date);
             if (oteDate is not null)
             {
                 selectedDateStart = oteDate.DateStart;
