@@ -92,6 +92,12 @@ public class ApprovedPaidWaitListHandler : IApprovedPaidWaitListHandler
                     TicketCount = t.Count,
                     TicketId = t.Id
                 }),
+                Questions = deserializedPayload.Questions.Select(s => new OteCreateRequestPaymentArgs.ProviderQuestion
+                {
+                    Id       = s.Id,
+                    Question = s.Question,
+                    Answer   = s.Answer
+                }),
                 ForceCreateTicket = true,
                 Waitlisted = true,
                 WaitListId = waitlist.Id,
@@ -133,9 +139,17 @@ public class ApprovedPaidWaitListHandler : IApprovedPaidWaitListHandler
         public string QRCode {get; set;}
     }
 
+    private class ActivityQuestion
+    {
+        public int Id { get; set; }
+        public string Question { get; set; }
+        public string Answer { get; set; }
+    }
+
     private class PayloadData 
     {
         public IEnumerable<Ticket> Tickets {get; set;}
+        public IEnumerable<ActivityQuestion> Questions { get; set; }
         public int TransactionId {get; set;}
     }
 }

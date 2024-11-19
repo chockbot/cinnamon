@@ -12,7 +12,7 @@
     <div class="@DisplayCalendar">
         <Calendar ViewOnly="ViewOnly" StrikeOutNotSelected="StrikeOutNotSelected" 
             SelectedDates="SelectedDates" OnSelectedDate="SelectedDate" CurrentDate="CurrentDate"
-            OnNextMonthChanged="OnNextMonthChanged" OnPreviousMonthChanged="OnPreviousMonthChanged" />
+                  OnNextMonthChanged="OnNextMonthChanged" OnPreviousMonthChanged="OnPreviousMonthChanged" Duration="Duration" />
     </div>
 </div>
 
@@ -28,6 +28,8 @@
     public EventCallback<DateTime> OnSelectedDate {get; set;}
     [Parameter]
     public bool StrikeOutNotSelected {get; set;}
+    [Parameter]
+    public TimeSpan Duration { get; set; }
 
     private bool displayCalendar {get; set;}
     private DateTime? selectedDate;
@@ -39,7 +41,7 @@
 
     protected override void OnInitialized()
     {
-        selectedDate = SelectedDates.Where(a => a >= DateTime.Now).FirstOrDefault();
+        selectedDate = SelectedDates.Where(a => a.Add(Duration) >= DateTime.Now).FirstOrDefault();
         if (selectedDate == DateTime.MinValue)
         {
             selectedDate = SelectedDates.FirstOrDefault();
