@@ -390,7 +390,7 @@
 
     @if (!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
     {
-            <div class="top-section" style="position:relative;display:flex">
+            <div class="top-section">
                 <div class="discover-section">
                     <div class="discover-title">
                         <p class="discover-text">Discover your</p>
@@ -399,13 +399,14 @@
                     <div class="discover-info">
                         @foreach (var activities in carouselActivities)
                         {
-                            string formattedDate = activities.DateStart.ToString("MMM dd, yyyy ● h:mm tt");
+                            string formattedDate = activities.DateStart.ToString("MMMM dd, yyyy ● ");
+                            string formattedTime = activities.DateStart.ToString("h:mm tt");
 
                             @if (selectedSlide == activities.Handler)
                             {
                                 <div class="discover-exp-info">
                                     <p class="discover-exp-text">@activities.Title</p>
-                                    <p class="discover-exp-text">@formattedDate</p>
+                                    <p class="discover-exp-text">@formattedDate<span class="discover-exp-text-time">@formattedTime</span></p>
                                     @if (@activities.ExperienceTypeId == 1)
                                     {
                                         var address = string.IsNullOrEmpty(activities.Address.PinnedLocation) ? activities.Address.City + ", " + activities.Address.Region : activities.Address.PinnedLocation;
@@ -3176,7 +3177,7 @@
         {
             subscriptionResultMessage = "You're already on our list! Keep an eye on your inbox for exciting updates, special discounts, and valuable insights.";
             subscriptionResultClass = "error";
-            subscriptionResultTitle = "Already a Subscriber...";
+            subscriptionResultTitle = "Already a Subscriber..."; 
         }
 
         showModal = true;
