@@ -489,10 +489,10 @@ public class ActivityController : ControllerBase
                     Price = p.Price,
                     Name = p.Name,
                     IsUnlimited = p.IsUnlimited,
-                    RequiredApproval = p.RequiredApproval
+                    RequiredApproval = p.RequiredApproval,
+                    ReserveSeatUuid = p.ReserveSeatUuid ?? string.Empty
                 };
             }).ToList();
-
             var onlineEvents = args.OnlineEvents is not null ? args.OnlineEvents.Select(u => {
                 return new OteOnlineEventsDTO {
                     Id                        = u.Id,

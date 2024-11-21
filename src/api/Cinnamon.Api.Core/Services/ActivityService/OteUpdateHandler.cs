@@ -316,7 +316,8 @@ public class OteUpdateHandler : IOteUpdateHandler
                         Price = p.Price,
                         Name = p.Name,
                         IsUnlimited = p.IsUnlimited,
-                        RequiredApproval = p.RequiredApproval
+                        RequiredApproval = p.RequiredApproval,
+                        ReserveSeatUuid = p.ReserveSeatUuid
                     };
                 }).ToList(),
                 Dates = dateItems.Select(d => {
