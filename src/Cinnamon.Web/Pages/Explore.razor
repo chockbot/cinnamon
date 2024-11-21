@@ -368,88 +368,68 @@
             </div>
         </div>    
     </div>
-        <form class="search-bar-mobile" style="@GetSearchBarStyle()" @onsubmit="Search">
-            <div class="input-group p-1">
-                <input type="text" @ref="searchInputRef" placeholder="Search Event" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
-            </div>
-        </form>
+    <form class="search-bar-mobile" style="@GetSearchBarStyle()" @onsubmit="Search">
+        <div class="input-group p-1">
+            <input type="text" @ref="searchInputRef" placeholder="Search Event" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
+        </div>
+    </form>
     <!-- Header -->
-
-    @{
-        //eto yung 15
-         var carouselActivities = activityFeeds
-        .Where(act => act.ExperienceCreationTypeId == 3)
-        .Take(15)
-        .ToList();
-    }
-
-    @{
-        //eto yung isa lang
-        var activitiesTest = activityFeeds.FirstOrDefault(act => act.ExperienceCreationTypeId == 3);
-    }
-
     @if (!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
     {
-            <div class="top-section">
-                <div class="discover-section">
-                    <div class="discover-title">
-                        <p class="discover-text">Discover your</p>
-                        <p class="discover-text sub-discover">experience.</p>
-                    </div>
-                    <div class="discover-info">
-                        @foreach (var activities in carouselActivities)
-                        {
-                            string formattedDate = activities.DateStart.ToString("MMMM dd, yyyy ● ");
-                            string formattedTime = activities.DateStart.ToString("h:mm tt");
-
-                            @if (selectedSlide == activities.Handler)
-                            {
-                                <div class="discover-exp-info">
-                                    <p class="discover-exp-text">@activities.Title</p>
-                                    <p class="discover-exp-text">@formattedDate<span class="discover-exp-text-time">@formattedTime</span></p>
-                                    @if (@activities.ExperienceTypeId == 1)
-                                    {
-                                        var address = string.IsNullOrEmpty(activities.Address.PinnedLocation) ? activities.Address.City + ", " + activities.Address.Region : activities.Address.PinnedLocation;
-                                        <p class="discover-exp-text">@address</p>
-                                    }
-                                    else
-                                    {
-                                        <p class="discover-exp-text">@(activities.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
-                                    }
-                                    <div class="provider-buttons">
-                                        <a class="buy-tickets-button" id="btnBrowse" href="@DetailsUrl(activities.Handler, (int)activities.ExperienceCreationTypeId, activities.IsReservedSeating)" target="_blank">
-                                            <span class="button-provider-text">Buy Tickets</span>
-                                        </a>
-                                    </div>
-                                </div>
-                            }
-                        }
-                    </div>
+        <div class="top-section">
+            <div class="discover-section">
+                <div class="discover-title">
+                    <p class="discover-text">Discover your</p>
+                    <p class="discover-text sub-discover">experience.</p>
                 </div>
-                <div class="main-container">
-                    <div class="carousel">
-                        <div class="carousel-track">
-                            <div class="image-container">
-                                <Carousel @bind-SelectedSlide="selectedSlide" Crossfade Interval="10000" ShowControls="false">
-                                    @foreach (var activities in carouselActivities)
-                                    {
-                                        <CarouselSlide Name="@activities.Handler">
-                                            <img src="@activities.SummaryDetails.ImageSrc" alt="img">
-                                        </CarouselSlide>
-                                    }
-                                </Carousel>
-                                <div class="gradient-rectangle"></div>
-                            </div>  
-                        </div>
+                <div class="discover-info">
+                    @foreach (var activities in activityFeeds.Take(15).ToList())
+                    {
+                        string formattedDate = activities.DateStart.ToString("MMMM dd, yyyy ● ");
+                        string formattedTime = activities.DateStart.ToString("h:mm tt");
+                        @if (selectedSlide == activities.Handler)
+                        {
+                            <div class="discover-exp-info">
+                                <p class="discover-exp-text">@activities.Title</p>
+                                <p class="discover-exp-text">@formattedDate<span class="discover-exp-text-time">@formattedTime</span></p>
+                                @if (@activities.ExperienceTypeId == 1)
+                                {
+                                    var address = string.IsNullOrEmpty(activities.Address.PinnedLocation) ? activities.Address.City + ", " + activities.Address.Region : activities.Address.PinnedLocation;
+                                    <p class="discover-exp-text">@address</p>
+                                }
+                                else
+                                {
+                                    <p class="discover-exp-text">@(activities.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                                }
+                                <div class="provider-buttons">
+                                    <a class="buy-tickets-button" id="btnBrowse" href="@DetailsUrl(activities.Handler, (int)activities.ExperienceCreationTypeId, activities.IsReservedSeating)" target="_blank">
+                                        <span class="button-provider-text">Buy Tickets</span>
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="main-container">
+                <div class="carousel">
+                    <div class="carousel-track">
+                        <div class="image-container">
+                            <Carousel @bind-SelectedSlide="selectedSlide" Crossfade Interval="10000" ShowControls="false">
+                                @foreach (var activities in activityFeeds.Take(15).ToList())
+                                {
+                                    <CarouselSlide Name="@activities.Handler">
+                                        <img src="@activities.SummaryDetails.ImageSrc" alt="img">
+                                    </CarouselSlide>
+                                }
+                            </Carousel>
+                            <div class="gradient-rectangle"></div>
+                        </div>  
                     </div>
                 </div>
             </div>
+        </div>
     } 
-    else 
-    {
-
-    }
-
     <!-- End of Header -->
     <!-- New Announcement Like Cards -->
     @if (!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
@@ -2452,13 +2432,6 @@
         {
             e.Message.ToString();
         }
-
-        carouselActivities = activityFeeds
-            .Where(act => act.ExperienceCreationTypeId == 3)
-            .Take(15)
-            .ToList();
-            
-        selectedSlide = carouselActivities.FirstOrDefault()?.Handler;
     }
 
     private async Task SendChatStatus()
