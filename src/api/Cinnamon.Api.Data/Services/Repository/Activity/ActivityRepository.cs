@@ -2013,6 +2013,7 @@ public class ActivityRepository : IActivityRepository
                     Name = p.Name,
                     RequiredApproval = p.RequiredApproval,
                     IsUnlimited = p.IsUnlimited,
+                    ReserveSeatUuid = p.ReserveSeatUuid
                 };
             }).ToList();
 
