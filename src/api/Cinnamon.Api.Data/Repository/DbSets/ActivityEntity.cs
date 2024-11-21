@@ -390,8 +390,9 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 							priceGroup.Name = price.Name;
 							priceGroup.IsUnlimited = price.IsUnlimited;
 							priceGroup.RequiredApproval = price.RequiredApproval;
+							priceGroup.ReserveSeatUuid = price.ReserveSeatUuid;
 
-							var priceList = result.OteSchedule.OteSchedulePricing.Where(p => p.OteSchedulePricingGroupId == priceGroup.Id);
+                            var priceList = result.OteSchedule.OteSchedulePricing.Where(p => p.OteSchedulePricingGroupId == priceGroup.Id);
 							if(priceList is not null)
 							{
 								foreach(var ticketPrice in priceList)
@@ -403,6 +404,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 									ticketPrice.Name = price.Name;
 									ticketPrice.IsUnlimited = price.IsUnlimited;
 									ticketPrice.RequiredApproval = price.RequiredApproval;
+									ticketPrice.ReserveSeatUuid = price.ReserveSeatUuid;
 								}
 							}
 						}
@@ -418,7 +420,8 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 							Price = p.Price,
 							RequiredApproval = p.RequiredApproval,
 							IsUnlimited = p.IsUnlimited,
-							OteSchedule = result.OteSchedule
+							OteSchedule = result.OteSchedule,
+							ReserveSeatUuid = p.ReserveSeatUuid,
 						};
 					});
 					
@@ -438,7 +441,8 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 								OteSchedule = result.OteSchedule,
 								OteSchedulePricingGroup = item,
 								IsUnlimited = item.IsUnlimited,
-								RequiredApproval = item.RequiredApproval
+								RequiredApproval = item.RequiredApproval,
+								ReserveSeatUuid = item.ReserveSeatUuid
 							});
 						}
 					}
@@ -701,7 +705,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 			string customerIdQuery = providerId is not null ? "and ac.\"CreatedBy\" = @providerId " : string.Empty;
 
 			string query = "select ac.\"Id\", ac.\"Title\", ac.\"Description\", ac.\"Handler\", ac.\"ForceDisable\", ad.\"PinnedLocation\", " +
-                               "ad.\"CityName\", ad.\"RegionName\", ac.\"ExperienceTypeId\", od.\"Date\", os.\"ReserveSeat\", " +
+							   "ad.\"CityName\", ad.\"RegionName\", ac.\"ExperienceTypeId\", od.\"Date\", os.\"ReserveSeat\", " +
 							   "od.\"DateStart\", od.\"DateEnd\", od.\"Id\" \"DateId\", " +
 							   "( " +
 								   "SELECT \"ImageLocation\" " +
@@ -756,7 +760,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 							Title            = item["Title"].ToString() ?? string.Empty,
 							ForceDisable     = Convert.ToBoolean(item["ForceDisable"]),
 							ReserveSeat      = Convert.ToBoolean(item["ReserveSeat"])
-                        }).ToList();
+						}).ToList();
 					}
 				}
 			}
