@@ -1977,6 +1977,7 @@ public class ActivityRepository : IActivityRepository
                     IsUnlimited      = p.IsUnlimited,
                     RequiredApproval = p.RequiredApproval,
                     OteSchedule      = schedule,
+                    ReserveSeatUuid  = p.ReserveSeatUuid
                 };
             }).ToList();
 
@@ -1995,7 +1996,8 @@ public class ActivityRepository : IActivityRepository
                             MaxSlots = p.MaxSlots,
                             Price = p.Price,
                             Name = p.Name,
-                            OteSchedulePricingGroup = p
+                            OteSchedulePricingGroup = p,
+                            ReserveSeatUuid = p.ReserveSeatUuid
                         };
                     }).ToList(),
                 };
@@ -2010,7 +2012,8 @@ public class ActivityRepository : IActivityRepository
                     Price = p.Price,
                     Name = p.Name,
                     RequiredApproval = p.RequiredApproval,
-                    IsUnlimited = p.IsUnlimited
+                    IsUnlimited = p.IsUnlimited,
+                    ReserveSeatUuid = p.ReserveSeatUuid
                 };
             }).ToList();
 
