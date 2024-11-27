@@ -43,7 +43,7 @@ public class SendEmailOTPHandler : ISendEmailOTPHandler
                 {
                     Body = emailBody,
                     Recipients = new List<string> { args.Email },
-                    Subject = "Email Verification",
+                    Subject = "Use OTP to Verify Your Identity",
                     ContentType = "html"
                 });
 
