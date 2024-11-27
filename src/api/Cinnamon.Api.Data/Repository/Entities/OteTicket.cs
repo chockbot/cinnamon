@@ -6,7 +6,7 @@ public class OteTicket : BaseEntity
     public int OteScheduleId {get; set;}
     public int OteSchedulePricingId {get; set;}
     public int CustomerId {get; set;}
-    public int PurchaseOrderId {get; set;}
+    public int? PurchaseOrderId {get; set;}
     public string Title {get; set;}
     public decimal Amount {get; set;}
     public string QRCode {get; set;}

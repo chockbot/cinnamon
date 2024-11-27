@@ -38,6 +38,7 @@ public static class ServiceExtenstion
         services.AddTransient<IAddOns, AddOnsEntity>(); 
         services.AddTransient<IOteOnlineEvent, OteOnlineEventEntity>();
         services.AddTransient<IOteWaitlist, OteWaitlistEntity>();
+        services.AddTransient<IGuestOTP, GuestOTPEntity>();
 
         services.AddTransient<Services.Repository.Interfaces.IActivityRepository, Services.Repository.Activity.ActivityRepository>();
         services.AddTransient<Services.Repository.Interfaces.IAddressRepository, Services.Repository.ActivityAddress.AddressRepository>();
@@ -91,6 +92,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IProviderCustomQuestionRepository, Services.Repository.ProviderCustomQuestion.ProviderCustomQuestionRepository>();
         services.AddTransient<Services.Repository.Interfaces.ISeatPlanFormatterRepository, Services.Repository.SeatPlan.SeatPlanFormatterRepository>();
         services.AddTransient<Services.Repository.Interfaces.ISeatPlanTemplateRepository, Services.Repository.SeatPlan.SeatPlanTemplateRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IGuestOTPRepository, Services.Repository.GuestOTP.GuestOTPRepository>();
 
         return services;
     }

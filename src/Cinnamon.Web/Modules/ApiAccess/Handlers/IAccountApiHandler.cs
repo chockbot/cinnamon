@@ -45,4 +45,5 @@ public interface IAccountApiHandler
     Task<AppResult<SecretLoginResult>> SecretLogin(SecretLoginArgs args);
     Task<AppResult<ChangEmailAddressResult>> ChangeEmailAddress(ChangeEmailArgs args, string token);
     Task<AppResult<DeleteWaitlistResult>> DeleteWaitlist(DeleteWaitlistArgs args, string token);
+    Task<AppResult<SendOTPResult>>SendOTP(SendOTPArgs args);
 } 

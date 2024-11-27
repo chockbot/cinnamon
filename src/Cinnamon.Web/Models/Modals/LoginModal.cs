@@ -10,17 +10,27 @@ public class LoginModal
 
     public Modal ForgotPasswordModal { get; set; }
     public Modal VerificationModal {get; set;}
+
+    public Modal GuestLoginModal { get; set; }
+
+    public Modal OTPModal { get; set; }
     public Validations EmailModelValidation {get; set;}
     public Validations PasswordModelValidation {get; set;}
     public Validations ResetPasswordValidation {get; set;}
+    public Validations GuestEmailModelValidation { get; set; }
 
     public LoginEmailModel EmailModel {get; set;} = new();
     public LoginPasswordModel PasswordModel {get; set;} = new();
     public ForgotPasswordModel ResetPasswordModel {get; set;} = new();
-
+    public LoginGuestEmailModel GuestEmailModel { get; set;} = new();   
     public bool IsResendingVerification {get; set;}
     public bool IsResendVerificationShowError {get; set;}
     public string ResendVrificationErrorMessage {get; set;}
+
+    public bool IsGuestSendingVerification { get; set; }
+    public bool IsGuestResendingVerification { get; set; }
+    public bool IsGuestResendVerificationShowError { get; set; }
+    public string ResendGuestVerificationErrorMessage { get; set; }
 
     public string CurrentEmail { get; set; } = string.Empty;
 
@@ -68,5 +78,16 @@ public class LoginModal
 
         public bool IsShowForgorPasswordSuccessMessage {get; set;}
         public string ForgotPasswordSuccessMessage {get; set;}
+    }
+
+    public class LoginGuestEmailModel
+    {
+        [Required(ErrorMessage = "Email address is required")]
+        [EmailAddress]
+        [DataType(DataType.EmailAddress)]
+        public string Email { get; set; }
+
+        public bool IsEmailSubmitting { get; set; }
+        public bool IsShowErrorMessage { get; set; }
     }
 }
