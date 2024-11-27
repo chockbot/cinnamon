@@ -71,6 +71,7 @@ public interface IDataStore
     IProviderCustomQuestion ProviderCustomQuestion {get;}
     ISeatPlanFormatter SeatPlanFormatter {get;}
     ISeatPlanTemplate SeatPlanTemplate {get;}
+    IGuestOTP GuestOTP { get;}
     
     Task EnsureMigrate();
 

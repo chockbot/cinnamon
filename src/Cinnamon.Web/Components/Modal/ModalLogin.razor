@@ -7,6 +7,7 @@
 @inject IJSRuntime JsRuntime;
 @inject NavigationManager NavigationManager;
 @inject IAdminApiHandler adminApiHandler;
+@inject IAccountApiHandler accountApiHandler;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <Modal @ref="Model.EmailModal" class="modal-email modal-account-credential">
@@ -373,17 +374,6 @@
         await Model.TextEmail.Focus();
     }
 
-    public async Task ShowGuest()
-    {
-        await Model.GuestLoginModal.Show();
-        await Model.EmailModal.Hide();
-    }
-
-    public async Task ShowOTP()
-    {
-        await Model.OTPModal.Show();
-    }
-
     string modalHeaderStyle = $"";
 
     string alertStyle = $"margin-bottom:0px;";
@@ -546,6 +536,10 @@
                             await Model.TextPassword.Focus();
                             Model.PasswordModel.ErrorMessage = "Email already registered. Please enter your password to continue.";
                             return;
+                        case "EMAIL-ALREADY-REGISTERED-NOT-VERIFIED":
+                        case "EMAIL-ALREADY-REGISTERED-VERIFIED":
+                            await ShowOTP();
+                            break;
                         default:
                             //Display OTP Modal
                             await ShowOTP();
@@ -556,7 +550,7 @@
         }
         catch
         {
-            Model.EmailModel.IsShowErrorMessage = true;
+            Model.GuestEmailModel.IsShowErrorMessage = true;
         }
     }
 
@@ -565,12 +559,50 @@
         try
         {
             Model.IsGuestSendingVerification = true;
+            //Confirm OTP API
+            //Add to customer 
         }
         catch (Exception)
         {
 
             throw;
         }
+    }
+
+    public async Task ShowGuest()
+    {
+        await Model.GuestLoginModal.Show();
+        await Model.EmailModal.Hide();
+    }
+
+    public async Task ShowOTP()
+    {
+        //Send OTP to the email
+        var sendOTP = await accountApiHandler.SendOTP(new Framework.ApiCommand.ApiCore.Account.Request.SendOTPArgs
+        {
+            Email = Model.GuestEmailModel.Email,
+            OTPCode = GenerateOtp()
+        });
+        //Open OTP Verification Modal
+        if (sendOTP.Succeeded && sendOTP.Result is not null && sendOTP.Result.IsSuccess)
+        {
+            await Model.OTPModal.Show();
+        }
+        
+    }
+
+    public int[] GenerateOtp()
+    {
+        Random random = new Random();
+        int[] otpArray = new int[6];  // Array to hold 6 digits
+
+        // Generate each digit between 0 and 9
+        for (int i = 0; i < otpArray.Length; i++)
+        {
+            otpArray[i] = random.Next(0, 10);  // Generate a random number between 0 and 9
+        }
+
+        return otpArray;
     }
 
     private void GoogleSignInClick()
