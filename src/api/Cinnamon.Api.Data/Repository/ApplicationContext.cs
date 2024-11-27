@@ -1,8 +1,7 @@
+using Cinnamon.Api.Data.Extensions;
+using Cinnamon.Api.Data.Repository.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Cinnamon.Api.Data.Repository.Entities;
-using Cinnamon.Api.Data.Extensions;
-using System.Security.AccessControl;
 
 namespace Cinnamon.Api.Data.Repository;
 
@@ -339,13 +338,13 @@ public class ApplicationContext : IdentityDbContext
         modelBuilder.Entity<OteTicket>()
             .HasOne(t => t.Customer);
         modelBuilder.Entity<OteTicket>()
+            .HasOne(t => t.PurchaseOrder);
+        modelBuilder.Entity<OteTicket>()
             .HasIndex(t => t.QRCode);
         modelBuilder.Entity<OteTicket>()
             .HasIndex(t => t.Status);
         modelBuilder.Entity<OteTicket>()
             .HasIndex("ActivityId","QRCode","Status");
-        modelBuilder.Entity<OteTicket>()
-            .HasIndex(t => t.PurchaseOrderId);
         modelBuilder.Entity<OteTicket>()
             .HasIndex(t => t.OteDateId);
 
@@ -460,6 +459,10 @@ public class ApplicationContext : IdentityDbContext
         // for seatplan template
         modelBuilder.Entity<SeatPlanTemplate>()
             .HasIndex(s => s.SeatPlanFormatterId);
+
+        // for guest otp 
+        modelBuilder.Entity<GuestOTP>().
+            HasIndex(g => g.CreatedOn);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

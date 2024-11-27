@@ -8,6 +8,7 @@ using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Waitlist;
 using Microsoft.AspNetCore.Authorization;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.FamilyMember;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.RequestRefund;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.OTP;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -59,6 +60,7 @@ public class AccountController : ControllerBase
     private readonly IExtraLoginHandler extraLoginHandler;
     private readonly IChangeEmailHandler changeEmailHandler;
     private readonly IDeleteWaitlistHandler deleteWaitlistHandler;
+    private readonly ISendOTPHandler sendOTPHandler;
 
     #endregion
 
@@ -80,7 +82,8 @@ public class AccountController : ControllerBase
         IGetAllCustomersHandler getAllCustomersHandler, IUpdateCustomerProfileHandler updateCustomerProfileHandler,
         IUpdateRequestRefundHandler updateRequestRefundHandler, IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler, 
         IUpdateConnectionIdHandler updateConnectionIdHandler, IVerifyUserNotificationHandler verifyUserNotificationHandler,
-        IBlockedAccountHandler blockedAccountHandler, IExtraLoginHandler extraLoginHandler, IChangeEmailHandler changeEmailHandler, IDeleteWaitlistHandler deleteWaitlistHandler)
+        IBlockedAccountHandler blockedAccountHandler, IExtraLoginHandler extraLoginHandler, IChangeEmailHandler changeEmailHandler, IDeleteWaitlistHandler deleteWaitlistHandler,
+        ISendOTPHandler sendOTPHandler)
     {
         this.submitRegisterHandler            = submitRegisterHandler;
         this.submitWaitlistHandler            = submitWaitlistHandler;
@@ -122,6 +125,7 @@ public class AccountController : ControllerBase
         this.extraLoginHandler                = extraLoginHandler;
         this.changeEmailHandler               = changeEmailHandler;   
         this.deleteWaitlistHandler            = deleteWaitlistHandler;
+        this.sendOTPHandler                   = sendOTPHandler;
     }
 
     #endregion
@@ -1604,6 +1608,43 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new DeleteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+
+    [Route("SendOTP")]
+    [HttpPost]
+    [ProducesResponseType(typeof(SendOTPResult), StatusCodes.Status201Created)]
+    [AllowAnonymous]
+    public async Task<IActionResult> SendOTP([FromBody] SendOTPArgs args)
+    {
+        try
+        {
+            var result = await sendOTPHandler.ExecuteAsync(new Services.AccountService.Interactors.SendOTPArgs
+            {
+                Email = args.Email,
+                OTPCode = args.OTPCode
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new SendOTPResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var objResult = result.Result;
+
+            return new JsonResult(new SendOTPResult
+            {
+                Result = new OtpDTO
+                {
+                    Email = objResult.Email,
+                    OTPcode = objResult.OTPCode
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new SendOTPResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

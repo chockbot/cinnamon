@@ -887,4 +887,25 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<DeleteWaitlistResult>.CreateFailed(ex, "An error occurred when calling DELETE waitlist api");
         }
     }
+
+    public async Task<AppResult<SendOTPResult>> SendOTP(SendOTPArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Account/SendOTP")
+                .PostJsonAsync(args)
+                .ReceiveJson<SendOTPResult>();
+
+            return AppResult<SendOTPResult>.CreateSucceeded(result, "Successfully posting otp api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<SendOTPResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<SendOTPResult>.CreateFailed(ex, "An error occured when posting otp api");
+        }
+    }
 }

@@ -7,6 +7,7 @@
 @inject IJSRuntime JsRuntime;
 @inject NavigationManager NavigationManager;
 @inject IAdminApiHandler adminApiHandler;
+@inject IAccountApiHandler accountApiHandler;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <Modal @ref="Model.EmailModal" class="modal-email modal-account-credential">
@@ -15,10 +16,17 @@
             <p class="col-12 modal-title font-20 m-0">Log In / Sign Up</p>
         </ModalHeader>
         <ModalBody class="px-4 py-4 m-0">
-            <div class="row mb-3">
+            <div class="row mb-2">
                 <div class="col-12 d-flex justify-content-center">
                     <button class="login-google" @onclick="GoogleSignInClick">
-                        Sign up with Google <span><img src="images/icon-google.png" class="img-icon"/></span>
+                        <img src="images/icon-google.png" class="img-icon" /><span class="">Sign up with Google</span>
+                    </button>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-12 d-flex justify-content-center">
+                    <button class="login-google" @onclick="ShowGuest">
+                        <img src="images/guest-login.png" class="img-icon" /><span>Login as Guest</span>
                     </button>
                 </div>
             </div>
@@ -245,6 +253,97 @@
     </ModalContent>
 </Modal>
 
+<Modal @ref="Model.GuestLoginModal" class="modal-account-credential">
+    <ModalContent>
+        <ModalHeader Style="@modalHeaderStyle" class="py-2 px-4 border-0-solid border-bottom-1-solid border-color-grey-200">
+            <p class="col-12 modal-title font-20 m-0">Login as Guest</p>
+        </ModalHeader>
+        <ModalBody class="px-4 py-5 m-0">
+            <div class="form-content">
+                <p class="color-black-100 font-16 mb-1 font-weight-700">Email</p>
+                <div class="w-100 text-center">
+                    <Validations @ref="Model.GuestEmailModelValidation" Mode="ValidationMode.Manual" Model="Model.EmailModel">
+                        <div class="">
+                            <div class="col-12">
+                                <Validation>
+                                    <TextEdit Border="Border.Is0" @ref="Model.TextEmail" KeyDown="OnGuestEmailTextSubmit" Role="TextRole.Email" Placeholder="Enter email address"
+                                              @bind-Text="Model.GuestEmailModel.Email" Size="Size.ExtraLarge" class="bg-grey-300 py-4 color-grey-100 font-16">
+                                        <Feedback>
+                                            <ValidationError TextAlignment="TextAlignment.Start" />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Validation>
+                            </div>
+                            <Button Clicked="SubmitGuestEmail" Type="ButtonType.Submit" class="btn-primary py-2 h-auto rounded-pill"
+                                    Loading="Model.GuestEmailModel.IsEmailSubmitting" Disabled="Model.GuestEmailModel.IsEmailSubmitting">
+                                <LoadingTemplate>
+                                    <i id="email-spinner-loading" class="fa fa-spinner fa-spin"></i> Please Wait
+                                </LoadingTemplate>
+                                <ChildContent>
+                                     Request OTP
+                                </ChildContent>
+                            </Button>
+                        </div>
+                    </Validations>
+                    <p style="font-family:'Nunito';font-size:12px;font-weight:400;"></p>
+                    <p style="font-family:'Nunito';font-size:12px;font-weight:400;" class="mt-3 text-center">
+                        By signing up you agree to our
+                        <a class="redirect-help" target="_blank" style="color:#FFA942" @onclick="NavigateToTermsConditions">Terms and Conditions</a> and
+                        <a class="redirect-help" target="_blank" style="color:#FFA942" @onclick="NavigateToPrivacyPolicy">Privacy Policy</a>
+                    </p>
+                    <Divider />
+                    <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.GuestEmailModel.IsShowErrorMessage">
+                        <AlertDescription>An error occured. Please try again later</AlertDescription>
+                    </Alert>
+                </div>
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="Model.OTPModal" class="modal-account-credential">
+    <ModalContent>
+        <ModalHeader Style="@modalHeaderStyle" class="py-2 px-4 border-0-solid border-bottom-1-solid border-color-grey-200">
+            <p class="col-12 modal-title font-20 m-0">Verification Email</p>
+        </ModalHeader>
+        <ModalBody class="px-4 py-4 m-0">
+            <h5 class="text-center" style="color:#ffa942; font-weight:bold">Please check you email.</h5>
+            <p class="text-center">We've sent a six digit code to <span class="fw-bold">@Model.GuestEmailModel.Email.</span></p>
+            <div class="d-flex justify-content-center otp-section">
+                @for (int i = 0; i < OtpLength; i++)
+                {
+                    int currentIndex = i; // Create a local variable to capture the loop index
+                    <input type="text" id="otp-@currentIndex" maxlength="1" class="otp-box form-control mx-1 text-center"
+                           inputmode="numeric" pattern="[0-9]*"
+                           value="@Otp[currentIndex]" @oninput="@(e => HandleInput(e.Value?.ToString(), currentIndex))" />
+                }
+            </div>
+            <div class="w-100 text-center">
+                <Button Clicked="VerifyGuestEmail" Type="ButtonType.Submit" class="btn-primary py-2 h-auto rounded-pill"
+                        Loading="Model.IsGuestResendingVerification">
+                    <LoadingTemplate>
+                        <i id="email-spinner-loading" class="fa fa-spinner fa-spin"></i> Please Wait
+                    </LoadingTemplate>
+                    <ChildContent>
+                        Verify
+                    </ChildContent>
+                </Button>
+            </div>
+            <p class="mt-2 text-center">
+                Didn't receive an email?
+                @if (!Model.IsGuestResendingVerification)
+                {
+                    <span @onclick="ResendVerification" class="resend-link"> Resend</span>
+                }
+                else
+                {
+                    <span>Please Wait...</span>
+                }
+            </p>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
 @code 
 {
     private Models.Modals.LoginModal Model = new();
@@ -254,6 +353,20 @@
 
     [Parameter]
     public bool IsFBLogin { get; set; }
+
+    IJSObjectReference module;
+
+    private const int OtpLength = 6;
+
+    private string[] Otp = new string[OtpLength];
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/FocusNext.js");
+        }
+    }
 
     public async Task Show()
     {
@@ -390,6 +503,108 @@
         Model.IsResendVerificationShowError = false;
     }
 
+    private async Task SubmitGuestEmail()
+    {
+        try
+        {
+            if (await Model.GuestEmailModelValidation.ValidateAll())
+            {
+                Model.GuestEmailModel.IsEmailSubmitting = true;
+                //Check if email is registered
+                var registerWaitlist = await accountApiHandler.RegisterWaitlist(new Framework.ApiCommand.ApiCore.Account.Request.RegisterWaitlistArgs
+                    {
+                        Email = Model.GuestEmailModel.Email,
+                        ValidationRoute = config.BaseUrl + "/explore"
+                    });
+
+                Model.GuestEmailModel.IsEmailSubmitting = false;
+
+                if (!registerWaitlist.Succeeded || registerWaitlist.Result == null)
+                {
+                    Model.GuestEmailModel.IsShowErrorMessage = true;
+                    return;
+                }
+
+                if (registerWaitlist.Succeeded && !registerWaitlist.Result.IsSuccess)
+                {
+                    switch (registerWaitlist.Result.ErrorInfo?.Code)
+                    {
+                        //Redirect to normal Login
+                        case "EMAIL-ALREADY-REGISTERED":
+                            await Model.GuestLoginModal.Hide();
+                            await Model.PasswordModal.Show();
+                            await Model.TextPassword.Focus();
+                            Model.PasswordModel.ErrorMessage = "Email already registered. Please enter your password to continue.";
+                            return;
+                        case "EMAIL-ALREADY-REGISTERED-NOT-VERIFIED":
+                        case "EMAIL-ALREADY-REGISTERED-VERIFIED":
+                            await ShowOTP();
+                            break;
+                        default:
+                            //Display OTP Modal
+                            await ShowOTP();
+                            return;
+                    }
+                }    
+            }
+        }
+        catch
+        {
+            Model.GuestEmailModel.IsShowErrorMessage = true;
+        }
+    }
+
+    private async Task VerifyGuestEmail()
+    {
+        try
+        {
+            Model.IsGuestSendingVerification = true;
+            //Confirm OTP API
+            //Add to customer 
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+
+    public async Task ShowGuest()
+    {
+        await Model.GuestLoginModal.Show();
+        await Model.EmailModal.Hide();
+    }
+
+    public async Task ShowOTP()
+    {
+        //Send OTP to the email
+        var sendOTP = await accountApiHandler.SendOTP(new Framework.ApiCommand.ApiCore.Account.Request.SendOTPArgs
+        {
+            Email = Model.GuestEmailModel.Email,
+            OTPCode = GenerateOtp()
+        });
+        //Open OTP Verification Modal
+        if (sendOTP.Succeeded && sendOTP.Result is not null && sendOTP.Result.IsSuccess)
+        {
+            await Model.OTPModal.Show();
+        }
+        
+    }
+
+    public int[] GenerateOtp()
+    {
+        Random random = new Random();
+        int[] otpArray = new int[6];  // Array to hold 6 digits
+
+        // Generate each digit between 0 and 9
+        for (int i = 0; i < otpArray.Length; i++)
+        {
+            otpArray[i] = random.Next(0, 10);  // Generate a random number between 0 and 9
+        }
+
+        return otpArray;
+    }
+
     private void GoogleSignInClick()
     {
         NavigationManager.NavigateTo("/api/account/GoogleSignIn/?redirect=" + ReturnUrl, true);
@@ -424,7 +639,7 @@
         Model.ForgotPasswordModal.Hide();
         Model.EmailModal.Show();
         Model.PasswordModal.Show();
-        
+
     }
 
     private async Task SubmitResetPassword()
@@ -468,6 +683,16 @@
         return Task.CompletedTask;
     }
 
+    private Task OnGuestEmailTextSubmit(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter" || e.Key == "Enter")
+        {
+            return SubmitGuestEmail();
+        }
+
+        return Task.CompletedTask;
+    }
+
     private Task OnPasswordTextSubmit(KeyboardEventArgs e)
     {
         if(e.Code == "Enter" || e.Code == "NumpadEnter" || e.Key == "Enter")
@@ -498,5 +723,32 @@
         Model.IsRevealPassword = !Model.IsRevealPassword;
         StateHasChanged();
         return Task.CompletedTask;
+    }
+    private void HandleInput(string? value, int index)
+    {
+        if (index < 0 || index >= Otp.Length)
+        {
+            return; // Ignore invalid index
+        }
+
+        if (!string.IsNullOrEmpty(value) && value.Length == 1 && char.IsDigit(value[0]))
+        {
+            Otp[index] = value;
+
+            // Automatically move to the next input if not the last one
+            if (index < Otp.Length - 1)
+            {
+                FocusNextInput(index + 1);
+            }
+        }
+        else
+        {
+            Otp[index] = string.Empty; // Clear invalid input
+        }
+    }
+
+    private async void FocusNextInput(int index)
+    {
+        await module.InvokeVoidAsync("focusNextOtpInput", index);
     }
 }
