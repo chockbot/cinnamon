@@ -28,6 +28,7 @@ public class LoginModal
     public string ResendVrificationErrorMessage {get; set;}
 
     public bool IsGuestSendingVerification { get; set; }
+    public bool IsGuestSendVerificationShowError { get; set; }
     public bool IsGuestResendingVerification { get; set; }
     public bool IsGuestResendVerificationShowError { get; set; }
     public string ResendGuestVerificationErrorMessage { get; set; }

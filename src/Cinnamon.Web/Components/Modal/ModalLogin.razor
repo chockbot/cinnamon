@@ -2,6 +2,7 @@
 @using Flurl;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @using System.Security.Claims;
+@using Cinnamon.Web.Models.Account;
 @inject IAccountApiHandler accountApiHandler;
 @inject Cinnamon.Web.Config.Config config;
 @inject IJSRuntime JsRuntime;
@@ -320,7 +321,7 @@
             </div>
             <div class="w-100 text-center">
                 <Button Clicked="VerifyGuestEmail" Type="ButtonType.Submit" class="btn-primary py-2 h-auto rounded-pill"
-                        Loading="Model.IsGuestResendingVerification">
+                        Loading="Model.IsGuestSendingVerification" Disabled="Model.IsGuestSendingVerification">
                     <LoadingTemplate>
                         <i id="email-spinner-loading" class="fa fa-spinner fa-spin"></i> Please Wait
                     </LoadingTemplate>
@@ -333,13 +334,16 @@
                 Didn't receive an email?
                 @if (!Model.IsGuestResendingVerification)
                 {
-                    <span @onclick="ResendVerification" class="resend-link"> Resend</span>
+                    <span @onclick="ResendOTP" class="resend-link"> Resend</span>
                 }
                 else
                 {
                     <span>Please Wait...</span>
                 }
             </p>
+            <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.IsGuestSendVerificationShowError">
+                <AlertDescription>An error occured. Please try again later</AlertDescription>
+            </Alert>
         </ModalBody>
     </ModalContent>
 </Modal>
@@ -359,6 +363,8 @@
     private const int OtpLength = 6;
 
     private string[] Otp = new string[OtpLength];
+
+    private List<OTPModel> oTPs = new List<OTPModel>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -559,13 +565,51 @@
         try
         {
             Model.IsGuestSendingVerification = true;
-            //Confirm OTP API
-            //Add to customer 
+            //Confirm OTP exist
+            var result = await accountApiHandler.GetUserOTP(new Framework.ApiCommand.ApiCore.Account.Request.GetUserOTPArgs
+            {
+                Email = Model.GuestEmailModel.Email
+            });
+
+            if (result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+            {
+                oTPs = result.Result.Result.Select(a =>
+                {
+                    return new OTPModel
+                    {
+                        Email = a.Email,
+                        OTPCode = a.OtpCode,
+                        CreatedOn = a.CreatedOn
+                    };
+                }).ToList();
+            }
+            else
+            {
+                Model.IsGuestSendingVerification = false;
+                Model.IsGuestSendVerificationShowError = true;
+                return;
+            }
+            //Check if OTP Exist
+            var enteredOtp = string.Join(",", Otp);
+
+            // Check if the entered OTP exists in the fetched list
+            var isValidOtp = oTPs.Any(otp => otp.OTPCode == enteredOtp);
+
+            if (isValidOtp)
+            {
+                // OTP is valid: Update waitlist to IsVerify and register to customer table
+                // Implement the required logic for updating the waitlist or registering
+            }
+            else
+            {
+                Model.IsGuestSendVerificationShowError = true;
+            }
+            Model.IsGuestSendingVerification = false;
         }
         catch (Exception)
         {
-
-            throw;
+            Model.IsGuestSendingVerification = false;
+            Model.IsGuestSendVerificationShowError = true; 
         }
     }
 
@@ -573,6 +617,23 @@
     {
         await Model.GuestLoginModal.Show();
         await Model.EmailModal.Hide();
+    }
+
+    public async Task ResendOTP()
+    {
+        //Send OTP to the email
+        Model.IsGuestResendingVerification = true;
+        var sendOTP = await accountApiHandler.SendOTP(new Framework.ApiCommand.ApiCore.Account.Request.SendOTPArgs
+            {
+                Email = Model.GuestEmailModel.Email,
+                OTPCode = GenerateOtp()
+            });
+        //Open OTP Verification Modal
+        if (!sendOTP.Succeeded || sendOTP.Result is null || !sendOTP.Result.IsSuccess)
+        {
+            Model.IsGuestResendVerificationShowError = true;
+        }
+        Model.IsGuestResendingVerification = false;
     }
 
     public async Task ShowOTP()

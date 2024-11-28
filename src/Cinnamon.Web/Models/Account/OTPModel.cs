@@ -1,6 +1,6 @@
-﻿namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.GuestOTP;
+﻿namespace Cinnamon.Web.Models.Account;
 
-public class GuestOTPDTO
+public class OTPModel
 {
     public string Email { get; set; }
     public string OTPCode { get; set; }

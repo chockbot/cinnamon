@@ -1,6 +1,5 @@
-﻿namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.GuestOTP;
-
-public class GuestOTPDTO
+﻿namespace Cinnamon.Api.Core.Services.AccountService.Interactors.Results;
+public class VerifyOTPResult
 {
     public string Email { get; set; }
     public string OTPCode { get; set; }

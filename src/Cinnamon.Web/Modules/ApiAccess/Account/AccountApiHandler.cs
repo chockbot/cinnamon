@@ -908,4 +908,25 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<SendOTPResult>.CreateFailed(ex, "An error occured when posting otp api");
         }
     }
+
+    public async Task<AppResult<GetUserOTPResult>> GetUserOTP(GetUserOTPArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Account/GetOTPs")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetUserOTPResult>();
+
+            return AppResult<GetUserOTPResult>.CreateSucceeded(result, "Successfully getting user otp api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetUserOTPResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetUserOTPResult>.CreateFailed(ex, "An error occured when getting user otp api");
+        }
+    }
 }

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.FamilyMember;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.RequestRefund;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.OTP;
+using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -61,6 +62,7 @@ public class AccountController : ControllerBase
     private readonly IChangeEmailHandler changeEmailHandler;
     private readonly IDeleteWaitlistHandler deleteWaitlistHandler;
     private readonly ISendOTPHandler sendOTPHandler;
+    private readonly IGetUserOTPHandler getUserOTPHandler;
 
     #endregion
 
@@ -83,7 +85,7 @@ public class AccountController : ControllerBase
         IUpdateRequestRefundHandler updateRequestRefundHandler, IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler, 
         IUpdateConnectionIdHandler updateConnectionIdHandler, IVerifyUserNotificationHandler verifyUserNotificationHandler,
         IBlockedAccountHandler blockedAccountHandler, IExtraLoginHandler extraLoginHandler, IChangeEmailHandler changeEmailHandler, IDeleteWaitlistHandler deleteWaitlistHandler,
-        ISendOTPHandler sendOTPHandler)
+        ISendOTPHandler sendOTPHandler, IGetUserOTPHandler getUserOTPHandler)
     {
         this.submitRegisterHandler            = submitRegisterHandler;
         this.submitWaitlistHandler            = submitWaitlistHandler;
@@ -126,6 +128,7 @@ public class AccountController : ControllerBase
         this.changeEmailHandler               = changeEmailHandler;   
         this.deleteWaitlistHandler            = deleteWaitlistHandler;
         this.sendOTPHandler                   = sendOTPHandler;
+        this.getUserOTPHandler                = getUserOTPHandler;
     }
 
     #endregion
@@ -1645,6 +1648,42 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new SendOTPResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetOTPs")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetUserOTPResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetOTPByEmail([FromQuery] GetUserOTPArgs args)
+    {
+        try
+        {
+            var result = await getUserOTPHandler.ExecuteAsync(new Services.AccountService.Interactors.GetUserOTPArgs
+            {
+                Email = args.Email
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetUserOTPResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new GetUserOTPResult
+            {
+                IsSuccess = true,
+                Result = result.Result.GuestOTPs.Select(e =>
+                {
+                    return new Framework.ApiCommand.ApiCore.DTO.OTP.OtpDTO
+                    {
+                        Email = e.Email,
+                        OtpCode = e.OTPCode,
+                        CreatedOn = e.CreatedOn
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetActivityImagesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
