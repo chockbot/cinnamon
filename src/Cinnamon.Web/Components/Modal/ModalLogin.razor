@@ -607,26 +607,34 @@
             if (isValidOtp)
             {
                 // OTP is valid: Update waitlist to IsVerify and register to customer table
-                // Implement the required logic for updating the waitlist or registering
-                var register = await JsRuntime.InvokeAsync<Models.JsResultModel>("MyLib.Components.modal.finishSignUpModal.init",
-                        new
-                        {
-                            firstname = string.Empty,
-                            lastname = string.Empty,
-                            email = Model.GuestEmailModel.Email,
-                            birthdate = DateTime.Now.AddYears(-19),
-                            phoneNumber = string.Empty,
-                            password = string.Empty,
-                            hasAcceptedTerms = true,
-                            IsGuest = true
-                        });
-                if (!register.Success)
+                // Implement the required logic for updating waitlist
+                var verify = await accountApiHandler.VerifyEmail(new Framework.ApiCommand.ApiCore.Account.Request.VerifyEmailArgs
                 {
-                    Model.IsGuestSendVerificationShowError = true;
-                    Model.IsGuestSendingVerification = false;
-                    return;
+                    Email = Model.GuestEmailModel.Email
+                });
+                if (verify.Succeeded && verify.Result is not null && verify.Result.IsSuccess)
+                {
+                    // Implement the required logic for updating registering
+                    var register = await JsRuntime.InvokeAsync<Models.JsResultModel>("MyLib.Components.modal.finishSignUpModal.init",
+                            new
+                            {
+                                firstname = string.Empty,
+                                lastname = string.Empty,
+                                email = Model.GuestEmailModel.Email,
+                                birthdate = DateTime.Now.AddYears(-19),
+                                phoneNumber = string.Empty,
+                                password = string.Empty,
+                                hasAcceptedTerms = true,
+                                IsGuest = true
+                            });
+                    if (!register.Success)
+                    {
+                        Model.IsGuestSendVerificationShowError = true;
+                        Model.IsGuestSendingVerification = false;
+                        return;
+                    }
+                    NavigationManager.NavigateTo("/explore?IsNewRegistered=true", true);
                 }
-                NavigationManager.NavigateTo("/explore?IsNewRegistered=true", true);
             }
             else
             {

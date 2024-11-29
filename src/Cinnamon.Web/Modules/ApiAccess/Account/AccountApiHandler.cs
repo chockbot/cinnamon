@@ -929,4 +929,25 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<GetUserOTPResult>.CreateFailed(ex, "An error occured when getting user otp api");
         }
     }
+
+    public async Task<AppResult<VerifyEmailResult>> VerifyEmail(VerifyEmailArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Account/VerifyEmail")
+                .PostJsonAsync(args)
+                .ReceiveJson<VerifyEmailResult>();
+
+            return AppResult<VerifyEmailResult>.CreateSucceeded(result, "Successfully posting verify email api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<VerifyEmailResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<VerifyEmailResult>.CreateFailed(ex, "An error occured when posting verify email api");
+        }
+    }
 }

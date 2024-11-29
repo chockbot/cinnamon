@@ -63,6 +63,7 @@ public class AccountController : ControllerBase
     private readonly IDeleteWaitlistHandler deleteWaitlistHandler;
     private readonly ISendOTPHandler sendOTPHandler;
     private readonly IGetUserOTPHandler getUserOTPHandler;
+    private readonly IVerifyOTPHandler verifyOTPHandler;
 
     #endregion
 
@@ -85,7 +86,7 @@ public class AccountController : ControllerBase
         IUpdateRequestRefundHandler updateRequestRefundHandler, IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler, 
         IUpdateConnectionIdHandler updateConnectionIdHandler, IVerifyUserNotificationHandler verifyUserNotificationHandler,
         IBlockedAccountHandler blockedAccountHandler, IExtraLoginHandler extraLoginHandler, IChangeEmailHandler changeEmailHandler, IDeleteWaitlistHandler deleteWaitlistHandler,
-        ISendOTPHandler sendOTPHandler, IGetUserOTPHandler getUserOTPHandler)
+        ISendOTPHandler sendOTPHandler, IGetUserOTPHandler getUserOTPHandler,IVerifyOTPHandler verifyOTPHandler)
     {
         this.submitRegisterHandler            = submitRegisterHandler;
         this.submitWaitlistHandler            = submitWaitlistHandler;
@@ -129,6 +130,7 @@ public class AccountController : ControllerBase
         this.deleteWaitlistHandler            = deleteWaitlistHandler;
         this.sendOTPHandler                   = sendOTPHandler;
         this.getUserOTPHandler                = getUserOTPHandler;
+        this.verifyOTPHandler                 = verifyOTPHandler;
     }
 
     #endregion
@@ -1686,6 +1688,40 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetActivityImagesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("VerifyEmail")]
+    [HttpPost]
+    [ProducesResponseType(typeof(VerifyEmailResult), StatusCodes.Status201Created)]
+    [AllowAnonymous]
+    public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailArgs args)
+    {
+        try
+        {
+            var result = await verifyOTPHandler.ExecuteAsync(new Services.AccountService.Interactors.VerifyOTPArgs
+            {
+                Email = args.Email,
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new VerifyEmailResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var objResult = result.Result;
+
+            return new JsonResult(new VerifyEmailResult
+            {
+                Result = new OtpDTO
+                {
+                    Email = objResult.Email
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new VerifyEmailResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

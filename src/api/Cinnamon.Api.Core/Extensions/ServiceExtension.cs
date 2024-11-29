@@ -131,6 +131,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IDeleteWaitlistHandler, Services.AccountService.DeleteWaitlistHandler>();
         services.AddTransient<Services.AccountService.Handlers.ISendOTPHandler, Services.AccountService.SendOTPHandler>();
         services.AddTransient<Services.AccountService.Handlers.IGetUserOTPHandler, Services.AccountService.GetUserOTPHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IVerifyOTPHandler, Services.AccountService.VerifyOTPHandler>();
 
         // activity services
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();

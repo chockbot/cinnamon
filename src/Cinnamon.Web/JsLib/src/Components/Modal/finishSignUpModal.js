@@ -4,7 +4,6 @@ import { track } from "../../mixpanel_lib";
 const finishSignupModal = {};
 
 finishSignupModal.init = async (obj) => {
-debugger;
   try {
     const { data } = await axios.post("/api/account/registerautologin", obj);
     if (data.success) {
