@@ -124,7 +124,7 @@ public class CustomerRepository : ICustomerRepository
     }
 
     public async Task<AppResult<CustomerDTO>> Create(string userId, string firstname, string lastname, string email, DateTime birthdate, string phoneNumber,
-        string? about, string profilePath, bool ismaker, bool externalLogin, string handler, bool hasAcceptedTerms)
+        string? about, string profilePath, bool ismaker, bool externalLogin, string handler, bool hasAcceptedTerms, bool IsGuest)
     {
         try
         {
@@ -152,7 +152,8 @@ public class CustomerRepository : ICustomerRepository
                 IsVerifiedBadge = 0,
                 UserId = userId,
                 Handler = handler,
-                HasAcceptedTerms = hasAcceptedTerms
+                HasAcceptedTerms = hasAcceptedTerms,
+                IsGuest = IsGuest
             };
 
             var createdCustomerRes = await dataStore.Customer.Add(customer);
@@ -188,7 +189,7 @@ public class CustomerRepository : ICustomerRepository
     }
 
     public async Task<AppResult<CustomerDTO>> CreateWithPassword(string firstname, string lastname, string email, 
-        DateTime birthdate, string phoneNumber, string? about, string profilePath, bool isMaker, bool externalLogin, string pasword, string handler, bool hasAcceptedTerms)
+        DateTime birthdate, string phoneNumber, string? about, string profilePath, bool isMaker, bool externalLogin, string pasword, string handler, bool hasAcceptedTerms, bool IsGuest)
     {
         try
         {
@@ -212,7 +213,7 @@ public class CustomerRepository : ICustomerRepository
 
             var userId = await userManager.GetUserIdAsync(user);
 
-            return await Create(userId, firstname, lastname, email, birthdate, phoneNumber, about, profilePath, isMaker, externalLogin, handler, hasAcceptedTerms);
+            return await Create(userId, firstname, lastname, email, birthdate, phoneNumber, about, profilePath, isMaker, externalLogin, handler, hasAcceptedTerms, IsGuest);
         }
         catch (Exception ex)
         {

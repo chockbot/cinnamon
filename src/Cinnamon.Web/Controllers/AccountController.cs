@@ -134,7 +134,8 @@ public class AccountController : Controller
 
             var registerWaitlist = await accountApiHandler.RegisterWaitlist(new Framework.ApiCommand.ApiCore.Account.Request.RegisterWaitlistArgs {
                 Email = model.Email,
-                ValidationRoute = config.BaseUrl + "/explore"
+                ValidationRoute = config.BaseUrl + "/explore",
+                IsGuest = false
             });
 
             if(!registerWaitlist.Succeeded || registerWaitlist.Result == null)
@@ -176,9 +177,9 @@ public class AccountController : Controller
                 return Json(new { success = false, message = "Please provide required fields" });
             }
 
-            if(model.Password.Trim().Length < 6)
+            if (!model.IsGuest && model.Password.Trim().Length < 6)
             {
-                return Json(new {success = false, message = "Password should be at least 6 characters long."});
+                return Json(new { success = false, message = "Password should be at least 6 characters long." });
             }
 
             var registerResult = await accountApiHandler.Register(new Framework.ApiCommand.ApiCore.Account.Request.SubmitRegisterArgs {
@@ -190,7 +191,8 @@ public class AccountController : Controller
                 PhoneNumber = model.PhoneNumber,
                 ProfilePath = "/images/Profile/user.png",
                 IsMaker = false,
-                HasAcceptedTerms = model.HasAcceptedTerms
+                HasAcceptedTerms = model.HasAcceptedTerms,
+                IsGuest = model.IsGuest
             });
 
             if(!registerResult.Succeeded || registerResult.Result == null)

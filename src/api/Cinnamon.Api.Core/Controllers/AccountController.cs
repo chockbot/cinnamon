@@ -150,7 +150,8 @@ public class AccountController : ControllerBase
                 LastName = args.LastName,
                 Password = args.Password,
                 ProfilePath = args.ProfilePath,
-                HasAcceptedTerms = args.HasAcceptedTerms
+                HasAcceptedTerms = args.HasAcceptedTerms,
+                IsGuest = args.IsGuest
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -169,7 +170,7 @@ public class AccountController : ControllerBase
                     LastName = objResult.LastName,
                     ProfileImg = objResult.ProfileImg,
                     Id = objResult.Id,
-                    Handler = objResult.Handler
+                    Handler = objResult.Handler,
                 },
                 IsSuccess = true,
             });
@@ -238,7 +239,8 @@ public class AccountController : ControllerBase
         {
             var result = await submitWaitlistHandler.ExecuteAsync(new Services.AccountService.Interactors.SubmitWaitlistArgs{
                 Email = args.Email,
-                ValidationRoute = args.ValidationRoute
+                ValidationRoute = args.ValidationRoute,
+                IsGuest = args.IsGuest
             });
 
             if(!result.Succeeded || result.Result == null)

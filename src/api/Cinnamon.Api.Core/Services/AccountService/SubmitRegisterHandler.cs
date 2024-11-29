@@ -95,10 +95,11 @@ public class SubmitRegisterHandler : ISubmitRegisterHandler
                 FirstName = args.FirstName,
                 LastName = args.LastName,
                 PhoneNumber = args.PhoneNumber,
-                ProfilePath = args.ProfilePath,
+                ProfilePath = args.ProfilePath, 
                 Password = args.Password,
                 Handler = handlerName,
-                HasAcceptedTerms = args.HasAcceptedTerms
+                HasAcceptedTerms = args.HasAcceptedTerms,
+                IsGuest = args.IsGuest
             });
 
             if(!createCustomer.Succeeded)

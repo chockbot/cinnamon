@@ -9,4 +9,5 @@ public class RegisterWaitlistArgs
     public string Email {get; set;}
     [Required]
     public string ValidationRoute {get; set;}
+    public bool IsGuest { get; set; } = false;
 }

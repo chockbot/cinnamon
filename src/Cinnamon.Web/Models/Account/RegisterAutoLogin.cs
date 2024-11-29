@@ -24,4 +24,5 @@ public class RegisterAutoLogin
 
     public bool AcceptFlag { get; set; }
     public bool HasAcceptedTerms { get; set; }
+    public bool IsGuest { get; set; }
 }

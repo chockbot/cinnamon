@@ -13,4 +13,5 @@ public class SubmitRegisterArgs : IInteractor
     public string ProfilePath {get; set;}
     public bool ExternalLogin {get; set;}
     public bool HasAcceptedTerms { get; set; }
+    public bool IsGuest { get; set; }
 }

@@ -2388,7 +2388,9 @@
                 var checkRegistered = await accountApiHandler.RegisterWaitlist(new Framework.ApiCommand.ApiCore.Account.Request.RegisterWaitlistArgs
                     {
                         Email = verifyRes.Result.Result.Email,
-                        ValidationRoute = AppConfig.BaseUrl + "/explore"
+                        ValidationRoute = AppConfig.BaseUrl + "/explore",
+                        IsGuest = false
+                        
                     });
                 if (!checkRegistered.Succeeded || checkRegistered.Result == null)
                 {
