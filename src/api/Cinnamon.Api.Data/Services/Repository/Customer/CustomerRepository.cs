@@ -628,7 +628,7 @@ public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isVerif
         {
             // Check if guest customer email already exists
             var existingCustomer = await dataStore.Customer.FindFirstAsync(c => c.Email == email);
-            if (existingCustomer != null)
+            if (existingCustomer.Succeeded && existingCustomer.Result is not null)
             {
                 return AppResult<CustomerDTO>.CreateFailed(
                     new ApplicationException("Email already exists"), 

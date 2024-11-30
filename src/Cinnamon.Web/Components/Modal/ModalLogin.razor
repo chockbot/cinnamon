@@ -615,7 +615,7 @@
                 if (verify.Succeeded && verify.Result is not null && verify.Result.IsSuccess)
                 {
                     // Implement the required logic to register customer
-                    var register = await JsRuntime.InvokeAsync<Models.JsResultModel>("MyLib.Components.modal.finishSignUpModal.init",
+                    var register = await JsRuntime.InvokeAsync<Models.JsResultModel>("MyLib.Components.modal.createGuest",
                             new
                             {
                                 firstname = string.Empty,
@@ -633,7 +633,7 @@
                         Model.IsGuestSendingVerification = false;
                         return;
                     }
-                    NavigationManager.NavigateTo("/explore?IsNewRegistered=true", true);
+                    NavigationManager.NavigateTo("/explore", true);
                 }
             }
             else
@@ -642,7 +642,7 @@
             }
             Model.IsGuestSendingVerification = false;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             Model.IsGuestSendingVerification = false;
             Model.IsGuestSendVerificationShowError = true; 

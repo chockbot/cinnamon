@@ -16,9 +16,10 @@ public class CreateGuestCustomerHandler : ICreateGuestCustomerHandler
     private readonly ICustomerData customerData;
     private readonly ApplicationConfig applicationConfig;
 
-    public CreateGuestCustomerHandler(ICustomerData customerData)
+    public CreateGuestCustomerHandler(ICustomerData customerData, ApplicationConfig applicationConfig)
     {
         this.customerData = customerData;
+        this.applicationConfig = applicationConfig;
     }
 
     public AppResult<CreateGuestCustomerResult> Execute(CreateGuestCustomerArgs args)
