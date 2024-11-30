@@ -621,4 +621,73 @@ public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isVerif
         }
     }
 
+    public async Task<AppResult<CustomerDTO>> CreateGuestCustomer(string? firstname, string? lastname, string email, DateTime? birthdate, 
+        string? phoneNumber, string? about, string? profilePath, string? handler, bool? hasAcceptedTerms)
+    {
+        try
+        {
+            // Check if guest customer email already exists
+            var existingCustomer = await dataStore.Customer.FindFirstAsync(c => c.Email == email);
+            if (existingCustomer != null)
+            {
+                return AppResult<CustomerDTO>.CreateFailed(
+                    new ApplicationException("Email already exists"), 
+                    "A customer with this email already registered");
+            }
+
+            // Set UTC for postgres reason
+            birthdate = !birthdate.HasValue ? DateTime.Now.SetKindUtc() : birthdate.Value.SetKindUtc();
+
+            var customer = new Entities.Customer
+            {
+                About = about,
+                ProfilePath = profilePath,
+                Email = email,
+                Birthdate = birthdate.Value,
+                PhoneNumber = phoneNumber,
+                ExternalLogin = false,
+                IsMaker = false,
+                FirstName = firstname,
+                LastName = lastname,
+                IsVerifiedBadge = 0,
+                UserId = null, // Guest customers don't have UserId
+                Handler = handler ?? string.Empty,
+                HasAcceptedTerms = hasAcceptedTerms ?? false,
+                IsGuest = true // Always true for guest customers
+            };
+
+            var createdCustomerRes = await dataStore.Customer.Add(customer);
+            if (!createdCustomerRes.Succeeded || createdCustomerRes.Result == null)
+            {
+                return AppResult<CustomerDTO>.CreateFailed(
+                    new ApplicationException("An error occurred when creating guest customer"), 
+                    "An error occurred when creating guest customer");
+            }
+
+            var createdCustomer = createdCustomerRes.Result;
+
+            return AppResult<CustomerDTO>.CreateSucceeded(new CustomerDTO
+            {
+                About = createdCustomer.About,
+                Birthdate = createdCustomer.Birthdate,
+                PhoneNumber = createdCustomer.PhoneNumber,
+                DateJoined = createdCustomer.CreatedOn,
+                Email = createdCustomer.Email,
+                FirstName = createdCustomer.FirstName,
+                LastName = createdCustomer.LastName,
+                IsVerified = createdCustomer.IsVerifiedBadge,
+                ExternalLogin = createdCustomer.ExternalLogin,
+                IsMaker = createdCustomer.IsMaker,
+                Id = createdCustomer.Id,
+                ProfileImg = createdCustomer.ProfilePath,
+                Handler = createdCustomer.Handler,
+                IsAccountBan = createdCustomer.IsAccountBan
+            }, "Successfully created guest customer data");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CustomerDTO>.CreateFailed(ex, "An error occurred in creating guest customer");
+        }
+    }
+
 }

@@ -64,6 +64,7 @@ public class AccountController : ControllerBase
     private readonly ISendOTPHandler sendOTPHandler;
     private readonly IGetUserOTPHandler getUserOTPHandler;
     private readonly IVerifyOTPHandler verifyOTPHandler;
+    private readonly ICreateGuestCustomerHandler createGuestCustomerHandler;
 
     #endregion
 
@@ -86,7 +87,8 @@ public class AccountController : ControllerBase
         IUpdateRequestRefundHandler updateRequestRefundHandler, IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler, 
         IUpdateConnectionIdHandler updateConnectionIdHandler, IVerifyUserNotificationHandler verifyUserNotificationHandler,
         IBlockedAccountHandler blockedAccountHandler, IExtraLoginHandler extraLoginHandler, IChangeEmailHandler changeEmailHandler, IDeleteWaitlistHandler deleteWaitlistHandler,
-        ISendOTPHandler sendOTPHandler, IGetUserOTPHandler getUserOTPHandler,IVerifyOTPHandler verifyOTPHandler)
+        ISendOTPHandler sendOTPHandler, IGetUserOTPHandler getUserOTPHandler,IVerifyOTPHandler verifyOTPHandler,
+        ICreateGuestCustomerHandler createGuestCustomerHandler)
     {
         this.submitRegisterHandler            = submitRegisterHandler;
         this.submitWaitlistHandler            = submitWaitlistHandler;
@@ -131,6 +133,7 @@ public class AccountController : ControllerBase
         this.sendOTPHandler                   = sendOTPHandler;
         this.getUserOTPHandler                = getUserOTPHandler;
         this.verifyOTPHandler                 = verifyOTPHandler;
+        this.createGuestCustomerHandler       = createGuestCustomerHandler;
     }
 
     #endregion
@@ -1722,6 +1725,51 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new VerifyEmailResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("CreateGuestCustomer")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateGuestCustomerResult), StatusCodes.Status201Created)]
+    [AllowAnonymous]
+    public async Task<IActionResult> CreateGuestCustomer([FromBody] CreateGuestCustomerArgs args)
+    {
+        try
+        {
+            var result = await createGuestCustomerHandler.ExecuteAsync(
+                new Services.AccountService.Interactors.CreateGuestCustomerArgs 
+                {
+                    FirstName = args.FirstName,
+                    LastName = args.LastName,
+                    Email = args.Email,
+                    Birthdate = args.Birthdate,
+                    PhoneNumber = args.PhoneNumber,
+                    About = args.About,
+                    ProfilePath = args.ProfilePath,
+                    Handler = args.Handler,
+                    HasAcceptedTerms = args.HasAcceptedTerms
+                });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new CreateGuestCustomerResult 
+                { 
+                    ErrorInfo = new ErrorInfo { Message = result.Message }
+                });
+            }
+
+            return new JsonResult(new CreateGuestCustomerResult 
+            {
+                Result = result.Result.SessionToken,
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateGuestCustomerResult 
+            { 
+                ErrorInfo = new ErrorInfo { Message = ex.Message }
+            });
         }
     }
 }

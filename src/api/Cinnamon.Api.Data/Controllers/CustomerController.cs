@@ -330,4 +330,45 @@ public class CustomerController : ControllerBase
             return new JsonResult(new ChangeEmailAddressResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("CreateGuestCustomer")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateCustomerResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateGuestCustomer([FromBody] CreateGuestCustomerArgs args)
+    {
+        try
+        {
+            var result = await customerRepository.CreateGuestCustomer(
+                args.FirstName,
+                args.LastName, 
+                args.Email,
+                args.Birthdate ?? DateTime.Now,
+                args.PhoneNumber,
+                args.About,
+                args.ProfilePath,
+                args.Handler,
+                args.HasAcceptedTerms ?? false);
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CreateCustomerResult 
+                { 
+                    ErrorInfo = new ErrorInfo { Message = result.Message } 
+                });
+            }
+
+            return new JsonResult(new CreateCustomerResult 
+            { 
+                IsSuccess = true, 
+                Result = result.Result 
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateCustomerResult 
+            { 
+                ErrorInfo = new ErrorInfo { Message = ex.Message } 
+            });
+        }
+    }
 }

@@ -27,4 +27,6 @@ public interface ICustomerRepository
     Task<AppResult<string>> GenerateResetPasswordToken(string email);
     Task<AppResult<bool>> ResetPassword(string email, string token, string newPassword);
     Task<AppResult<bool>> ChangeEmailAddress(string currentEmail, string newEmail);
+    Task<AppResult<CustomerDTO>> CreateGuestCustomer(string? firstname, string? lastname, string email, DateTime? birthdate, 
+        string? phoneNumber, string? about, string? profilePath, string? handler, bool? hasAcceptedTerms);
 }
