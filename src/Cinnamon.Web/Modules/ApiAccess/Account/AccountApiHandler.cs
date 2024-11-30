@@ -950,4 +950,25 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<VerifyEmailResult>.CreateFailed(ex, "An error occured when posting verify email api");
         }
     }
+
+    public async Task<AppResult<CreateGuestCustomerResult>> CreateGuestCustomer(CreateGuestCustomerArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Account/CreateGuestCustomer")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateGuestCustomerResult>();
+
+            return AppResult<CreateGuestCustomerResult>.CreateSucceeded(result, "Successfully created guest customer");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<CreateGuestCustomerResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateGuestCustomerResult>.CreateFailed(ex, "An error occurred when creating guest customer");
+        }
+    }
 }

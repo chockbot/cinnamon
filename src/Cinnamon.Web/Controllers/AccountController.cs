@@ -519,4 +519,65 @@ public class AccountController : Controller
             return Json(new { success = false, message = "An error occured please try again later" });
         }
     }
+
+    [Route("CreateGuestCustomer")]
+    [HttpPost]
+    [AllowAnonymous]
+    public async Task<IActionResult> CreateGuestCustomer([FromBody] CreateGuestCustomerModel model)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = "Please provide required fields" });
+            }
+
+            // Create guest customer
+            var createGuestResult = await accountApiHandler.CreateGuestCustomer(
+                new Framework.ApiCommand.ApiCore.Account.Request.CreateGuestCustomerArgs
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email,
+                    Birthdate = model.Birthdate,
+                    PhoneNumber = model.PhoneNumber,
+                    About = model.About,
+                    ProfilePath = "/images/Profile/user.png", // Default profile image
+                    Handler = model.Handler,
+                    HasAcceptedTerms = model.HasAcceptedTerms
+                });
+
+            if (!createGuestResult.Succeeded || createGuestResult.Result == null)
+            {
+                return Json(new { success = false, message = "An error occurred please try again later" });
+            }
+
+            if (createGuestResult.Succeeded && !createGuestResult.Result.IsSuccess)
+            {
+                return Json(new { success = false, message = createGuestResult.Result.ErrorInfo?.Message });
+            }
+
+            // Set up claims for authentication
+            var claims = new List<Claim>
+            {
+                new Claim("Token", createGuestResult.Result.Result),
+                new Claim(ClaimTypes.Role, nameof(UserRole.Customer).ToLower())
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var authProperties = new AuthenticationProperties { IsPersistent = true };
+
+            // Sign in the guest user
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme, 
+                new ClaimsPrincipal(claimsIdentity), 
+                authProperties);
+
+            return Json(new { success = true, message = "Successfully created guest account" });
+        }
+        catch
+        {
+            return Json(new { success = false, message = "An error occurred please try again later" });
+        }
+    }
 }

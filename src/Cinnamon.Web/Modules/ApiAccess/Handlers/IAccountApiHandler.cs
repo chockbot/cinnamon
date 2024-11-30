@@ -48,4 +48,5 @@ public interface IAccountApiHandler
     Task<AppResult<SendOTPResult>>SendOTP(SendOTPArgs args);
     Task<AppResult<GetUserOTPResult>>GetUserOTP(GetUserOTPArgs args);
     Task<AppResult<VerifyEmailResult>>VerifyEmail(VerifyEmailArgs args);
+    Task<AppResult<CreateGuestCustomerResult>> CreateGuestCustomer(CreateGuestCustomerArgs args);
 } 
