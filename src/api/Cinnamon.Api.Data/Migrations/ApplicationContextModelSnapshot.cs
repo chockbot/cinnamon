@@ -1152,7 +1152,6 @@ namespace Cinnamon.Api.Data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("FrontIdImagePath")
@@ -1166,6 +1165,9 @@ namespace Cinnamon.Api.Data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsAccountBan")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsGuest")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsMaker")
@@ -1190,11 +1192,9 @@ namespace Cinnamon.Api.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ProfilePath")
@@ -1204,7 +1204,6 @@ namespace Cinnamon.Api.Data.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");

@@ -1162,8 +1162,12 @@
                 currentUserFirstName    = args.FirstName;
                 currentUserLastName     = args.LastName;
                 currentUserProfilePath  = args.ProfileImg;
-
                 await GetChatRoomsByUserId();
+                if (args.IsGuest)
+                {
+                    NavigationManager.NavigateTo("page-not-found");
+                    return;
+                }
             }
         }
     }

@@ -30,10 +30,12 @@ public class GuestOTPRepository : IGuestOTPRepository
     {
         // Get the current UTC time
         var currentTime = DateTime.UtcNow;
+        var startOfDay = currentTime.Date;
+        var endOfDay = startOfDay.AddDays(1);
 
         //Filter all not expired otp
         Expression<Func<Entities.GuestOTP, bool>> filter = a => (a.Email == email) &&
-        (currentTime - a.CreatedOn) <= TimeSpan.FromMinutes(10);
+        (a.CreatedOn >= startOfDay && a.CreatedOn < endOfDay);
 
         var result = await dataStore.GuestOTP.FindAsync(filter);
         if (!result.Succeeded || result.Result == null)

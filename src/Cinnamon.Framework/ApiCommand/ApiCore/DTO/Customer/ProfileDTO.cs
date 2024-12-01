@@ -21,5 +21,6 @@ public class ProfileDTO
     public string Handler {get; set;}
     public decimal TotalCredits {get; set;}
     public string ConnectionId { get; set; }
+    public bool IsGuest { get; set; }
 
 }

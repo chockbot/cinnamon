@@ -13,9 +13,9 @@ public interface ICustomerRepository
         bool? isOfficialPartner = false, bool? hasVerification = false);
     Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync();
     Task<AppResult<CustomerDTO>> Create(string userId, string firstname, string lastname, string email, DateTime birthdate, string phoneNumber,
-        string? about, string profilePath, bool ismaker, bool externalLogin, string handler, bool hasAcceptedTerms);
+        string? about, string profilePath, bool ismaker, bool externalLogin, string handler, bool hasAcceptedTerms, bool IsGuest);
     Task<AppResult<CustomerDTO>> CreateWithPassword(string firstname, string lastname, string email, DateTime birthdate, string phoneNumber,
-        string? about, string profilePath, bool isMaker, bool externalLogin, string pasword, string handler, bool hasAcceptedTerms);
+        string? about, string profilePath, bool isMaker, bool externalLogin, string pasword, string handler, bool hasAcceptedTerms, bool IsGuest);
     Task<AppResult<CustomerDTO>> CheckLogin(string email, string password);
     Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate, string? phoneNumber,
         string? about, string? profilePath, bool? ismaker, bool? externalLogin, int? isVerified, DateTime? isVerifiedDate, 
@@ -27,4 +27,6 @@ public interface ICustomerRepository
     Task<AppResult<string>> GenerateResetPasswordToken(string email);
     Task<AppResult<bool>> ResetPassword(string email, string token, string newPassword);
     Task<AppResult<bool>> ChangeEmailAddress(string currentEmail, string newEmail);
+    Task<AppResult<CustomerDTO>> CreateGuestCustomer(string? firstname, string? lastname, string email, DateTime? birthdate, 
+        string? phoneNumber, string? about, string? profilePath, string? handler, bool? hasAcceptedTerms);
 }
