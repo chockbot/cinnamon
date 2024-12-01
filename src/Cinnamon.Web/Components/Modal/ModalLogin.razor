@@ -413,8 +413,11 @@
                         case "EMAIL-ALREADY-REGISTERED":
                             //Check if guest or not
                             var customer = await accountApiHandler.GetCustomerByEmail(Model.GuestEmailModel.Email);
-                            await Model.PasswordModal.Show();
-                            await Model.TextPassword.Focus();
+                            //If guest 
+                                //implemet auto login
+                                //else
+                                await Model.PasswordModal.Show();
+                                await Model.TextPassword.Focus();
                             return;
                         case "EMAIL-ALREADY-REGISTERED-NOT-VERIFIED":
                         case "EMAIL-ALREADY-REGISTERED-VERIFIED":
