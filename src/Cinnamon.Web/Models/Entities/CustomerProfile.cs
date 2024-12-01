@@ -24,6 +24,7 @@
         public string BackIdImagePath { get; set; }
         public decimal TotalCredits {get; set;}
         public bool IsAccountBan { get; set; }
+        public bool IsGuest { get; set; }
 
         public IList<FamilyMember> FamilyMembers {get; set;}
 

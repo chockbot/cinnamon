@@ -25,7 +25,7 @@ public interface IAccountApiHandler
     Task<AppResult<UploadGovernmentIdsResult>> UploadGovernmentIds(UploadGovernmentIdsArgs args, string token);
     Task<AppResult<UploadProfilePictureResult>> UploadProfilePicture(UploadProfilePictureArgs args, string token);
     Task<AppResult<GetWaitListResult>> GetAllWaitList();
-    Task<AppResult<GetCustomerByEmailResult>> GetCustomerByEmail(string token, string email);
+    Task<AppResult<GetCustomerByEmailResult>> GetCustomerByEmail(string email);
     Task<AppResult<GetWaitListByGuidResult>> GetWaitListByGuid(string token, string guid);
     Task<AppResult<GetCustomerByIdResult>> GetCustomerById(int id);
     Task<AppResult<GetCustomerByIdResult>> GetMakerDetailByHandler(string handler);

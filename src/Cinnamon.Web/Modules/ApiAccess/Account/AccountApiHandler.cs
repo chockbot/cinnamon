@@ -437,12 +437,11 @@ public class AccountApiHandler : IAccountApiHandler
         }
     }
 
-    public async Task<AppResult<GetCustomerByEmailResult>> GetCustomerByEmail(string email, string token)
+    public async Task<AppResult<GetCustomerByEmailResult>> GetCustomerByEmail(string email)
     {
         try
         {
             var result = await flurlClient
-                .WithOAuthBearerToken(token)
                 .Request($"Account/GetCustomerByEmail/{email}")
                 .GetJsonAsync<GetCustomerByEmailResult>();
 

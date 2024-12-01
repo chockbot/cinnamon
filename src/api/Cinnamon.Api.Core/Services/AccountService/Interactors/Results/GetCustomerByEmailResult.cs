@@ -14,4 +14,5 @@ public class GetCustomerByEmailResult
     public bool IsOfficial { get; set; }
     public bool ExternalLogin { get; set; }
     public DateTime DateJoined { get; set; }
+    public bool IsGuest { get; set; }
 }

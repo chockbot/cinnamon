@@ -411,6 +411,8 @@
                     switch(registerWaitlist.Result.ErrorInfo?.Code)
                     {
                         case "EMAIL-ALREADY-REGISTERED":
+                            //Check if guest or not
+                            var customer = await accountApiHandler.GetCustomerByEmail(Model.GuestEmailModel.Email);
                             await Model.PasswordModal.Show();
                             await Model.TextPassword.Focus();
                             return;
@@ -618,14 +620,14 @@
                     var register = await JsRuntime.InvokeAsync<Models.JsResultModel>("MyLib.Components.modal.createGuest",
                             new
                             {
-                                firstname = string.Empty,
-                                lastname = string.Empty,
-                                email = Model.GuestEmailModel.Email,
-                                birthdate = DateTime.Now.AddYears(-19),
-                                phoneNumber = string.Empty,
-                                password = string.Empty,
+                                firstname        = Model.GuestEmailModel.Email,
+                                lastname         = string.Empty,
+                                email            = Model.GuestEmailModel.Email,
+                                birthdate        = DateTime.Now.AddYears(-19),
+                                phoneNumber      = string.Empty,
+                                password         = string.Empty,
                                 hasAcceptedTerms = true,
-                                IsGuest = true
+                                IsGuest          = true
                             });
                     if (!register.Success)
                     {

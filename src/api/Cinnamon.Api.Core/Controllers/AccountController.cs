@@ -397,25 +397,26 @@ public class AccountController : ControllerBase
 
             return new JsonResult(new GetProfileResult {
                 Result = new ProfileDTO {
-                    Email = profile.Email,
-                    FirstName = profile.FirstName,
-                    LastName = profile.LastName,
-                    IsMaker = profile.IsMaker,
-                    Id = profile.Id,
-                    About = profile.About,
-                    Birthdate = profile.Birthdate,
-                    PhoneNumber = profile.PhoneNumber,
-                    DateJoined = profile.DateJoined,
-                    IsVerified = profile.IsVerified,
+                    Email          = profile.Email,
+                    FirstName      = profile.FirstName,
+                    LastName       = profile.LastName,
+                    IsMaker        = profile.IsMaker,
+                    Id             = profile.Id,
+                    About          = profile.About,
+                    Birthdate      = profile.Birthdate,
+                    PhoneNumber    = profile.PhoneNumber,
+                    DateJoined     = profile.DateJoined,
+                    IsVerified     = profile.IsVerified,
                     IsVerifiedDate = profile.IsVerifiedDate,
-                    IsOfficial = profile.IsOfficial,
+                    IsOfficial     = profile.IsOfficial,
                     IsOfficialDate = profile.IsOfficialDate,
-                    IsOG = profile.IsOG,
-                    IsOGDate = profile.IsOGDate,
-                    ProfileImg = profile.ProfileImagePath,
-                    Handler = profile.Handler,
-                    TotalCredits = profile.TotalCredits,
-                    ConnectionId = profile.ConnectionId
+                    IsOG           = profile.IsOG,
+                    IsOGDate       = profile.IsOGDate,
+                    ProfileImg     = profile.ProfileImagePath,
+                    Handler        = profile.Handler,
+                    TotalCredits   = profile.TotalCredits,
+                    ConnectionId   = profile.ConnectionId,
+                    IsGuest        = profile.IsGuest
                 },
                 IsSuccess = true
             });
@@ -791,20 +792,22 @@ public class AccountController : ControllerBase
             {
                 Result = new CustomerDTO
                 {
-                    Id = objResult.Id,
-                    FirstName = objResult.FirstName,
-                    IsMaker = objResult.IsMaker,
-                    LastName = objResult.LastName,
-                    IsVerified = objResult.IsVerified,
-                    ProfileImg = objResult.ProfileImg,
-                    About = objResult.About,
-                    IsOG = objResult.IsOG,
-                    IsOfficial = objResult.IsOfficial,
-                    DateJoined = objResult.DateJoined,
-                    Email = objResult.Email,
-                    PhoneNumber = objResult.PhoneNumber,
+                    Id           = objResult.Id,
+                    FirstName    = objResult.FirstName,
+                    IsMaker      = objResult.IsMaker,
+                    LastName     = objResult.LastName,
+                    IsVerified   = objResult.IsVerified,
+                    ProfileImg   = objResult.ProfileImg,
+                    About        = objResult.About,
+                    IsOG         = objResult.IsOG,
+                    IsOfficial   = objResult.IsOfficial,
+                    DateJoined   = objResult.DateJoined,
+                    Email        = objResult.Email,
+                    PhoneNumber  = objResult.PhoneNumber,
                     ConnectionId = objResult.ConnectionId,
-                    Handler = objResult.Handler
+                    Handler      = objResult.Handler,
+                    IsGuest      = objResult.IsGuest,
+
                 },
                 IsSuccess = true,
             });
@@ -861,6 +864,7 @@ public class AccountController : ControllerBase
     [Route("GetCustomerByEmail/{email}")]
     [HttpGet]
     [ProducesResponseType(typeof(GetCustomerByEmailResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
     public async Task<IActionResult> GetCustomerByEmail(string email)
     {
         try
@@ -880,19 +884,20 @@ public class AccountController : ControllerBase
             {
                 Result = new CustomerDTO
                 {
-                    IsVerified = objResult.IsVerified,
-                    Id = objResult.Id,
-                    Email = objResult.Email,
-                    FirstName = objResult.FirstName,
-                    About = objResult.About,
-                    Birthdate = objResult.Birthdate,
-                    DateJoined = objResult.DateJoined,
+                    IsVerified    = objResult.IsVerified,
+                    Id            = objResult.Id,
+                    Email         = objResult.Email,
+                    FirstName     = objResult.FirstName,
+                    About         = objResult.About,
+                    Birthdate     = objResult.Birthdate,
+                    DateJoined    = objResult.DateJoined,
                     ExternalLogin = objResult.ExternalLogin,
-                    IsMaker = objResult.IsMaker,
-                    LastName = objResult.LastName,
-                    ProfileImg = objResult.ProfileImg,
-                    IsOfficial = objResult.IsOfficial,
-                    IsOG = objResult.IsOG,
+                    IsMaker       = objResult.IsMaker,
+                    LastName      = objResult.LastName,
+                    ProfileImg    = objResult.ProfileImg,
+                    IsOfficial    = objResult.IsOfficial,
+                    IsOG          = objResult.IsOG,
+                    IsGuest       = objResult.IsGuest,
                 },
                 IsSuccess = true,
             });

@@ -54,16 +54,17 @@ public class GetCustomerByEmailHandler: IGetCustomerByEmailHandler
 
             return AppResult<GetCustomerByEmailResult>.CreateSucceeded(new GetCustomerByEmailResult
             {
-                About= result.Result.Result.About,
-                Birthdate =result.Result.Result.Birthdate,
-                DateJoined= result.Result.Result.DateJoined,
-                Email= result.Result.Result.Email,  
-                Id= result.Result.Result.Id,
-                IsMaker= result.Result.Result.IsMaker,
-                IsVerified= result.Result.Result.IsVerified,
-                IsOG = result.Result.Result.IsOG,
-                IsOfficial= result.Result.Result.IsOfficial,
+                About       = result.Result.Result.About,
+                Birthdate   = result.Result.Result.Birthdate,
+                DateJoined  = result.Result.Result.DateJoined,
+                Email       = result.Result.Result.Email,  
+                Id          = result.Result.Result.Id,
+                IsMaker     = result.Result.Result.IsMaker,
+                IsVerified  = result.Result.Result.IsVerified,
+                IsOG        = result.Result.Result.IsOG,
+                IsOfficial  = result.Result.Result.IsOfficial,
                 ProfileImg  = result.Result.Result.ProfileImg,
+                IsGuest     = result.Result.Result.IsGuest,
             }, "Successfully getting customer information");
         }
         catch (Exception ex)

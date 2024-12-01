@@ -372,6 +372,12 @@ else
         }
         var profile = result.Result.Result;
 
+        if (profile.IsGuest)
+        {
+            NavigationManager.NavigateTo("page-not-found");
+            return;
+        }
+
         // get owned activities
         var ownedActivities = new List<Activity>();
         var ownedActivitiesRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs {

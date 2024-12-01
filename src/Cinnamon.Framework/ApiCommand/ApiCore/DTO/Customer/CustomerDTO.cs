@@ -25,4 +25,5 @@ public class CustomerDTO
     public string? ConnectionId { get; set; }
     public CustomerPricingDTO CustomerPricing {get; set;}
     public bool IsAccountBan { get; set; }
+    public bool IsGuest { get; set; }
 }
