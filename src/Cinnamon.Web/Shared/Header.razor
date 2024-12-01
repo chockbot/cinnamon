@@ -22,18 +22,22 @@
                 </div>
                 <!--Menu-->
                 <div class="d-flex gap-1" @onmouseenter="OnMouseEnter" @onmouseleave="OnMouseEnter">
-                    @if (Model.Profile != null && Model.Profile.IsMaker)
+                    @if(Model.Profile != null && !Model.Profile.IsGuest)
                     {
-                        <div class="become">
-                            <a @onclick="NavigateToDashboard" class="btn border-0">Go to Dashboard</a>
-                        </div>
-                    } 
-                    else
-                    {
-                        <div class="become">
-                            <a href="/Onboarding" class="btn border-0">@Resources.App.Become</a>
-                        </div>
+                        @if (Model.Profile.IsMaker)
+                        {
+                            <div class="become">
+                                <a @onclick="NavigateToDashboard" class="btn border-0">Go to Dashboard</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="become">
+                                <a href="/Onboarding" class="btn border-0">@Resources.App.Become</a>
+                            </div>
+                        }
                     }
+                    
                     @*DESKTOP*@
                     <div class="dropdown">
                         <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" 
@@ -54,48 +58,66 @@
                         <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2" style="overflow: hidden;">
                             @if (Model.IsAuthenticated)
                             {
-                                if (Model.Profile != null && Model.Profile.IsMaker)
+                                if (Model.Profile != null && !Model.Profile.IsGuest)
                                 {
+                                    if (Model.Profile.IsMaker)
+                                    {
+                                        <li class="dropdown-item">
+                                            <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
+                                        </li>
+                                        <li class="dropdown-item">
+                                            <NavButton OnClick="NavigateToAttendance" Text="Check Attendance" />
+                                        </li>
+                                        <li class="dropdown-item">
+                                            <NavButton OnClick="NavigateToMaterials" Text="Materials" />
+                                        </li>
+                                        <li class="dropdown-item messages-item">
+                                            <NavButton OnClick="NavigateToMessages" Text="Messages" />
+                                            @if (hasNewMessages)
+                                            {
+                                                <span class="has-new-message-badge">
+                                                </span>
+                                            }
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li class="dropdown-item messages-item">
+                                            <NavButton OnClick="NavigateToMessages" Text="Messages" />
+                                            @if (hasNewMessages)
+                                            {
+                                                <span class="has-new-message-badge">
+                                                </span>
+                                            }
+                                        </li>
+                                    }
                                     <li class="dropdown-item">
-                                        <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
+                                        <NavButton OnClick="NavigateToAccount" Text="Account" />
                                     </li>
                                     <li class="dropdown-item">
-                                        <NavButton OnClick="NavigateToAttendance" Text="Check Attendance" />
+                                        <Button Border="Border.Is0" Clicked="Logout">
+                                            Logout
+                                        </Button>
                                     </li>
                                     <li class="dropdown-item">
-                                        <NavButton OnClick="NavigateToMaterials" Text="Materials" />
-                                    </li>
-                                    <li class="dropdown-item messages-item">
-                                        <NavButton OnClick="NavigateToMessages" Text="Messages" />
-                                        @if (hasNewMessages)
-                                        {
-                                            <span class="has-new-message-badge">
-                                            </span>
-                                        }
+                                        <NavButton OnClick="NavigateToHelp" Text="Help" />
                                     </li>
                                 }
                                 else
                                 {
-                                    <li class="dropdown-item messages-item">
-                                        <NavButton OnClick="NavigateToMessages" Text="Messages" />
-                                        @if (hasNewMessages)
-                                        {
-                                            <span class="has-new-message-badge">
-                                            </span>
-                                        }
+                                    <li class="dropdown-item">
+                                        <NavButton OnClick="NavigateToExplore" Text="Explore" />
+                                    </li>
+                                    <li class="dropdown-item">
+                                        <Button Border="Border.Is0" Clicked="Logout">
+                                            Logout
+                                        </Button>
+                                    </li>
+                                    <li class="dropdown-item">
+                                        <NavButton OnClick="NavigateToHelp" Text="Help" />
                                     </li>
                                 }
-                                <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToAccount" Text="Account" />
-                                </li>
-                                <li class="dropdown-item">
-                                    <Button Border="Border.Is0" Clicked="Logout">
-                                        Logout
-                                    </Button>
-                                </li>
-                                <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToHelp" Text="Help" />
-                                </li>
+
                             }
                             else
                             {
@@ -133,54 +155,72 @@
                         <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
                             @if (Model.IsAuthenticated)
                             {
-                                if (Model.Profile != null && Model.Profile.IsMaker)
+                                if (Model.Profile != null && !Model.Profile.IsGuest)
                                 {
+                                    if (Model.Profile.IsMaker)
+                                    {
+                                        <li class="dropdown-item">
+                                            <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
+                                        </li>
+                                        <li class="dropdown-item">
+                                            <NavButton OnClick="NavigateToAttendance" Text="Check Attendance" />
+                                        </li>
+                                        <li class="dropdown-item">
+                                            <NavButton OnClick="NavigateToMaterials" Text="Materials" />
+                                        </li>
+                                        <li class="dropdown-item messages-item">
+                                            <NavButton OnClick="NavigateToMessages" Text="Messages" />
+                                            @if (hasNewMessages)
+                                            {
+                                                <span class="has-new-message-badge">
+                                                </span>
+                                            }
+                                        </li>
+                                    }
+                                    else if (!Model.Profile.IsMaker)
+                                    {
+                                        <li class="dropdown-item">
+                                            <NavButton OnClick="NavigateToOnboarding" Text="Become an Activity Provider" />
+                                        </li>
+                                        <li class="dropdown-item">
+                                            <NavButton OnClick="NavigateToMaterials" Text="Materials" />
+                                        </li>
+                                        <li class="dropdown-item messages-item">
+                                            <NavButton OnClick="NavigateToMessages" Text="Messages" />
+                                            @if (hasNewMessages)
+                                            {
+                                                <span class="has-new-message-badge">
+                                                </span>
+                                            }
+                                        </li>
+                                    }
                                     <li class="dropdown-item">
-                                        <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
+                                        <NavButton OnClick="NavigateToAccount" Text="Account" />
                                     </li>
                                     <li class="dropdown-item">
-                                        <NavButton OnClick="NavigateToAttendance" Text="Check Attendance" />
+                                        <Button Border="Border.Is0" Clicked="Logout">
+                                            Logout
+                                        </Button>
                                     </li>
                                     <li class="dropdown-item">
-                                        <NavButton OnClick="NavigateToMaterials" Text="Materials" />
-                                    </li>
-                                    <li class="dropdown-item messages-item">
-                                        <NavButton OnClick="NavigateToMessages" Text="Messages" />
-                                        @if (hasNewMessages)
-                                        {
-                                            <span class="has-new-message-badge">
-                                            </span>
-                                        }
+                                        <NavButton OnClick="NavigateToHelp" Text="Help" />
                                     </li>
                                 }
-                                else if (Model.Profile != null && !Model.Profile.IsMaker)
+                                else
                                 {
                                     <li class="dropdown-item">
-                                        <NavButton OnClick="NavigateToOnboarding" Text="Become an Activity Provider" />
+                                        <NavButton OnClick="NavigateToExplore" Text="Explore" />
                                     </li>
                                     <li class="dropdown-item">
-                                        <NavButton OnClick="NavigateToMaterials" Text="Materials" />
+                                        <Button Border="Border.Is0" Clicked="Logout">
+                                            Logout
+                                        </Button>
                                     </li>
-                                    <li class="dropdown-item messages-item">
-                                        <NavButton OnClick="NavigateToMessages" Text="Messages" />
-                                        @if (hasNewMessages)
-                                        {
-                                            <span class="has-new-message-badge">
-                                            </span>
-                                        }
+                                    <li class="dropdown-item">
+                                        <NavButton OnClick="NavigateToHelp" Text="Help" />
                                     </li>
                                 }
-                                <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToAccount" Text="Account" />
-                                </li>
-                                <li class="dropdown-item">
-                                    <Button Border="Border.Is0" Clicked="Logout">
-                                        Logout
-                                    </Button>
-                                </li>
-                                <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToHelp" Text="Help" />
-                                </li>
+
                             }
                             else
                             {
@@ -247,7 +287,8 @@
                 // map only required field
                 Model.Profile = new Models.Entities.CustomerProfile {
                     IsMaker = result.Result.Result.IsMaker,
-                    Id = result.Result.Result.Id
+                    Id      = result.Result.Result.Id,
+                    IsGuest = result.Result.Result.IsGuest
                 };
                 Model.IsAuthenticated = true;
 
@@ -335,7 +376,11 @@
     {
         NavigationManager.NavigateTo("/materials");
     }
-    
+    private void NavigateToExplore()
+    {
+        NavigationManager.NavigateTo("/explore");
+    }
+
     private void onClickMenu()
     {
         if (clickButton)

@@ -33,4 +33,5 @@ public class CustomerDTO
         public bool InclusivePricing {get; set;}
     }
     public bool IsAccountBan { get; set; }
+    public bool IsGuest { get; set; }
 }

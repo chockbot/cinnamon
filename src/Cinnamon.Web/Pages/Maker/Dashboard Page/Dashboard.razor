@@ -147,6 +147,12 @@
                 NavigationManager.NavigateTo("explore");
                 return;
             }
+            if (result.Result.Result.IsGuest)
+            {
+                // an error occured
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
             var customer = result.Result.Result;
             profile.Id        = customer.Id;
             profile.FirstName = customer.FirstName;

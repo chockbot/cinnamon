@@ -184,7 +184,7 @@ public class CustomerController : ControllerBase
         try
         {
             var result = await customerRepository.Create(args.UserId, args.FirstName, args.LastName, args.Email, args.Birthdate,
-                args.PhoneNumber ,args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, args.Handler, args.HasAcceptedTerms);
+                args.PhoneNumber ,args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, args.Handler, args.HasAcceptedTerms, false);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -207,7 +207,7 @@ public class CustomerController : ControllerBase
         try
         {
             var result = await customerRepository.CreateWithPassword(args.FirstName, args.LastName, args.Email, args.Birthdate,
-                args.PhoneNumber ,args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, args.Password, args.Handler, args.HasAcceptedTerms);
+                args.PhoneNumber ,args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, args.Password, args.Handler, args.HasAcceptedTerms, args.IsGuest);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -328,6 +328,47 @@ public class CustomerController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new ChangeEmailAddressResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("CreateGuestCustomer")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateCustomerResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateGuestCustomer([FromBody] CreateGuestCustomerArgs args)
+    {
+        try
+        {
+            var result = await customerRepository.CreateGuestCustomer(
+                args.FirstName,
+                args.LastName, 
+                args.Email,
+                args.Birthdate ?? DateTime.Now,
+                args.PhoneNumber,
+                args.About,
+                args.ProfilePath,
+                args.Handler,
+                args.HasAcceptedTerms ?? false);
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CreateCustomerResult 
+                { 
+                    ErrorInfo = new ErrorInfo { Message = result.Message } 
+                });
+            }
+
+            return new JsonResult(new CreateCustomerResult 
+            { 
+                IsSuccess = true, 
+                Result = result.Result 
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateCustomerResult 
+            { 
+                ErrorInfo = new ErrorInfo { Message = ex.Message } 
+            });
         }
     }
 }

@@ -124,7 +124,7 @@ public class CustomerRepository : ICustomerRepository
     }
 
     public async Task<AppResult<CustomerDTO>> Create(string userId, string firstname, string lastname, string email, DateTime birthdate, string phoneNumber,
-        string? about, string profilePath, bool ismaker, bool externalLogin, string handler, bool hasAcceptedTerms)
+        string? about, string profilePath, bool ismaker, bool externalLogin, string handler, bool hasAcceptedTerms, bool IsGuest)
     {
         try
         {
@@ -152,7 +152,8 @@ public class CustomerRepository : ICustomerRepository
                 IsVerifiedBadge = 0,
                 UserId = userId,
                 Handler = handler,
-                HasAcceptedTerms = hasAcceptedTerms
+                HasAcceptedTerms = hasAcceptedTerms,
+                IsGuest = IsGuest
             };
 
             var createdCustomerRes = await dataStore.Customer.Add(customer);
@@ -188,7 +189,7 @@ public class CustomerRepository : ICustomerRepository
     }
 
     public async Task<AppResult<CustomerDTO>> CreateWithPassword(string firstname, string lastname, string email, 
-        DateTime birthdate, string phoneNumber, string? about, string profilePath, bool isMaker, bool externalLogin, string pasword, string handler, bool hasAcceptedTerms)
+        DateTime birthdate, string phoneNumber, string? about, string profilePath, bool isMaker, bool externalLogin, string pasword, string handler, bool hasAcceptedTerms, bool IsGuest)
     {
         try
         {
@@ -212,7 +213,7 @@ public class CustomerRepository : ICustomerRepository
 
             var userId = await userManager.GetUserIdAsync(user);
 
-            return await Create(userId, firstname, lastname, email, birthdate, phoneNumber, about, profilePath, isMaker, externalLogin, handler, hasAcceptedTerms);
+            return await Create(userId, firstname, lastname, email, birthdate, phoneNumber, about, profilePath, isMaker, externalLogin, handler, hasAcceptedTerms, IsGuest);
         }
         catch (Exception ex)
         {
@@ -349,23 +350,24 @@ public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isVerif
 
             var customerDTO = new CustomerDTO
             {
-                About = result.Result.About,
-                Birthdate = result.Result.Birthdate,
-                DateJoined = result.Result.CreatedOn,
-                PhoneNumber = result.Result.PhoneNumber,
-                Email = result.Result.Email,
+                About         = result.Result.About,
+                Birthdate     = result.Result.Birthdate,
+                DateJoined    = result.Result.CreatedOn,
+                PhoneNumber   = result.Result.PhoneNumber,
+                Email         = result.Result.Email,
                 ExternalLogin = result.Result.ExternalLogin,
-                FirstName = result.Result.FirstName,
-                LastName = result.Result.LastName,
-                Id = result.Result.Id,
-                IsMaker = result.Result.IsMaker,
-                IsVerified = result.Result.IsVerifiedBadge,
-                IsOG = result.Result.IsOG,  
-                IsOfficial = result.Result.IsOfficialPartner,
-                ProfileImg = result.Result.ProfilePath,
-                Handler = result.Result.Handler,
-                TotalCredits = result.Result.TotalCredits,
-                IsAccountBan = result.Result.IsAccountBan
+                FirstName     = result.Result.FirstName,
+                LastName      = result.Result.LastName,
+                Id            = result.Result.Id,
+                IsMaker       = result.Result.IsMaker,
+                IsVerified    = result.Result.IsVerifiedBadge,
+                IsOG          = result.Result.IsOG,  
+                IsOfficial    = result.Result.IsOfficialPartner,
+                ProfileImg    = result.Result.ProfilePath,
+                Handler       = result.Result.Handler,
+                TotalCredits  = result.Result.TotalCredits,
+                IsAccountBan  = result.Result.IsAccountBan,
+                IsGuest       = result.Result.IsGuest,
             };
 
             return AppResult<CustomerDTO>.CreateSucceeded(customerDTO, "Successfully getting customer by email");
@@ -388,27 +390,29 @@ public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isVerif
 
             var customerDTO = new CustomerDTO
             {
-                About = result.Result.About,
-                Birthdate = result.Result.Birthdate,
-                DateJoined = result.Result.CreatedOn,
-                Email = result.Result.Email,
-                ExternalLogin = result.Result.ExternalLogin,
-                FirstName = result.Result.FirstName,
-                LastName = result.Result.LastName,
-                Id = result.Result.Id,
-                IsMaker = result.Result.IsMaker,
-                IsVerified = result.Result.IsVerifiedBadge,
+                About                  = result.Result.About,
+                Birthdate              = result.Result.Birthdate,
+                DateJoined             = result.Result.CreatedOn,
+                Email                  = result.Result.Email,
+                ExternalLogin          = result.Result.ExternalLogin,
+                FirstName              = result.Result.FirstName,
+                LastName               = result.Result.LastName,
+                Id                     = result.Result.Id,
+                IsMaker                = result.Result.IsMaker,
+                IsVerified             = result.Result.IsVerifiedBadge,
                 IsVerifiedObtainedDate = result.Result.IsVerifiedDate,
-                IsOG = result.Result.IsOG,
-                IsOGObtainedDate = result.Result.IsOGDate, 
-                IsOfficial = result.Result.IsOfficialPartner,
+                IsOG                   = result.Result.IsOG,
+                IsOGObtainedDate       = result.Result.IsOGDate, 
+                IsOfficial             = result.Result.IsOfficialPartner,
                 IsOfficialObtainedDate = result.Result.IsOfficialDate,
-                ProfileImg = result.Result.ProfilePath,
-                Handler = result.Result.Handler,
-                TotalCredits = result.Result.TotalCredits,
-                PhoneNumber = result.Result.PhoneNumber,
-                ConnectionId= result.Result.ConnectionId,
-                IsAccountBan = result.Result.IsAccountBan
+                ProfileImg             = result.Result.ProfilePath,
+                Handler                = result.Result.Handler,
+                TotalCredits           = result.Result.TotalCredits,
+                PhoneNumber            = result.Result.PhoneNumber,
+                ConnectionId           = result.Result.ConnectionId,
+                IsAccountBan           = result.Result.IsAccountBan,
+                IsGuest                = result.Result.IsGuest,
+
             };
 
             return AppResult<CustomerDTO>.CreateSucceeded(customerDTO, "Successfully getting customer by id");
@@ -617,6 +621,75 @@ public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isVerif
         catch (Exception ex)
         {
             return AppResult<bool>.CreateFailed(ex, "An error occurred when resetting email");
+        }
+    }
+
+    public async Task<AppResult<CustomerDTO>> CreateGuestCustomer(string? firstname, string? lastname, string email, DateTime? birthdate, 
+        string? phoneNumber, string? about, string? profilePath, string? handler, bool? hasAcceptedTerms)
+    {
+        try
+        {
+            // Check if guest customer email already exists
+            var existingCustomer = await dataStore.Customer.FindFirstAsync(c => c.Email == email);
+            if (existingCustomer.Succeeded && existingCustomer.Result is not null)
+            {
+                return AppResult<CustomerDTO>.CreateFailed(
+                    new ApplicationException("Email already exists"), 
+                    "A customer with this email already registered");
+            }
+
+            // Set UTC for postgres reason
+            birthdate = !birthdate.HasValue ? DateTime.Now.SetKindUtc() : birthdate.Value.SetKindUtc();
+
+            var customer = new Entities.Customer
+            {
+                About = about,
+                ProfilePath = profilePath,
+                Email = email,
+                Birthdate = birthdate.Value,
+                PhoneNumber = phoneNumber,
+                ExternalLogin = false,
+                IsMaker = false,
+                FirstName = firstname,
+                LastName = lastname,
+                IsVerifiedBadge = 0,
+                UserId = null, // Guest customers don't have UserId
+                Handler = handler ?? string.Empty,
+                HasAcceptedTerms = hasAcceptedTerms ?? false,
+                IsGuest = true // Always true for guest customers
+            };
+
+            var createdCustomerRes = await dataStore.Customer.Add(customer);
+            if (!createdCustomerRes.Succeeded || createdCustomerRes.Result == null)
+            {
+                return AppResult<CustomerDTO>.CreateFailed(
+                    new ApplicationException("An error occurred when creating guest customer"), 
+                    "An error occurred when creating guest customer");
+            }
+
+            var createdCustomer = createdCustomerRes.Result;
+
+            return AppResult<CustomerDTO>.CreateSucceeded(new CustomerDTO
+            {
+                About = createdCustomer.About,
+                Birthdate = createdCustomer.Birthdate,
+                PhoneNumber = createdCustomer.PhoneNumber,
+                DateJoined = createdCustomer.CreatedOn,
+                Email = createdCustomer.Email,
+                FirstName = createdCustomer.FirstName,
+                LastName = createdCustomer.LastName,
+                IsVerified = createdCustomer.IsVerifiedBadge,
+                ExternalLogin = createdCustomer.ExternalLogin,
+                IsMaker = createdCustomer.IsMaker,
+                Id = createdCustomer.Id,
+                ProfileImg = createdCustomer.ProfilePath,
+                Handler = createdCustomer.Handler,
+                IsAccountBan = createdCustomer.IsAccountBan
+            }, "Successfully created guest customer data");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CustomerDTO>.CreateFailed(ex, "An error occurred in creating guest customer");
         }
     }
 

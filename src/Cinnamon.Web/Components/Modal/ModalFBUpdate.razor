@@ -115,7 +115,8 @@
                 var registerWaitlist = await accountApiHandler.RegisterWaitlist(new Framework.ApiCommand.ApiCore.Account.Request.RegisterWaitlistArgs
                     {
                         Email = Model.EmailModel.Email,
-                        ValidationRoute = config.BaseUrl + "/explore"
+                        ValidationRoute = config.BaseUrl + "/explore",
+                        IsGuest = false
                     });
 
                 Model.EmailModel.IsEmailSubmitting = false;
