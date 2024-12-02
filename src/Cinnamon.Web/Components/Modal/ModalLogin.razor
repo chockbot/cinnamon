@@ -309,7 +309,13 @@
         </ModalHeader>
         <ModalBody class="px-4 py-4 m-0">
             <h5 class="text-center" style="color:#ffa942; font-weight:bold">Please check you email.</h5>
-            <p class="text-center">We've sent a six digit code to <span class="fw-bold">@Model.GuestEmailModel.Email.</span></p>
+            <p class="text-center">
+                We've sent a six digit code to <span class="fw-bold">
+                    @(string.IsNullOrEmpty(Model.GuestEmailModel.Email)
+                        ? Model.EmailModel.Email
+                        : Model.GuestEmailModel.Email)
+                </span>.
+            </p>
             <div class="d-flex justify-content-center otp-section">
                 @for (int i = 0; i < OtpLength; i++)
                 {
@@ -366,6 +372,8 @@
 
     private List<OTPModel> oTPs = new List<OTPModel>();
 
+    private bool IsGuestsAlreadyRegistered { get; set; } = false;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -412,12 +420,17 @@
                     {
                         case "EMAIL-ALREADY-REGISTERED":
                             //Check if guest or not
-                            var customer = await accountApiHandler.GetCustomerByEmail(Model.GuestEmailModel.Email);
-                            //If guest 
-                                //implemet auto login
-                                //else
+                            var customer = await accountApiHandler.GetCustomerByEmail(Model.EmailModel.Email);
+                            if (customer.Result is not null && customer.Result.Result.IsGuest)
+                            {
+                                await ShowOTP();
+                                IsGuestsAlreadyRegistered = customer.Result.Result.IsGuest;
+                            }
+                            else
+                            {
                                 await Model.PasswordModal.Show();
                                 await Model.TextPassword.Focus();
+                            }  
                             return;
                         case "EMAIL-ALREADY-REGISTERED-NOT-VERIFIED":
                         case "EMAIL-ALREADY-REGISTERED-VERIFIED":
@@ -544,10 +557,19 @@
                     {
                         //Redirect to normal Login
                         case "EMAIL-ALREADY-REGISTERED":
-                            await Model.GuestLoginModal.Hide();
-                            await Model.PasswordModal.Show();
-                            await Model.TextPassword.Focus();
-                            Model.PasswordModel.ErrorMessage = "Email already registered. Please enter your password to continue.";
+                            var customer = await accountApiHandler.GetCustomerByEmail(Model.GuestEmailModel.Email);
+                            if (customer.Result is not null && customer.Result.Result.IsGuest)
+                            {
+                                await ShowOTP();
+                                IsGuestsAlreadyRegistered = customer.Result.Result.IsGuest;
+                            }
+                            else
+                            {
+                                await Model.GuestLoginModal.Hide();
+                                await Model.PasswordModal.Show();
+                                await Model.TextPassword.Focus();
+                                Model.PasswordModel.ErrorMessage = "Email already registered. Please enter your password to continue.";
+                            }
                             return;
                         case "EMAIL-ALREADY-REGISTERED-NOT-VERIFIED":
                         case "EMAIL-ALREADY-REGISTERED-VERIFIED":
@@ -577,10 +599,11 @@
         try
         {
             Model.IsGuestSendingVerification = true;
+            string userEmail = string.IsNullOrEmpty(Model.GuestEmailModel.Email) ? Model.EmailModel.Email : Model.GuestEmailModel.Email;
             //Confirm OTP exist
             var result = await accountApiHandler.GetUserOTP(new Framework.ApiCommand.ApiCore.Account.Request.GetUserOTPArgs
             {
-                Email = Model.GuestEmailModel.Email
+                Email = userEmail
             });
 
             if (result.Succeeded && result.Result is not null && result.Result.IsSuccess)
@@ -611,27 +634,22 @@
 
             if (isValidOtp)
             {
-                // OTP is valid: Update waitlist to IsVerify and register to customer table
-                // Implement the required logic for updating waitlist
-                var verify = await accountApiHandler.VerifyEmail(new Framework.ApiCommand.ApiCore.Account.Request.VerifyEmailArgs
-                {
-                    Email = Model.GuestEmailModel.Email
-                });
-                if (verify.Succeeded && verify.Result is not null && verify.Result.IsSuccess)
+                //If already registered implement auto login
+                if (IsGuestsAlreadyRegistered)
                 {
                     // Implement the required logic to register customer
                     var register = await JsRuntime.InvokeAsync<Models.JsResultModel>("MyLib.Components.modal.createGuest",
-                            new
-                            {
-                                firstname        = Model.GuestEmailModel.Email,
-                                lastname         = string.Empty,
-                                email            = Model.GuestEmailModel.Email,
-                                birthdate        = DateTime.Now.AddYears(-19),
-                                phoneNumber      = string.Empty,
-                                password         = string.Empty,
-                                hasAcceptedTerms = true,
-                                IsGuest          = true
-                            });
+                        new
+                        {
+                            firstname = userEmail,
+                            lastname = string.Empty,
+                            email = userEmail,
+                            birthdate = DateTime.Now.AddYears(-19),
+                            phoneNumber = string.Empty,
+                            password = string.Empty,
+                            hasAcceptedTerms = true,
+                            IsGuest = true
+                        });
                     if (!register.Success)
                     {
                         Model.IsGuestSendVerificationShowError = true;
@@ -639,6 +657,38 @@
                         return;
                     }
                     NavigationManager.NavigateTo("/explore", true);
+                }
+                else
+                {
+                    // OTP is valid: Update waitlist to IsVerify and register to customer table
+                    // Implement the required logic for updating waitlist
+                    var verify = await accountApiHandler.VerifyEmail(new Framework.ApiCommand.ApiCore.Account.Request.VerifyEmailArgs
+                        {
+                            Email = userEmail
+                        });
+                    if (verify.Succeeded && verify.Result is not null && verify.Result.IsSuccess)
+                    {
+                        // Implement the required logic to register customer
+                        var register = await JsRuntime.InvokeAsync<Models.JsResultModel>("MyLib.Components.modal.createGuest",
+                        new
+                        {
+                            firstname = userEmail,
+                            lastname = string.Empty,
+                            email = userEmail,
+                            birthdate = DateTime.Now.AddYears(-19),
+                            phoneNumber = string.Empty,
+                            password = string.Empty,
+                            hasAcceptedTerms = true,
+                            IsGuest = true
+                        });
+                        if (!register.Success)
+                        {
+                            Model.IsGuestSendVerificationShowError = true;
+                            Model.IsGuestSendingVerification = false;
+                           return;
+                        }
+                        NavigationManager.NavigateTo("/explore", true);
+                    }
                 }
             }
             else
@@ -665,9 +715,10 @@
     {
         //Send OTP to the email
         Model.IsGuestResendingVerification = true;
+        string userEmail = string.IsNullOrEmpty(Model.GuestEmailModel.Email) ? Model.EmailModel.Email : Model.GuestEmailModel.Email;
         var sendOTP = await accountApiHandler.SendOTP(new Framework.ApiCommand.ApiCore.Account.Request.SendOTPArgs
             {
-                Email = Model.GuestEmailModel.Email,
+                Email = userEmail,
                 OTPCode = GenerateOtp()
             });
         //Open OTP Verification Modal
@@ -681,9 +732,10 @@
     public async Task ShowOTP()
     {
         //Send OTP to the email
+        string userEmail = string.IsNullOrEmpty(Model.GuestEmailModel.Email) ? Model.EmailModel.Email : Model.GuestEmailModel.Email;
         var sendOTP = await accountApiHandler.SendOTP(new Framework.ApiCommand.ApiCore.Account.Request.SendOTPArgs
         {
-            Email = Model.GuestEmailModel.Email,
+            Email = userEmail,
             OTPCode = GenerateOtp()
         });
         //Open OTP Verification Modal

@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Cinnamon.Api.Core.Config;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
 
 namespace Cinnamon.Api.Core.Services.AccountService;
 
@@ -38,26 +39,37 @@ public class CreateGuestCustomerHandler : ICreateGuestCustomerHandler
     {
         try
         {
-            var createGuestResult = await customerData.CreateGuestCustomer(new Framework.ApiCommand.ApiData.Customer.Request.CreateGuestCustomerArgs
-            {
-                FirstName = args.FirstName,
-                LastName = args.LastName,
-                Email = args.Email,
-                Birthdate = args.Birthdate,
-                PhoneNumber = args.PhoneNumber,
-                About = args.About,
-                ProfilePath = args.ProfilePath,
-                Handler = args.Handler,
-                HasAcceptedTerms = args.HasAcceptedTerms,
-            });
+            CustomerDTO createdGuestCustomer = new CustomerDTO();
 
-            if (!createGuestResult.Succeeded || createGuestResult.Result == null)
+            var getCustomer = await customerData.GetCustomerByEmail(args.Email);
+            if (getCustomer.Result is not null && getCustomer.Result.IsSuccess)
             {
-                return AppResult<CreateGuestCustomerResult>.CreateFailed(
-                    new ApplicationException(createGuestResult.Message), createGuestResult.Message);
+                createdGuestCustomer = getCustomer.Result.Result;
             }
+            else
+            {
+                var createGuestResult = await customerData.CreateGuestCustomer(new Framework.ApiCommand.ApiData.Customer.Request.CreateGuestCustomerArgs
+                {
+                    FirstName        = args.FirstName,
+                    LastName         = args.LastName,
+                    Email            = args.Email,
+                    Birthdate        = args.Birthdate,
+                    PhoneNumber      = args.PhoneNumber,
+                    About            = args.About,
+                    ProfilePath      = args.ProfilePath,
+                    Handler          = args.Handler,
+                    HasAcceptedTerms = args.HasAcceptedTerms,
+                });
 
-            var createdGuestCustomer = createGuestResult.Result.Result;
+                if (!createGuestResult.Succeeded || createGuestResult.Result == null)
+                {
+                    return AppResult<CreateGuestCustomerResult>.CreateFailed(
+                        new ApplicationException(createGuestResult.Message), createGuestResult.Message);
+                }
+
+                createdGuestCustomer = createGuestResult.Result.Result;
+            }
+            
 
             var claims = new [] {
                 new Claim(JwtRegisteredClaimNames.Sub, createdGuestCustomer.Email),
