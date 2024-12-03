@@ -380,7 +380,6 @@
         {
             module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/FocusNext.js");
         }
-        module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/FocusNext.js");
     }
 
     public async Task Show()
@@ -906,6 +905,9 @@
 
     private async void FocusNextInput(int index)
     {
-        await module.InvokeVoidAsync("focusNextOtpInput", index);
+        if (module != null)
+        {
+            await module.InvokeVoidAsync("focusNextOtpInput", index);
+        }
     }
 }
