@@ -686,7 +686,7 @@
                         {
                             Model.IsGuestSendVerificationShowError = true;
                             Model.IsGuestSendingVerification = false;
-                           return;
+                            return;
                         }
                         NavigationManager.NavigateTo(redirect, true);
                     }
@@ -744,7 +744,7 @@
         {
             await Model.OTPModal.Show();
         }
-        
+
     }
 
     public int[] GenerateOtp()
@@ -905,6 +905,9 @@
 
     private async void FocusNextInput(int index)
     {
-        await module.InvokeVoidAsync("focusNextOtpInput", index);
+        if (module != null)
+        {
+            await module.InvokeVoidAsync("focusNextOtpInput", index);
+        }
     }
 }
