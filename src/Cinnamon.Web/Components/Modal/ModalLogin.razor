@@ -380,6 +380,7 @@
         {
             module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/FocusNext.js");
         }
+        module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/FocusNext.js");
     }
 
     public async Task Show()
@@ -599,6 +600,7 @@
         try
         {
             Model.IsGuestSendingVerification = true;
+            var redirect = string.IsNullOrEmpty(ReturnUrl) ? "/explore" : ReturnUrl;
             string userEmail = string.IsNullOrEmpty(Model.GuestEmailModel.Email) ? Model.EmailModel.Email : Model.GuestEmailModel.Email;
             //Confirm OTP exist
             var result = await accountApiHandler.GetUserOTP(new Framework.ApiCommand.ApiCore.Account.Request.GetUserOTPArgs
@@ -656,7 +658,7 @@
                         Model.IsGuestSendingVerification = false;
                         return;
                     }
-                    NavigationManager.NavigateTo("/explore", true);
+                    NavigationManager.NavigateTo(redirect, true);
                 }
                 else
                 {
@@ -687,7 +689,7 @@
                             Model.IsGuestSendingVerification = false;
                            return;
                         }
-                        NavigationManager.NavigateTo("/explore", true);
+                        NavigationManager.NavigateTo(redirect, true);
                     }
                 }
             }
