@@ -211,7 +211,7 @@
                     </ModalHeader>
                     <ModalBody>
                         <Calendar ViewOnly StrikeOutNotSelected
-                                  SelectedDates="SelectedDates" OnSelectedDate="SelectedDate" CurrentDate="SelectedDates.FirstOrDefault()"/>
+                                  SelectedDates="SelectedDates" OnSelectedDate="SelectedDate" CurrentDate="SelectedDates.FirstOrDefault()" Duration="SelectedDuration"/>
                     </ModalBody>
                 </ModalContent>
             </Modal>
@@ -395,6 +395,15 @@
                 dates = GeneratedDates.Select(d => d.DateStart).ToList();
             }
             return dates;
+        }
+    }
+    private TimeSpan SelectedDuration
+    {
+        get
+        {
+            var oteDate = GeneratedDates.FirstOrDefault();
+            TimeSpan eventDuration = oteDate.DateEnd - oteDate.DateStart;
+            return eventDuration;
         }
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -697,17 +706,32 @@
                     });
             }
             var every = Summary.ScheduleData.DurationEvery ?? 0;
-            var dateStart = Summary.ScheduleData.DurationStart ?? DateTime.Now;
-            var dateEnd = Summary.ScheduleData.DurationEnd ?? DateTime.Now; ;
+            var dateStart = new DateTime(
+                Summary.ScheduleData.DurationStart?.Year ?? DateTime.Now.Year,
+                Summary.ScheduleData.DurationStart?.Month ?? DateTime.Now.Month,
+                Summary.ScheduleData.DurationStart?.Day ?? DateTime.Now.Day,
+                Summary.ScheduleData.DateFrom.Hour,
+                Summary.ScheduleData.DateFrom.Minute,
+                Summary.ScheduleData.DateFrom.Second
+                );
 
-            var timeStart = dateStart.TimeOfDay;
-            var timeDuration = Summary.ScheduleData.DateTo - Summary.ScheduleData.DateFrom;
+            var dateEnd = new DateTime(
+                Summary.ScheduleData.DurationEnd?.Year ?? DateTime.Now.Year,
+                Summary.ScheduleData.DurationEnd?.Month ?? DateTime.Now.Month,
+                Summary.ScheduleData.DurationEnd?.Day ?? DateTime.Now.Day,
+                Summary.ScheduleData.DateTo.Hour,
+                Summary.ScheduleData.DateTo.Minute,
+                Summary.ScheduleData.DateTo.Second
+            );
+
+            var timeStart     = dateStart.TimeOfDay;
+            var timeDuration  = Summary.ScheduleData.DateTo - Summary.ScheduleData.DateFrom;
             string weekString = Summary.ScheduleData.WeekString ?? string.Empty;
 
             var monthSelection = Summary.ScheduleData.MonthSelection ?? 0;
-            var onDayDate = Summary.ScheduleData.OnDayDate ?? 0;
-            var monthRepeat = Summary.ScheduleData.MonthRepeat ?? string.Empty;
-            var monthDay = Summary.ScheduleData.MonthDay ?? string.Empty;
+            var onDayDate      = Summary.ScheduleData.OnDayDate ?? 0;
+            var monthRepeat    = Summary.ScheduleData.MonthRepeat ?? string.Empty;
+            var monthDay       = Summary.ScheduleData.MonthDay ?? string.Empty;
 
             dates = Summary.ScheduleData.Recurrences switch
             {
