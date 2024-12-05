@@ -539,7 +539,7 @@
 </Modal>
 
 @code
-{
+    {
     [Parameter]
     public string Handler {get; set;} = string.Empty;
 
@@ -564,6 +564,7 @@
     private Models.Forms.CardPaymentModel cardPaymentModel = new();
     private bool submitting = false;
     private IDictionary<int, TicketInfo> selectedTickets = new Dictionary<int, TicketInfo>();
+    private List<ActivityQuestion> selectedQuestions = new List<ActivityQuestion>();
     private IEnumerable<OtePricing> AvailableTickets {get; set;} = Enumerable.Empty<OtePricing>();
     public List<string> AvailableSeats = new List<string>();
     private Modal? failedModal;
@@ -721,6 +722,19 @@
                 };
                 await AddSelectedTicket(otePricing);
             }
+        }
+        //get questions
+        if (tracker.Questions is not null)
+        {
+            selectedQuestions = tracker.Questions.Select(s =>
+            {
+                return new ActivityQuestion
+                {
+                    Id = s.Id,
+                    Answer = s.Answer,
+                    Question = s.Question
+                };
+            }).ToList();
         }
     }
 
@@ -1078,6 +1092,12 @@
                         SeatNumber = string.Empty
                     };
                 }),
+                Questions = selectedQuestions.Select(q => new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs.ActivityQuestion
+                {
+                    Answer = q.Answer,
+                    Id = q.Id,
+                    Question = q.Question
+                }),
                 Guid = Guid,
                 Token = Token
             }, token);
@@ -1154,5 +1174,16 @@
         public int Count {get; set;}
         public decimal Price {get; set;}
         public bool RequiredApproval {get; set;}
+    }
+
+    private class ActivityQuestion
+    {
+        public int Id { get; set; }
+        public string Question { get; set; }
+        public string FieldType { get; set; }
+        public bool Required { get; set; }
+        public string Options { get; set; }
+        [Required(ErrorMessage = "Please write your answer")]
+        public string Answer { get; set; }
     }
 }

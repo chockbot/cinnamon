@@ -71,6 +71,8 @@ should have Available dates, Selected Dates, *@
     public bool Flat {get; set;}
     [Parameter]
     public bool StoreClickedItems {get; set;}
+    [Parameter]
+    public TimeSpan Duration { get; set; }
 
     private IList<CalendarItem> calendarItems = new List<CalendarItem>();
     private DateTime activeDate;
@@ -103,7 +105,7 @@ should have Available dates, Selected Dates, *@
                 var currentDateTime = DateTime.Now;
                 var date = new DateTime(now.Year, now.Month, i - skipCount, now.TimeOfDay.Hours, now.TimeOfDay.Minutes, now.TimeOfDay.Seconds);
                 var selected = SelectedDates.Any(a => a.Date == date.Date);
-                var pastDate = SelectedDates.Any(a => a.Date == date.Date && a <= currentDateTime);
+                var pastDate = SelectedDates.Any(a => a.Date == date.Date && a.Add(Duration) <= currentDateTime);
                 calendarItems.Add(new CalendarItem {
                     Empty = false,
                     Date = date,
