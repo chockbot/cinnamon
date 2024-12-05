@@ -113,18 +113,18 @@
             <!-- Desktop -->
             <form class="search-bar" @onsubmit="Search">
                 <div class="input-group p-1">
-                    <input type="text" placeholder="Search Experience" id="19d13aa1-90c0-4232-a7bc-62a772baa223"
-                           autocomplete="new-password"
-                           @bind-value="searchValue"
-                           @oninput="SearchOnInput"
-                           aria-describedby="btn-search"
-                           class="form-control bg-none border-0"
-                           style="outline: none;box-shadow: none;">
-                    <div class="input-group-append border-0">
-                        <button type="button" @onclick="Search" class="search-button btn btn-link text-success">
-                            <img src="images/explore-page-images/search-icon-explore.svg" alt="search-icon" />
-                        </button>
-                    </div>
+                <input type="text" placeholder="Search" id="19d13aa1-90c0-4232-a7bc-62a772baa223"
+                    autocomplete="new-password"
+                    @bind-value="searchValue"
+                    @oninput="SearchOnInput"
+                    aria-describedby="btn-search"
+                    class="form-control bg-none border-0"
+                    style="outline: none;box-shadow: none;">
+                <div class="input-group-prepend border-0">
+                    <button type="button" @onclick="Search" class="search-button btn btn-link text-success">
+                        <img src="images/explore-page-images/search-icon-explore.svg" alt="search-icon" />
+                    </button>
+                </div>
                 </div>
             </form>
             @if (!isLogin)
@@ -407,60 +407,68 @@
             </div>
         </div>    
     </div>
-        <form class="search-bar-mobile" style="@GetSearchBarStyle()" @onsubmit="Search">
-            <div class="input-group p-1">
-                <input type="text" @ref="searchInputRef" placeholder="Search Event" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
-            </div>
-        </form>
+    <form class="search-bar-mobile" style="@GetSearchBarStyle()" @onsubmit="Search">
+        <div class="input-group p-1">
+            <input type="text" @ref="searchInputRef" placeholder="Search Event" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
+        </div>
+    </form>
     <!-- Header -->
     @if (!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
     {
-<div class="top-section" style="position:relative;display:flex">
-    <Carousel @bind-SelectedSlide="@selectedSlide" Crossfade Interval="10000" ShowControls="false">
-        <CarouselSlide Name="1">
-        <div class="mobile-wrapper">
-            <Image Source="images/explore-page-images/carousel-images/carousel-slide-image-1.webp" class="section-1-image"/>
-        </div>
-        </CarouselSlide>
-        <CarouselSlide Name="2">
-        <div class="image-wrapper">
-            <Image Source="images/explore-page-images/carousel-images/carousel-slide-image-2.webp" class="section-1-image"/>
-        </div>
-        </CarouselSlide>
-    </Carousel>
-    
-    @if (selectedSlide == "1")
-    {
-        <div class="provider-section">
-            <p class="provider-text">Dua Lipa Radical Optimism Tour</p>
-            <p class="provider-sub-text">November 13, 2024</p>
-            <p class="provider-sub-text">Philippine Arena</p>
-            <div class="provider-buttons">
-                <button type="button" class="buy-tickets-button" @onclick="RedirectToCarousel1">
-                    <span>Buy Tickets</span>
-                </button>
+        <div class="top-section">
+            <div class="discover-section">
+                <div class="discover-title">
+                    <p class="discover-text">Discover your</p>
+                    <p class="discover-text sub-discover">experience.</p>
+                </div>
+                <div class="discover-info">
+                    @foreach (var activities in activityFeeds.Take(15).ToList())
+                    {
+                        string formattedDate = activities.DateStart.ToString("MMMM dd, yyyy ● ");
+                        string formattedTime = activities.DateStart.ToString("h:mm tt");
+                        @if (selectedSlide == activities.Handler)
+                        {
+                            <div class="discover-exp-info">
+                                <p class="discover-exp-text">@activities.Title</p>
+                                <p class="discover-exp-text">@formattedDate<span class="discover-exp-text-time">@formattedTime</span></p>
+                                @if (@activities.ExperienceTypeId == 1)
+                                {
+                                    var address = string.IsNullOrEmpty(activities.Address.PinnedLocation) ? activities.Address.City + ", " + activities.Address.Region : activities.Address.PinnedLocation;
+                                    <p class="discover-exp-text">@address</p>
+                                }
+                                else
+                                {
+                                    <p class="discover-exp-text">@(activities.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                                }
+                                <div class="provider-buttons">
+                                    <a class="buy-tickets-button" id="btnBrowse" href="@DetailsUrl(activities.Handler, (int)activities.ExperienceCreationTypeId, activities.IsReservedSeating)" target="_blank">
+                                        <span class="button-provider-text">Buy Tickets</span>
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="main-container">
+                <div class="carousel">
+                    <div class="carousel-track">
+                        <div class="image-container">
+                            <Carousel @bind-SelectedSlide="selectedSlide" Crossfade Interval="10000" ShowControls="false">
+                                @foreach (var activities in activityFeeds.Take(15).ToList())
+                                {
+                                    <CarouselSlide Name="@activities.Handler">
+                                        <img src="@activities.SummaryDetails.ImageSrc" alt="img">
+                                    </CarouselSlide>
+                                }
+                            </Carousel>
+                            <div class="gradient-rectangle"></div>
+                        </div>  
+                    </div>
+                </div>
             </div>
         </div>
-    }
-    else if (selectedSlide == "2")
-    {
-        <div class="provider-section">
-            <p class="provider-text">Wicker Jam</p>
-            <p class="provider-sub-text">November 26, 2024</p>
-            <p class="provider-sub-text">Handuraw Pizza Mandaue</p>
-            <div class="provider-buttons">
-                <button type="button" class="buy-tickets-button" id="btnBrowse" @onclick="RedirectToCarousel2">
-                    <span>Buy Tickets</span>
-                </button>
-            </div>
-        </div>
-    }
-</div>
-    } else 
-    {
-
-    }
-
+    } 
     <!-- End of Header -->
     <!-- New Announcement Like Cards -->
     @if (!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
@@ -2235,8 +2243,6 @@
     private ModalLogin signinModal;
     private ModalFBUpdate fbUpdateModal;
     private UpdatePasswordModal updatePasswordModal;
-    private string selectedSlide = "1";
-
 
     bool IsSearchPerformed { get; set; } = false;
     string SearchQuery { get; set; }
@@ -2316,7 +2322,8 @@
     private string subscriptionResultClass;
     private string subscriptionResultTitle;
     private bool showModal;
-
+    public string selectedSlide;
+    public List<ActivityFeed> carouselActivities { get; set; } = new List<ActivityFeed>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -3185,7 +3192,7 @@
         {
             subscriptionResultMessage = "You're already on our list! Keep an eye on your inbox for exciting updates, special discounts, and valuable insights.";
             subscriptionResultClass = "error";
-            subscriptionResultTitle = "Already a Subscriber...";
+            subscriptionResultTitle = "Already a Subscriber..."; 
         }
 
         showModal = true;
