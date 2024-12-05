@@ -4,8 +4,7 @@
         input.focus();
     }
 }
-
-export function getClipboardText() {
+export async function getClipboardText() {
     return new Promise((resolve) => {
         document.addEventListener('paste', (event) => {
             const clipboardData = event.clipboardData || window.clipboardData;
