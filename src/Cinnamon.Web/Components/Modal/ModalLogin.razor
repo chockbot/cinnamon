@@ -389,7 +389,6 @@
     {
         await Model.EmailModal.Show();
         await Model.TextEmail.Focus();
-        module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/FocusNext.js");
     }
 
     string modalHeaderStyle = $"";
