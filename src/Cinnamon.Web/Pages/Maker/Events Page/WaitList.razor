@@ -230,23 +230,23 @@
 
 @code 
 {
-    [Parameter]
-    public IEnumerable<OteSchedule> OteTickets { get; set; }
+        [Parameter]
+        public IEnumerable<OteSchedule> OteTickets { get; set; }
 
-    [Parameter]
-    public string Token { get; set; }
+        [Parameter]
+        public string Token { get; set; }
 
-    [Parameter]
-    public int ProviderId { get; set; }
+        [Parameter]
+        public int ProviderId { get; set; }
 
-    [Parameter]
-    public int ActivityId { get; set; }
+        [Parameter]
+        public int ActivityId { get; set; }
 
-    [Parameter]
-    public string EventName { get; set; }
+        [Parameter]
+        public string EventName { get; set; }
 
-    [Parameter]
-    public int DateId { get; set; }
+        [Parameter]
+        public int DateId { get; set; }
 
     public List<OteTicket> ExportCustomer = new List<OteTicket>();
 
@@ -427,19 +427,29 @@
         }, Token);
         if (waitlists.Succeeded && waitlists.Result is not null && waitlists.Result.IsSuccess)
         {
-            OteWaitlist = waitlists.Result.Result.Select(e => new OteWaitlist
-            { 
-                Id           = e.Id,
-                ActivityId   = e.ActivityId,
-                CustomerId   = e.CustomerId,
-                CustomerName = e.CustomerName,
-                Payload      = e.Payload,
-                ProviderId   = e.ProviderId,
-                ScheduleId   = e.ScheduleId,
-                Status       = e.Status,
-                ChangedOn    = e.ChangedOn,
-                CreatedOn    = e.CreatedOn
-            }).OrderByDescending(a => a.CreatedOn).ToList();
+            OteWaitlist = waitlists.Result.Result.Select(e =>
+            {
+                // Deserialize Payload (assuming Payload is a JSON string)
+                var payload = JsonConvert.DeserializeObject<Payload>(e.Payload);
+                // Get Amount
+                var ticketAmount = payload?.Tickets?.Sum(a => a.Price) ?? 0;
+
+                return new OteWaitlist
+                {
+                    Id           = e.Id,
+                    ActivityId   = e.ActivityId,
+                    CustomerId   = e.CustomerId,
+                    CustomerName = e.CustomerName,
+                    Payload      = e.Payload,
+                    ProviderId   = e.ProviderId,
+                    ScheduleId   = e.ScheduleId,
+                    Status       = e.Status,
+                    ChangedOn    = e.ChangedOn,
+                    CreatedOn    = e.CreatedOn,
+                    TicketPrice  = ticketAmount
+                };
+            }).Where(a => a.Status != 2 && a.TicketPrice > 0)
+            .OrderByDescending(a => a.CreatedOn).ToList();
         }
     }
     private async Task ExportToExcel()
@@ -487,7 +497,8 @@
                         Quantity     = ticketCount,
                         Registration = registration
                     };
-            }).OrderBy(a => a.Id).ToList();
+            }).Where(s => s.Status != "Approved" && s.Amount > 0)
+            .OrderBy(a => a.Id).ToList();
         }
         using (var workbook = new XLWorkbook("wwwroot/Template/WaitListTemplate.xlsx"))
         {
