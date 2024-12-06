@@ -648,9 +648,10 @@
                                         {
                                             <div class="mt-2">
                                                 <input type="radio"
-                                                       name="@question.Id"
-                                                       value="@option"
-                                                       @onchange="(e) => UpdateAnswer(question, option)" />
+                                                       name ="@question.Id"
+                                                       value = "@option"
+                                                       @onchange ="(e) => UpdateAnswer(question, option)" 
+                                                       checked = "@question.Answer"/>
                                                 <label>@option</label>
                                             </div>
                                         }
@@ -691,7 +692,8 @@
                                                 <input type="radio"
                                                        name="@question.Id"
                                                        value="@option"
-                                                       @onchange="(e) => UpdateAnswer(question, option)" />
+                                                       @onchange="(e) => UpdateAnswer(question, option)" 
+                                                       checked = "@question.Answer"/>
                                                 <label>@option</label>
                                          </div>
                                     }
@@ -1323,6 +1325,8 @@
 
         submitting = false;
         StateHasChanged();
+        selectedTickets.Clear();
+        await ClearAnswers();
 
         string paymentUrl = $"/payment/ote/{Handler}/?guid={createTracker.Guid}&token={createTracker.Token}";
 
@@ -1378,6 +1382,7 @@
             }
 
             await ClearAnswers();
+            selectedTickets.Clear();
 
             var haveApprovalTicket = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
 
@@ -1863,6 +1868,10 @@
 
         if (waitlist.Succeeded && waitlist.Result is not null && waitlist.Result.IsSuccess)
         {
+            //Clear tickets
+            selectedTickets.Clear();
+            //Clear Question
+            await ClearAnswers();
             //Add Email
             await NotificationService.Success("Successfully added to waitlist.", "Success");
             if (activity.IsCapacity)
