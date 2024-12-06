@@ -28,14 +28,14 @@ public class GuestOTPRepository : IGuestOTPRepository
 
     public async Task<AppResult<IEnumerable<GuestOTPDTO>>> GetByEmailAsync(string email)
     {
-        // Get the current UTC time
         var currentTime = DateTime.UtcNow;
-        var startOfDay = currentTime.Date;
-        var endOfDay = startOfDay.AddDays(1);
+        var startOfDay = currentTime.Date;  // Midnight of the current day
+        var endOfDay = startOfDay.AddDays(1);  // Midnight of the next day
 
-        //Filter all not expired otp
-        Expression<Func<Entities.GuestOTP, bool>> filter = a => (a.Email == email) &&
-        (a.CreatedOn >= startOfDay && a.CreatedOn < endOfDay);
+        // Filter all OTPs for the specified email, created today
+        Expression<Func<Entities.GuestOTP, bool>> filter = a =>
+            (a.Email == email) &&
+            (a.CreatedOn >= startOfDay && a.CreatedOn < endOfDay);
 
         var result = await dataStore.GuestOTP.FindAsync(filter);
         if (!result.Succeeded || result.Result == null)

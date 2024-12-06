@@ -29,6 +29,7 @@ public class LoginModal
 
     public bool IsGuestSendingVerification { get; set; }
     public bool IsGuestSendVerificationShowError { get; set; }
+    public string IsGuestVerificatioErrorMessage { get; set; } = "An error occured. Please try again later";
     public bool IsGuestResendingVerification { get; set; }
     public bool IsGuestResendVerificationShowError { get; set; }
     public string ResendGuestVerificationErrorMessage { get; set; }
