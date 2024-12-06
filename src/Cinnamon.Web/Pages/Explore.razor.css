@@ -75,6 +75,10 @@
 
 .discover-exp-info p {
 	margin-bottom: 0px;
+	max-width: 600px; /* Adjust as needed */
+	overflow: hidden;
+	text-overflow: ellipsis; /* Adds "..." for truncated text */
+	white-space: nowrap; /* Prevents text from wrapping */
 }
 
 .discover-section {
@@ -5797,9 +5801,15 @@ img.img-icon {
 	.search-bar {
 		display: none;
 	}
+	.discover-exp-info p {
+		max-width: 570px; /* Adjust as needed */
+	}
 }
 
 @media (min-width: 371px) and (max-width: 420px) {
+	.discover-exp-info p {
+		max-width: 415px; /* Adjust as needed */
+	}
 	.post-featured-image {
 		width: 350px;
 	}
@@ -5815,6 +5825,9 @@ img.img-icon {
 
 /* For search bar to stay on middle */
 @media (min-width: 320px) and (max-width: 370px) {
+	.discover-exp-info p {
+		max-width: 365px; /* Adjust as needed */
+	}
 
 	.modal-content {
 		width: 300px;

@@ -7,10 +7,10 @@
     }
 }
 
-export function getClipboardText() {
+export async function getClipboardText() { // Mark the function as async
     if (navigator.clipboard) {
         try {
-            const text = await navigator.clipboard.readText();
+            const text = await navigator.clipboard.readText(); // Await works correctly now
             return text.replace(/\s+/g, '').replace(/[^0-9]/g, '');
         } catch (err) {
             console.error('Failed to read clipboard:', err);
