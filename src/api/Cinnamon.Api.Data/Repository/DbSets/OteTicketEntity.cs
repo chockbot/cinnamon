@@ -253,14 +253,15 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
                 cr.TicketName,
                 cr.Quantity,
                 cr.Amount,
-                cr.Payload,
+            	COALESCE(cr.Payload, e.""Payload"") AS Payload,
                 cr.Id,
                 cr.DateId,
                 c.""FirstName"",
                 c.""LastName"",
                 c.""Email"",
                 d.""Date"",
-                cr.Status
+                cr.Status,
+            	cr.EventType
             FROM (
                 SELECT  
                     w.""Id"" AS TicketId,
@@ -268,16 +269,18 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
                     NULL AS Quantity,
                     NULL AS Amount,
                     w.""Payload"" AS Payload,
-                    w.""CustomerId"" AS Id,
+                    w.""CustomerId"" AS Id, 
                     w.""OteDateId"" AS DateId,
                     CASE 
                         WHEN w.""Status"" = 1 THEN 'PENDING WAITLIST'
                         WHEN w.""Status"" = 2 THEN 'APPROVED WAITLIST'
                         WHEN w.""Status"" = 3 THEN 'DECLINED WAITLIST'
                         ELSE 'Unknown'
-                    END AS Status
-                FROM public.""OteWaitList"" AS w 
-                WHERE w.""ActivityId"" = @activityId AND w.""Status"" != 4
+                    END AS Status,
+                    NULL AS POId,
+            		w.""Type"" AS EventType
+                FROM public.""OteWaitList"" AS w
+                WHERE w.""ActivityId"" = @activityId AND w.""Status"" != 4 AND (w.""Status"" != 2 AND w.""Type"" != 'Free')
                 
                 UNION ALL
                 
@@ -289,12 +292,15 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
                     NULL AS Payload,
                     t.""CustomerId"" AS Id,
                     t.""OteDateId"" AS DateId,
-                    t.""Status"" AS Status
+                    t.""Status"" AS Status,
+                    t.""PurchaseOrderId"" AS POId,
+            		NULL AS EventType
                 FROM public.""OteTickets"" AS t
                 WHERE t.""ActivityId"" = @activityId
             ) AS cr
-            JOIN public.""Customers"" AS c ON cr.Id = c.""Id"" 
-            JOIN public.""OteDates"" AS d ON cr.DateId = d.""Id"";";
+            LEFT JOIN public.""Customers"" AS c ON cr.Id = c.""Id""
+            LEFT JOIN public.""OteDates"" AS d ON cr.DateId = d.""Id""
+            LEFT JOIN public.""PurchaseOrders"" AS e ON cr.POId = e.""Id""";
 
             IList<OteTicketDTO> listResult = new List<OteTicketDTO>();
 
