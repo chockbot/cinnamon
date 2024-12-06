@@ -351,7 +351,7 @@
                 }
             </p>
             <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.IsGuestSendVerificationShowError">
-                <AlertDescription>An error occured. Please try again later</AlertDescription>
+                <AlertDescription>@Model.IsGuestVerificatioErrorMessage</AlertDescription>
             </Alert>
         </ModalBody>
     </ModalContent>
@@ -389,7 +389,6 @@
     {
         await Model.EmailModal.Show();
         await Model.TextEmail.Focus();
-        module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/FocusNext.js");
     }
 
     string modalHeaderStyle = $"";
@@ -661,6 +660,7 @@
                         Model.IsGuestSendingVerification = false;
                         return;
                     }
+                    Model.IsGuestSendingVerification = false;
                     NavigationManager.NavigateTo(redirect, true);
                 }
                 else
@@ -690,8 +690,10 @@
                         {
                             Model.IsGuestSendVerificationShowError = true;
                             Model.IsGuestSendingVerification = false;
+                            Model.IsGuestVerificatioErrorMessage = "An error occured. Please try again later";
                             return;
                         }
+                        Model.IsGuestSendingVerification = false;
                         NavigationManager.NavigateTo(redirect, true);
                     }
                 }
@@ -699,7 +701,7 @@
             else
             {
                 Model.IsGuestSendVerificationShowError = true;
-                //Add error message
+                Model.IsGuestVerificatioErrorMessage = "The OTP is invalid or has expired. Please try again.";
             }
             Model.IsGuestSendingVerification = false;
         }
@@ -707,6 +709,7 @@
         {
             Model.IsGuestSendingVerification = false;
             Model.IsGuestSendVerificationShowError = true; 
+            Model.IsGuestVerificatioErrorMessage = "An error occured. Please try again later";
         }
     }
 
