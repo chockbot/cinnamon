@@ -635,6 +635,7 @@
             <Validations @ref="questionValidation" Mode="ValidationMode.Manual" Model="filteredQuestions">
                 @foreach (var question in filteredQuestions)
                 {
+                    var options = question.Options.Split(",").ToList();
                     if (question.Required)
                     {
                         <Validation>
@@ -644,14 +645,14 @@
                                     @if (question.FieldType == Cinnamon.Framework.Enums.FieldType.Check.ToString())
                                     {
                                         // For checkbox options
-                                        foreach (var option in question.Options.Split(",").ToList())
+                                        foreach (var option in options)
                                         {
                                             <div class="mt-2">
                                                 <input type="radio"
                                                        name ="@question.Id"
                                                        value = "@option"
-                                                       @onchange ="(e) => UpdateAnswer(question, option)" 
-                                                       checked = "@question.Answer"/>
+                                                       @onchange ="(e) => UpdateAnswer(question, option)"
+                                                       checked="@(question.Answer == option)" />
                                                 <label>@option</label>
                                             </div>
                                         }
@@ -667,10 +668,9 @@
                                         // For dropdown options
                                         <br/>
                                         <select class="question-dropdown" @onchange="(e) => UpdateAnswer(question, e.Value.ToString())">
-                                            <option value="">--Select an option--</option>
-                                            @foreach (var option in question.Options.Split(",").ToList())
+                                            @foreach (var option in options)
                                             {
-                                                <option value="@option">@option</option>
+                                                <option value="@option" selected="@(question.Answer == option)">@option</option>
                                             }
                                         </select>
                                     }
@@ -680,20 +680,21 @@
                     }
                     else
                     {
+
                         <Field class="mb-3">
                             <FieldLabel class="color-black-100 mb-0">@question.Question</FieldLabel>
                             <FieldBody>
                                 @if (question.FieldType == Cinnamon.Framework.Enums.FieldType.Check.ToString())
                                 {
                                     // For checkbox options
-                                    foreach (var option in question.Options.Split(",").ToList())
+                                    foreach (var option in options)
                                     {
                                         <div class="mt-2">
                                                 <input type="radio"
                                                        name="@question.Id"
                                                        value="@option"
-                                                       @onchange="(e) => UpdateAnswer(question, option)" 
-                                                       checked = "@question.Answer"/>
+                                                       @onchange="(e) => UpdateAnswer(question, option)"
+                                                       checked="@(question.Answer == option)" />
                                                 <label>@option</label>
                                          </div>
                                     }
@@ -707,10 +708,9 @@
                                     // For dropdown options
                                     <br/>
                                     <select class="question-dropdown" @onchange="(e) => UpdateAnswer(question, e.Value.ToString())">
-                                        <option value="">--Select an option--</option>
-                                        @foreach (var option in question.Options.Split(",").ToList())
+                                        @foreach (var option in options)
                                         {
-                                            <option value="@option">@option</option>
+                                            <option value="@option" selected="@(question.Answer == option)">@option</option>
                                         }
                                     </select>
                                 }
@@ -1414,10 +1414,20 @@
         predefinedQuestion.NameAnswer = string.Empty;
         predefinedQuestion.EmailAnswer = string.Empty;
         predefinedQuestion.PhoneAnswer = string.Empty;
-
         foreach (var item in activityQuestions)
         {
-            item.Answer = string.Empty;
+            if (!string.IsNullOrEmpty(item.Options))
+            {
+                var optionsList = item.Options.Split(',');
+                if (optionsList.Length > 0)
+                {
+                    item.Answer = optionsList[0];
+                }
+            }
+            else
+            {
+                item.Answer = string.Empty;
+            }
         }
         return Task.CompletedTask;
     }
@@ -1921,6 +1931,18 @@
             .Where(q => q.Question != predefinedQuestion.NameQuestion &&
                 q.Question != predefinedQuestion.EmailQuestion &&
                 q.Question != predefinedQuestion.PhoneQuestion);
+
+        foreach (var question in filtered)
+        {
+            if (!string.IsNullOrEmpty(question.Options))
+            {
+                var optionsList = question.Options.Split(',');
+                if (optionsList.Length > 0)
+                {
+                    question.Answer = optionsList[0]; 
+                }
+            }
+        }
 
         filteredQuestions.AddRange(filtered);
 
