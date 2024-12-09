@@ -25,7 +25,9 @@
             </div>
             <div class="searchbar-holder ml-md-auto mt-3 mt-md-0">
                 <div class="searchBar">
-                    <input type="search" id="searchBar" class="form-control search-input" placeholder="Search">
+                    <input type="search" id="searchBar" class="form-control search-input" placeholder="Search"
+                       @bind-value="SearchText"
+                       @oninput="OnInputChanged">
                 </div>
             </div>
         </div>
@@ -186,6 +188,7 @@
     private UserAction userAction = UserAction.View;
     private Modal? modalConfirmation;
     private int selectedToDelete;
+    private string SearchText { get; set; } = "";
 
     private enum UserAction {
         View = 0,
@@ -381,7 +384,22 @@
             await LoadAnnnouncements();
         }
     }
+    private async Task OnInputChanged(ChangeEventArgs e)
+    {
+        SearchText = e.Value?.ToString();
 
+        if (!string.IsNullOrWhiteSpace(SearchText))
+        {
+            Announcements = Announcements
+                .Where(item => item.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+        else
+        {
+            await LoadAnnnouncements();
+        }
+        StateHasChanged();
+    }
     record AnnouncementModel
     {
         public int Id {get; set;}
