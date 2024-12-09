@@ -25,7 +25,9 @@
             </div>
             <div class="searchbar-holder ml-md-auto mt-3 mt-md-0">
                 <div class="searchBar">
-                    <input type="search" id="searchBar" class="form-control search-input" placeholder="Search" @bind="SearchText">
+                <input type="search" id="searchBar" class="form-control search-input" placeholder="Search" 
+                @bind-value="SearchText"
+                @oninput="OnInputChanged">
                 </div>
             </div>
         </div>
@@ -537,7 +539,22 @@
         await modalRef.Close(CloseReason.UserClosing);
         ClearFields();
     }
+    private async Task OnInputChanged(ChangeEventArgs e)
+    {
+        SearchText = e.Value?.ToString();
 
+        if (!string.IsNullOrWhiteSpace(SearchText))
+        {
+            ListCoupons.Coupons = ListCoupons.Coupons
+                .Where(item => item.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+        else
+        {
+            await FetchCouponCodes();
+        }
+        StateHasChanged();
+    }
     public class CouponsModel 
     {
         public IEnumerable<Coupon> Coupons {get; set;}
