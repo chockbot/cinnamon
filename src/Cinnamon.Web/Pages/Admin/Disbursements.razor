@@ -68,7 +68,9 @@
                      <div></div> <!--Empty div to keep search bar sa left-->
                     <div class="searchbar-holder ml-md-auto mt-0 mt-md-0 mb-3">
                         <div class="searchBar">
-                            <input type="search" id="searchBar" class="form-control search-input" placeholder="Search">
+                            <input type="search" id="searchBar" class="form-control search-input" placeholder="Search"
+                                   @bind-value="SearchText"
+                                   @oninput="OnInputChanged">
                         </div>
                     </div>
                 </div>
@@ -150,6 +152,8 @@
 
     private bool IsFetchingTransactions {get; set;}
 
+    private string SearchText { get; set; } = "";
+
     private List<DisbursementsInformationDTO> disbursements = new();
 
     enum Filters {
@@ -194,7 +198,22 @@
 
         IsFetchingTransactions = false;
     }
+    private async Task OnInputChanged(ChangeEventArgs e)
+    {
+        SearchText = e.Value?.ToString();
 
+        if (!string.IsNullOrWhiteSpace(SearchText))
+        {
+            disbursements = disbursements
+                .Where(item => item.Label.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+        else
+        {
+            await LoadDisbursements();
+        }
+        StateHasChanged();
+    }
     private string ShowMenu()
     {
         return clickButton ? "show" : "";
