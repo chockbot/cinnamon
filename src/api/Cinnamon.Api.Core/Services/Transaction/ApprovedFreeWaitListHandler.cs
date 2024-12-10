@@ -248,47 +248,50 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
                 return AppResult<ApprovedFreeWaitListResult>.CreateFailed(
                     new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
             }
-
             // add in group chat
-            var groupName = Guid.NewGuid().ToString();
-            var createChatRes = await createChatRoomHandler.ExecuteAsync(new ChatService.Interactors.CreateChatRoomArgs {
-                ChatName = $"{activity.Owner?.FirstName} {activity.Owner?.LastName}'s Chat Group",
-                ChatType = Framework.Enums.Enums.ChatType.GroupChat,
-                FromUserId = purchaseOrder.CustomerId,
-                GroupName = groupName,
-                ToUserId = activity.Owner?.Id ?? 0
-            });
-            if(!createChatRes.Succeeded || createChatRes.Result is null)
+            //prevent user from creating chat room with themselves
+            if (purchaseOrder.CustomerId != activity.Owner?.Id)
             {
-                return AppResult<ApprovedFreeWaitListResult>.CreateFailed(
-                    new ApplicationException("An error occured when creating chat group."), "An error occured when creating chat group."); 
+                var groupName = Guid.NewGuid().ToString();
+                var createChatRes = await createChatRoomHandler.ExecuteAsync(new ChatService.Interactors.CreateChatRoomArgs
+                {
+                    ChatName = $"{activity.Owner?.FirstName} {activity.Owner?.LastName}'s Chat Group",
+                    ChatType = Framework.Enums.Enums.ChatType.GroupChat,
+                    FromUserId = purchaseOrder.CustomerId,
+                    GroupName = groupName,
+                    ToUserId = activity.Owner?.Id ?? 0
+                });
+                if (!createChatRes.Succeeded || createChatRes.Result is null)
+                {
+                    return AppResult<ApprovedFreeWaitListResult>.CreateFailed(
+                        new ApplicationException("An error occured when creating chat group."), "An error occured when creating chat group.");
+                }
+
+                await chathub.Clients.All.SendAsync("AddToGroupAfterPayment", $"{createChatRes.Result.GroupName}|{createChatRes.Result.ChatRoomId}|{customer.Id}|{customer.FirstName}|{customer.LastName}|{customer.ProfileImg}|{activity.Owner?.FirstName} {activity.Owner?.LastName}'s Chat Group");
+
+                var createChatHistoryRes = await createChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatHistoryArgs
+                {
+                    ChatRoomId = createChatRes.Result.ChatRoomId,
+                    FromConnectionId = string.Empty,
+                    FromUserId = purchaseOrder.CustomerId,
+                    ToConnectionId = string.Empty,
+                    ToUserId = 0,
+                    IsViewed = false,
+                    Message = $"{customer.FirstName} {customer.LastName} has joined the group.",
+                    ChatHistoryType = Framework.Enums.Enums.ChatHistoryType.Notification
+                });
+
+                if (!createChatHistoryRes.Succeeded || createChatHistoryRes.Result is null)
+                {
+                    return AppResult<ApprovedFreeWaitListResult>.CreateFailed(
+                        new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
+                }
+
+                int chatRoomId = createChatRes.Result.ChatRoomId;
+
+                string joinedPayload = $"{chatRoomId}|{DateTime.Now}|{purchaseOrder.CustomerId}|{customer.FirstName}|{customer.LastName}|{customer.ProfileImg}|{false}|{customer.FirstName} {customer.LastName} has joined the group.|{groupName}|{(int)ChatType.GroupChat}|{(int)ChatHistoryType.Notification}|{true}|{string.Empty}";
+                await chathub.Clients.Group(createChatRes.Result.GroupName).SendAsync("ReceiveGroupMessage", joinedPayload);
             }
-
-            await chathub.Clients.All.SendAsync("AddToGroupAfterPayment", $"{createChatRes.Result.GroupName}|{createChatRes.Result.ChatRoomId}|{customer.Id}|{customer.FirstName}|{customer.LastName}|{customer.ProfileImg}|{activity.Owner?.FirstName} {activity.Owner?.LastName}'s Chat Group");
-
-            var createChatHistoryRes = await createChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatHistoryArgs
-            {
-                ChatRoomId = createChatRes.Result.ChatRoomId,
-                FromConnectionId = string.Empty,
-                FromUserId = purchaseOrder.CustomerId,
-                ToConnectionId = string.Empty,
-                ToUserId = 0,
-                IsViewed = false,
-                Message = $"{customer.FirstName} {customer.LastName} has joined the group.",
-                ChatHistoryType = Framework.Enums.Enums.ChatHistoryType.Notification
-            });
-
-            if(!createChatHistoryRes.Succeeded || createChatHistoryRes.Result is null)
-            {
-                return AppResult<ApprovedFreeWaitListResult>.CreateFailed(
-                    new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
-            }
-
-            int chatRoomId = createChatRes.Result.ChatRoomId;
-
-            string joinedPayload = $"{chatRoomId}|{DateTime.Now}|{purchaseOrder.CustomerId}|{customer.FirstName}|{customer.LastName}|{customer.ProfileImg}|{false}|{customer.FirstName} {customer.LastName} has joined the group.|{groupName}|{(int)ChatType.GroupChat}|{(int)ChatHistoryType.Notification}|{true}|{string.Empty}";
-            await chathub.Clients.Group(createChatRes.Result.GroupName).SendAsync("ReceiveGroupMessage", joinedPayload);
-
             return AppResult<ApprovedFreeWaitListResult>.CreateSucceeded(new ApprovedFreeWaitListResult {
                 TicketLink = url
             }, "Successfully approved free ticket.");

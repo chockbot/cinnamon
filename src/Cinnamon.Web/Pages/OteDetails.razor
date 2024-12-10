@@ -119,7 +119,7 @@
                                     <Column class="schedule-header-left" ColumnSize="ColumnSize.Is12.Is5.OnDesktop">
                                         <div class="calendar-section">
                                             <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()"
-                                                SelectedDates="SelectedDates" ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" />
+                                                SelectedDates="SelectedDates" ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" Duration="SelectedDuration" />
                                         </div>
                                         </Column>
                                         <Column class="schedule-header-right" ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
@@ -431,7 +431,7 @@
                                     <Column class="schedule-header-left" ColumnSize="ColumnSize.Is12.Is5.OnDesktop">
                                         <div class="calendar-section">
                                             <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()"
-                                                SelectedDates="SelectedDates" ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" />
+                                                SelectedDates="SelectedDates" ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" Duration="SelectedDuration" />
                                         </div>
                                         </Column>
                                         <Column class="schedule-header-right" ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
@@ -532,7 +532,7 @@
     <Footer></Footer>
 }
 
-<ModalLogin @ref="loginModal" ReturnUrl="@signInReturnUrl" />
+<ModalLogin @ref="loginModal" ReturnUrl="@signInReturnUrl"/>
 <ImageViewer @ref="imageViewer" Image="@SetPlanImage" />
 <ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
                OnConfirmationChanged="ConfirmDeleteChanged">
@@ -635,6 +635,7 @@
             <Validations @ref="questionValidation" Mode="ValidationMode.Manual" Model="filteredQuestions">
                 @foreach (var question in filteredQuestions)
                 {
+                    var options = question.Options.Split(",").ToList();
                     if (question.Required)
                     {
                         <Validation>
@@ -644,13 +645,14 @@
                                     @if (question.FieldType == Cinnamon.Framework.Enums.FieldType.Check.ToString())
                                     {
                                         // For checkbox options
-                                        foreach (var option in question.Options.Split(",").ToList())
+                                        foreach (var option in options)
                                         {
                                             <div class="mt-2">
                                                 <input type="radio"
-                                                       name="@question.Id"
-                                                       value="@option"
-                                                       @onchange="(e) => UpdateAnswer(question, option)" />
+                                                       name ="@question.Id"
+                                                       value = "@option"
+                                                       @onchange ="(e) => UpdateAnswer(question, option)"
+                                                       checked="@(question.Answer == option)" />
                                                 <label>@option</label>
                                             </div>
                                         }
@@ -666,10 +668,9 @@
                                         // For dropdown options
                                         <br/>
                                         <select class="question-dropdown" @onchange="(e) => UpdateAnswer(question, e.Value.ToString())">
-                                            <option value="">--Select an option--</option>
-                                            @foreach (var option in question.Options.Split(",").ToList())
+                                            @foreach (var option in options)
                                             {
-                                                <option value="@option">@option</option>
+                                                <option value="@option" selected="@(question.Answer == option)">@option</option>
                                             }
                                         </select>
                                     }
@@ -679,19 +680,21 @@
                     }
                     else
                     {
+
                         <Field class="mb-3">
                             <FieldLabel class="color-black-100 mb-0">@question.Question</FieldLabel>
                             <FieldBody>
                                 @if (question.FieldType == Cinnamon.Framework.Enums.FieldType.Check.ToString())
                                 {
                                     // For checkbox options
-                                    foreach (var option in question.Options.Split(",").ToList())
+                                    foreach (var option in options)
                                     {
                                         <div class="mt-2">
                                                 <input type="radio"
                                                        name="@question.Id"
                                                        value="@option"
-                                                       @onchange="(e) => UpdateAnswer(question, option)" />
+                                                       @onchange="(e) => UpdateAnswer(question, option)"
+                                                       checked="@(question.Answer == option)" />
                                                 <label>@option</label>
                                          </div>
                                     }
@@ -705,10 +708,9 @@
                                     // For dropdown options
                                     <br/>
                                     <select class="question-dropdown" @onchange="(e) => UpdateAnswer(question, e.Value.ToString())">
-                                        <option value="">--Select an option--</option>
-                                        @foreach (var option in question.Options.Split(",").ToList())
+                                        @foreach (var option in options)
                                         {
-                                            <option value="@option">@option</option>
+                                            <option value="@option" selected="@(question.Answer == option)">@option</option>
                                         }
                                     </select>
                                 }
@@ -784,7 +786,7 @@
     </Modal>
 
 @code
-{
+    {
     [Parameter]
     public string Handler { get; set; } = string.Empty;
     private OteActivity? activity;
@@ -794,7 +796,7 @@
     private CustomerProfile? currentLogin { get; set; }
     private string token { get; set; } = string.Empty;
     private string signInReturnUrl = string.Empty;
-    private ModalLogin? loginModal;
+    private ModalLogin loginModal;
     private ImageViewer imageViewer;
     private ConfirmDialog confirmDialogRef { get; set; }
     private bool IsInclusivePricing { get; set; }
@@ -855,6 +857,12 @@
         try
         {
             await LoadOteDetails();
+            if (!activity.IsPublished || activity.ForceDisable)
+            {
+                NavigationManager.NavigateTo("page-not-found");
+                await Task.Delay(1);
+                return;
+            }
             await LoadProvider();
             await LoadIsInclusiveOte();
             await LoadProfile();
@@ -965,17 +973,11 @@
                 NavigationManager.NavigateTo("page-not-found");
                 return;
             }
-            var act = result.Result.Result;
-
-            if (!act.IsPublished || act.ForceDisable)
-            {
-                NavigationManager.NavigateTo("page-not-found");
-                return;
-            }
-            activity = mapper.Map<OteActivity>(act);
-            activity.Pricings = activity.Pricings.OrderBy(t => t.Id).ToList();
-            activity.OteDates = activity.OteDates.OrderBy(d => d.Date);
-            activity.Sold = activity.Pricings.Sum(a => a.TicketSold);
+            var act                   = result.Result.Result;
+            activity                  = mapper.Map<OteActivity>(act);
+            activity.Pricings         = activity.Pricings.OrderBy(t => t.Id).ToList();
+            activity.OteDates         = activity.OteDates.OrderBy(d => d.Date);
+            activity.Sold             = activity.Pricings.Sum(a => a.TicketSold);
             activity.EventTicketLimit = act.OteSchedule.EventTicketLimit;
             IsLimit                   = act.OteSchedule.EventTicketLimit != 0 ? true : false;
             activity.IsOpen           = act.OteSchedule.IsOpen;
@@ -983,11 +985,46 @@
             activity.CapacityCount    = act.OteSchedule.CapacityCount;
             int soldLimitedTickets    = activity.Pricings.Where(a => !a.IsUnlimited).Sum(a => a.TicketSold);
             activity.IsEventSoldOut   = activity.Pricings.Sum(a => a.MaxSlots) <= soldLimitedTickets ? true : false;
-            selectedDate              = SelectedDates.Where(a => a >= DateTime.Now).FirstOrDefault();
-            IsExpiredEvent            = selectedDate == DateTime.MinValue;
+            // Current Date
+            DateTime currentDate = DateTime.Now;
+
+            // Event Start
+            selectedDate = SelectedDates.FirstOrDefault();
+
+            // Check if selectedDate is valid
+            if (selectedDate != default)
+            {
+                // Event End
+                DateTime eventEnd = selectedDate.Add(SelectedDuration);
+
+                // Check if the event is expired
+                IsExpiredEvent = currentDate > eventEnd;
+
+                // If the event is ongoing, override IsExpiredEvent to false
+                if (currentDate >= selectedDate && currentDate <= eventEnd)
+                {
+                    IsExpiredEvent = false; // Event is ongoing
+                }
+            }
+            else
+            {
+                // No valid event dates found
+                IsExpiredEvent = true;
+            }
+
             if (IsExpiredEvent)
             {
-                selectedDate = SelectedDates.FirstOrDefault();
+                //Get second date
+                if(SelectedDates.Count > 1)
+                {
+                    var getNotExpiredDate = SelectedDates.Where(a => a.Add(SelectedDuration) >= currentDate);
+                    selectedDate = getNotExpiredDate.FirstOrDefault();
+                    IsExpiredEvent = false;
+                }
+                else
+                {
+                    IsExpiredEvent = true;
+                }
             }
             ViewAvailableDates();
         }
@@ -1288,6 +1325,8 @@
 
         submitting = false;
         StateHasChanged();
+        selectedTickets.Clear();
+        await ClearAnswers();
 
         string paymentUrl = $"/payment/ote/{Handler}/?guid={createTracker.Guid}&token={createTracker.Token}";
 
@@ -1343,6 +1382,7 @@
             }
 
             await ClearAnswers();
+            selectedTickets.Clear();
 
             var haveApprovalTicket = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
 
@@ -1350,7 +1390,7 @@
             {
                 await modalPurchaseWithConfirmation?.Show();
             }
-            else
+            else 
             {
                 await modalPurchaseWithoutConfirmation?.Show();
             }
@@ -1374,10 +1414,20 @@
         predefinedQuestion.NameAnswer = string.Empty;
         predefinedQuestion.EmailAnswer = string.Empty;
         predefinedQuestion.PhoneAnswer = string.Empty;
-
         foreach (var item in activityQuestions)
         {
-            item.Answer = string.Empty;
+            if (!string.IsNullOrEmpty(item.Options))
+            {
+                var optionsList = item.Options.Split(',');
+                if (optionsList.Length > 0)
+                {
+                    item.Answer = optionsList[0];
+                }
+            }
+            else
+            {
+                item.Answer = string.Empty;
+            }
         }
         return Task.CompletedTask;
     }
@@ -1561,9 +1611,18 @@
             IList<DateTime> dates = new List<DateTime>();
             if (activity is not null)
             {
-                dates = activity.OteDates.Select(d => d.DateEnd).ToList();
+                dates = activity.OteDates.Select(d => d.DateStart).ToList();
             }
             return dates;
+        }
+    }
+    private TimeSpan SelectedDuration
+    {
+        get
+        {
+            var oteDate = activity.OteDates.FirstOrDefault();
+            TimeSpan eventDuration = oteDate.DateEnd - oteDate.DateStart;
+            return eventDuration;
         }
     }
 
@@ -1572,7 +1631,7 @@
         AvailablePriceList = Enumerable.Empty<OtePricing>();
         if (activity is not null)
         {
-            var oteDate = activity.OteDates.FirstOrDefault(d => d.Date.Date == selectedDate.Date);
+            var oteDate = activity.OteDates.FirstOrDefault(d => d.Date == selectedDate.Date);
             if (oteDate is not null)
             {
                 selectedDateStart = oteDate.DateStart;
@@ -1819,6 +1878,10 @@
 
         if (waitlist.Succeeded && waitlist.Result is not null && waitlist.Result.IsSuccess)
         {
+            //Clear tickets
+            selectedTickets.Clear();
+            //Clear Question
+            await ClearAnswers();
             //Add Email
             await NotificationService.Success("Successfully added to waitlist.", "Success");
             if (activity.IsCapacity)
@@ -1868,6 +1931,18 @@
             .Where(q => q.Question != predefinedQuestion.NameQuestion &&
                 q.Question != predefinedQuestion.EmailQuestion &&
                 q.Question != predefinedQuestion.PhoneQuestion);
+
+        foreach (var question in filtered)
+        {
+            if (!string.IsNullOrEmpty(question.Options))
+            {
+                var optionsList = question.Options.Split(',');
+                if (optionsList.Length > 0)
+                {
+                    question.Answer = optionsList[0]; 
+                }
+            }
+        }
 
         filteredQuestions.AddRange(filtered);
 

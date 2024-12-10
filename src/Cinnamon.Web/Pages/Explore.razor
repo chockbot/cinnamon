@@ -52,7 +52,6 @@
 {
     <div class="full-screen-cover" @onclick="HandleClickOutside"></div>
 }
-
 <input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
     <!--Search-->
     <div class="top-row px-4">
@@ -63,42 +62,48 @@
                 <a class="cinnamon-link" href="https://cinnamon.ph/blog/cinnamon/">About</a>
                 <a class="cinnamon-link" href="https://cinnamon.ph/blog/">Blogs</a>
                 <a class="cinnamon-link" @onclick="NavigateToHelp">Help</a>
-                @if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
+                @if(CustomerModel.CustomerProfile != null && !CustomerModel.CustomerProfile.IsGuest)
                 {
-                    <div class="dropdown">
-                        <button class="creation-dropdown" @onclick="ToggleDropdown">
-                            <a class="cinnamon-link create-experience">Create Experience <i class="fas fa-caret-down"></i></a>
-                        </button>
-                        @if (IsDropdownVisible)
-                        {
-                        <ul class="dropdown-menu" style="margin-left: 10%; display:block;">
-                            <li class="dropdown-item">
-                                <NavButton OnClick="NavigateToOTECreation" Text="Create Event" />
-                            </li>
-                            <li class="dropdown-item">
-                                <NavButton OnClick="NavigateToCreation" Text="Create Activity" />
-                            </li>
-                        </ul>
-                        }
-                    </div>
-                } else {
-                    <div class="dropdown">
-                        <button class="creation-dropdown" @onclick="ToggleDropdown">
-                            <a class="cinnamon-link create-experience">Create Experience <i class="fas fa-caret-down"></i></a>
-                        </button>
-                        @if (IsDropdownVisible)
-                        {
-                        <ul class="dropdown-menu" style="margin-left: 10%; display:block;">
-                            <li class="dropdown-item">
-                                <NavButton OnClick="NavigateToOnboarding" Text="Create Event" />
-                            </li>
-                            <li class="dropdown-item">
-                                <NavButton OnClick="NavigateToOnboarding" Text="Create Activity" />
-                            </li>
-                        </ul>
-                        }
-                    </div>
+                    @if (CustomerModel.CustomerProfile.IsMaker)
+                    {
+                        <div class="dropdown">
+                            <button class="creation-dropdown" @onclick="ToggleDropdown">
+                                <a class="cinnamon-link create-experience">Create Experience <i class="fas fa-caret-down"></i></a>
+                            </button>
+                            @if (IsDropdownVisible)
+                            {
+                            <ul class="dropdown-menu" style="margin-left: 10%; display:block;">
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToOTECreation" Text="Create Event" />
+                                </li>
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToCreation" Text="Create Activity" />
+                                </li>
+                            </ul>
+                            }
+                        </div>
+                    } 
+                    else 
+                    {
+                        <div class="dropdown">
+                            <button class="creation-dropdown" @onclick="ToggleDropdown">
+                                <a class="cinnamon-link create-experience">Create Experience <i class="fas fa-caret-down"></i></a>
+                            </button>
+                            @if (IsDropdownVisible)
+                            {
+                            <ul class="dropdown-menu" style="margin-left: 10%; display:block;">
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToOnboarding" Text="Create Event" />
+                                </li>
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToOnboarding" Text="Create Activity" />
+                                </li>
+                            </ul>
+                            }
+                        </div>
+                    }
                 }
+                
             </div>
         </div>
 
@@ -107,27 +112,26 @@
             <!-- Desktop -->
             <form class="search-bar" @onsubmit="Search">
                 <div class="input-group p-1">
-                    <input type="text" placeholder="Search Experience" id="19d13aa1-90c0-4232-a7bc-62a772baa223"
-                           autocomplete="new-password"
-                           @bind-value="searchValue"
-                           @oninput="SearchOnInput"
-                           aria-describedby="btn-search"
-                           class="form-control bg-none border-0"
-                           style="outline: none;box-shadow: none;">
-                    <div class="input-group-append border-0">
-                        <button type="button" @onclick="Search" class="search-button btn btn-link text-success">
-                            <img src="images/explore-page-images/search-icon-explore.svg" alt="search-icon" />
-                        </button>
-                    </div>
+                <input type="text" placeholder="Search" id="19d13aa1-90c0-4232-a7bc-62a772baa223"
+                    autocomplete="new-password"
+                    @bind-value="searchValue"
+                    @oninput="SearchOnInput"
+                    aria-describedby="btn-search"
+                    class="form-control bg-none border-0"
+                    style="outline: none;box-shadow: none;">
+                <div class="input-group-prepend border-0">
+                    <button type="button" @onclick="Search" class="search-button btn btn-link text-success">
+                        <img src="images/explore-page-images/search-icon-explore.svg" alt="search-icon" />
+                    </button>
+                </div>
                 </div>
             </form>
-
-                        @if (!isLogin)
-                        {
-                        <button class="btn-login" @onclick="() => signinModal.Show()">
-                            Login | Signup
-                        </button>
-                        }
+            @if (!isLogin)
+            {
+                <button class="btn-login" @onclick="() => signinModal.Show()">
+                    Login | Signup
+                </button>
+            }
             @if (AuthState != null && AuthState.Identity.IsAuthenticated && CustomerModel.CustomerProfile != null)
             {
             <div class="dropdown">
@@ -150,56 +154,73 @@
                     {
                         @if (AuthState.Identity.IsAuthenticated)
                         {
-                            if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
+                            if (CustomerModel.CustomerProfile != null && !CustomerModel.CustomerProfile.IsGuest)
                             {
+                                if (CustomerModel.CustomerProfile.IsMaker)
+                                {
+                                    <li class="dropdown-item">
+                                        <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
+                                    </li>
+                                    <li class="dropdown-item">
+                                        <NavButton OnClick="NavigateToAttendance" Text="Check Attendance" />
+                                    </li>
+                                    <li class="dropdown-item">
+                                        <NavButton OnClick="NavigateToMaterials" Text="Materials" />
+                                    </li>
+                                    <li class="dropdown-item messages-item">
+                                        <NavButton OnClick="NavigateToMessages" Text="Messages" />
+                                        @if (hasNewMessages)
+                                        {
+                                            <span class="has-new-message-badge">
+                                            </span>
+                                        }
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="dropdown-item">
+                                        <NavButton OnClick="NavigateToOnboarding" Text="Become an Activity Provider" />
+                                    </li>
+                                    <li class="dropdown-item">
+                                        <NavButton OnClick="NavigateToMaterials" Text="Materials" />
+                                    </li>
+                                    <li class="dropdown-item messages-item">
+                                        <NavButton OnClick="NavigateToMessages" Text="Messages" />
+                                        @if (hasNewMessages)
+                                        {
+                                            <span class="has-new-message-badge">
+                                            </span>
+                                        }
+                                    </li>
+                                }
                                 <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
+                                    <NavButton OnClick="NavigateToAccount" Text="Account" />
                                 </li>
                                 <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToAttendance" Text="Check Attendance" />
+                                    <Button Border="Border.Is0" Clicked="Logout">
+                                        Logout
+                                    </Button>
                                 </li>
                                 <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToMaterials" Text="Materials" />
-                                </li>
-                                <li class="dropdown-item messages-item">
-                                    <NavButton OnClick="NavigateToMessages" Text="Messages" />
-                                    @if (hasNewMessages)
-                                    {
-                                        <span class="has-new-message-badge">
-                                        </span>
-                                    }
+                                    <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
+                                        Help
+                                    </Button>
                                 </li>
                             }
                             else
                             {
                                 <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToOnboarding" Text="Become an Activity Provider" />
+                                    <Button Border="Border.Is0" Clicked="Logout">
+                                        Logout
+                                    </Button>
                                 </li>
                                 <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToMaterials" Text="Materials" />
-                                </li>
-                                <li class="dropdown-item messages-item">
-                                    <NavButton OnClick="NavigateToMessages" Text="Messages" />
-                                    @if (hasNewMessages)
-                                    {
-                                        <span class="has-new-message-badge">
-                                        </span>
-                                    }
+                                    <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
+                                        Help
+                                    </Button>
                                 </li>
                             }
-                            <li class="dropdown-item">
-                                <NavButton OnClick="NavigateToAccount" Text="Account" />
-                            </li>
-                            <li class="dropdown-item">
-                                <Button Border="Border.Is0" Clicked="Logout">
-                                    Logout
-                                </Button>
-                            </li>
-                            <li class="dropdown-item">
-                                <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
-                                    Help
-                                </Button>
-                            </li>
+                           
                         }
                         else
                         {
@@ -252,9 +273,11 @@
                     <div class="menu">
                         @if (AuthState != null && AuthState.Identity.IsAuthenticated && CustomerModel.CustomerProfile != null)
                         {
-                        <img class = "rounded-2 rounded-circle profile-img-mobile" src="@CustomerModel.CustomerProfile.ProfileImg">
-                        } else {
-                        <img src="images/menu.png">
+                            <img class = "rounded-2 rounded-circle profile-img-mobile" src="@CustomerModel.CustomerProfile.ProfileImg">
+                        } 
+                        else 
+                        {
+                            <img src="images/menu.png">
                         }
                         @if (CustomerModel.CustomerProfile != null)
                         {
@@ -272,56 +295,72 @@
                     {
                         @if (AuthState.Identity.IsAuthenticated)
                         {
-                            if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
+                            if(CustomerModel.CustomerProfile != null && !CustomerModel.CustomerProfile.IsGuest)
                             {
+                                if (CustomerModel.CustomerProfile.IsMaker)
+                                {
+                                    <li class="dropdown-item">
+                                        <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
+                                    </li>
+                                    <li class="dropdown-item">
+                                        <NavButton OnClick="NavigateToAttendance" Text="Check Attendance" />
+                                    </li>
+                                    <li class="dropdown-item">
+                                        <NavButton OnClick="NavigateToMaterials" Text="Materials" />
+                                    </li>
+                                    <li class="dropdown-item messages-item">
+                                        <NavButton OnClick="NavigateToMessages" Text="Messages" />
+                                        @if (hasNewMessages)
+                                        {
+                                            <span class="has-new-message-badge">
+                                            </span>
+                                        }
+                                    </li>
+                                }
+                                else if (!CustomerModel.CustomerProfile.IsMaker)
+                                {
+                                    <li class="dropdown-item">
+                                        <NavButton OnClick="NavigateToOnboarding" Text="Become an Activity Provider" />
+                                    </li>
+                                    <li class="dropdown-item">
+                                        <NavButton OnClick="NavigateToMaterials" Text="Materials" />
+                                    </li>
+                                    <li class="dropdown-item messages-item">
+                                        <NavButton OnClick="NavigateToMessages" Text="Messages" />
+                                        @if (hasNewMessages)
+                                        {
+                                            <span class="has-new-message-badge">
+                                            </span>
+                                        }
+                                    </li>
+                                }
                                 <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
+                                    <NavButton OnClick="NavigateToAccount" Text="Account" />
                                 </li>
                                 <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToAttendance" Text="Check Attendance" />
+                                    <Button Border="Border.Is0" Clicked="Logout">
+                                        Logout
+                                    </Button>
                                 </li>
                                 <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToMaterials" Text="Materials" />
-                                </li>
-                                <li class="dropdown-item messages-item">
-                                    <NavButton OnClick="NavigateToMessages" Text="Messages" />
-                                    @if (hasNewMessages)
-                                    {
-                                        <span class="has-new-message-badge">
-                                        </span>
-                                    }
+                                    <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
+                                        Help
+                                    </Button>
                                 </li>
                             }
-                            else if (CustomerModel.CustomerProfile != null && !CustomerModel.CustomerProfile.IsMaker)
+                            else
                             {
                                 <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToOnboarding" Text="Become an Activity Provider" />
+                                    <Button Border="Border.Is0" Clicked="Logout">
+                                        Logout
+                                    </Button>
                                 </li>
                                 <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToMaterials" Text="Materials" />
-                                </li>
-                                <li class="dropdown-item messages-item">
-                                    <NavButton OnClick="NavigateToMessages" Text="Messages" />
-                                    @if (hasNewMessages)
-                                    {
-                                        <span class="has-new-message-badge">
-                                        </span>
-                                    }
+                                    <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
+                                        Help
+                                    </Button>
                                 </li>
                             }
-                            <li class="dropdown-item">
-                                <NavButton OnClick="NavigateToAccount" Text="Account" />
-                            </li>
-                            <li class="dropdown-item">
-                                <Button Border="Border.Is0" Clicked="Logout">
-                                    Logout
-                                </Button>
-                            </li>
-                            <li class="dropdown-item">
-                                <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
-                                    Help
-                                </Button>
-                            </li>
                         }
                         else
                         {
@@ -367,60 +406,68 @@
             </div>
         </div>    
     </div>
-        <form class="search-bar-mobile" style="@GetSearchBarStyle()" @onsubmit="Search">
-            <div class="input-group p-1">
-                <input type="text" @ref="searchInputRef" placeholder="Search Event" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
-            </div>
-        </form>
+    <form class="search-bar-mobile" style="@GetSearchBarStyle()" @onsubmit="Search">
+        <div class="input-group p-1">
+            <input type="text" @ref="searchInputRef" placeholder="Search Event" id="19d13aa1-90c0-4232-a7bc-62a772baa223" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
+        </div>
+    </form>
     <!-- Header -->
     @if (!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
     {
-<div class="top-section" style="position:relative;display:flex">
-    <Carousel @bind-SelectedSlide="@selectedSlide" Crossfade Interval="10000" ShowControls="false">
-        <CarouselSlide Name="1">
-        <div class="mobile-wrapper">
-            <Image Source="images/explore-page-images/carousel-images/carousel-slide-image-1.webp" class="section-1-image"/>
-        </div>
-        </CarouselSlide>
-        <CarouselSlide Name="2">
-        <div class="image-wrapper">
-            <Image Source="images/explore-page-images/carousel-images/carousel-slide-image-2.webp" class="section-1-image"/>
-        </div>
-        </CarouselSlide>
-    </Carousel>
-    
-    @if (selectedSlide == "1")
-    {
-        <div class="provider-section">
-            <p class="provider-text">Dua Lipa Radical Optimism Tour</p>
-            <p class="provider-sub-text">November 13, 2024</p>
-            <p class="provider-sub-text">Philippine Arena</p>
-            <div class="provider-buttons">
-                <button type="button" class="buy-tickets-button" @onclick="RedirectToCarousel1">
-                    <span>Buy Tickets</span>
-                </button>
+        <div class="top-section">
+            <div class="discover-section">
+                <div class="discover-title">
+                    <p class="discover-text">Discover your</p>
+                    <p class="discover-text sub-discover">experience.</p>
+                </div>
+                <div class="discover-info">
+                    @foreach (var activities in activityFeeds.Take(15).ToList())
+                    {
+                        string formattedDate = activities.DateStart.ToString("MMMM dd, yyyy ● ");
+                        string formattedTime = activities.DateStart.ToString("h:mm tt");
+                        @if (selectedSlide == activities.Handler)
+                        {
+                            <div class="discover-exp-info">
+                                <p class="discover-exp-text">@activities.Title</p>
+                                <p class="discover-exp-text">@formattedDate<span class="discover-exp-text-time">@formattedTime</span></p>
+                                @if (@activities.ExperienceTypeId == 1)
+                                {
+                                    var address = string.IsNullOrEmpty(activities.Address.PinnedLocation) ? activities.Address.City + ", " + activities.Address.Region : activities.Address.PinnedLocation;
+                                    <p class="discover-exp-text">@address</p>
+                                }
+                                else
+                                {
+                                    <p class="discover-exp-text">@(activities.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                                }
+                                <div class="provider-buttons">
+                                    <a class="buy-tickets-button" id="btnBrowse" href="@DetailsUrl(activities.Handler, (int)activities.ExperienceCreationTypeId, activities.IsReservedSeating)" target="_blank">
+                                        <span class="button-provider-text">Buy Tickets</span>
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="main-container">
+                <div class="carousel">
+                    <div class="carousel-track">
+                        <div class="image-container">
+                            <Carousel @bind-SelectedSlide="selectedSlide" Crossfade Interval="10000" ShowControls="false">
+                                @foreach (var activities in activityFeeds.Take(15).ToList())
+                                {
+                                    <CarouselSlide Name="@activities.Handler">
+                                        <img src="@activities.SummaryDetails.ImageSrc" alt="img">
+                                    </CarouselSlide>
+                                }
+                            </Carousel>
+                            <div class="gradient-rectangle"></div>
+                        </div>  
+                    </div>
+                </div>
             </div>
         </div>
-    }
-    else if (selectedSlide == "2")
-    {
-        <div class="provider-section">
-            <p class="provider-text">Wicker Jam</p>
-            <p class="provider-sub-text">November 26, 2024</p>
-            <p class="provider-sub-text">Handuraw Pizza Mandaue</p>
-            <div class="provider-buttons">
-                <button type="button" class="buy-tickets-button" id="btnBrowse" @onclick="RedirectToCarousel2">
-                    <span>Buy Tickets</span>
-                </button>
-            </div>
-        </div>
-    }
-</div>
-    } else 
-    {
-
-    }
-
+    } 
     <!-- End of Header -->
     <!-- New Announcement Like Cards -->
     @if (!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
@@ -592,21 +639,14 @@
                 </div>
             </div>
         </div>
-    } else 
-    {
-
-    }
-
+    } 
     <!-- End of New Announcement Like Cards -->
     @if(!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
     {
     <div class="container">
         <hr class="line-divider">
     </div> 
-    } else {
- 
-    }
-    
+    } 
 
     <div class="container">
         @if(!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
@@ -1921,7 +1961,6 @@
 
     </div>
 
-
     <!--Section 3-->
     <div class="partners">
         <div class="section-3">
@@ -2195,8 +2234,6 @@
     private ModalLogin signinModal;
     private ModalFBUpdate fbUpdateModal;
     private UpdatePasswordModal updatePasswordModal;
-    private string selectedSlide = "1";
-
 
     bool IsSearchPerformed { get; set; } = false;
     string SearchQuery { get; set; }
@@ -2276,7 +2313,8 @@
     private string subscriptionResultClass;
     private string subscriptionResultTitle;
     private bool showModal;
-
+    public string selectedSlide;
+    public List<ActivityFeed> carouselActivities { get; set; } = new List<ActivityFeed>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -2388,7 +2426,9 @@
                 var checkRegistered = await accountApiHandler.RegisterWaitlist(new Framework.ApiCommand.ApiCore.Account.Request.RegisterWaitlistArgs
                     {
                         Email = verifyRes.Result.Result.Email,
-                        ValidationRoute = AppConfig.BaseUrl + "/explore"
+                        ValidationRoute = AppConfig.BaseUrl + "/explore",
+                        IsGuest = false
+                        
                     });
                 if (!checkRegistered.Succeeded || checkRegistered.Result == null)
                 {
@@ -2461,6 +2501,7 @@
                         ProfileImg = args.ProfileImg,
                         IsMaker = args.IsMaker,
                         IsVerified = args.IsVerified,
+                        IsGuest = args.IsGuest
                     };
 
                 await GetChatRoomsByUserId();
@@ -3142,7 +3183,7 @@
         {
             subscriptionResultMessage = "You're already on our list! Keep an eye on your inbox for exciting updates, special discounts, and valuable insights.";
             subscriptionResultClass = "error";
-            subscriptionResultTitle = "Already a Subscriber...";
+            subscriptionResultTitle = "Already a Subscriber..."; 
         }
 
         showModal = true;

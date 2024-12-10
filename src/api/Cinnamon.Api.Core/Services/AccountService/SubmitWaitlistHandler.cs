@@ -90,14 +90,18 @@ public class SubmitWaitlistHandler : ISubmitWaitlistHandler
             var verificationLink = args.ValidationRoute.SetQueryParams(new {userid = tokenGenerated.Guid, token = tokenGenerated.Token}).ToString();
 
             // send email verification link
-            var sendEmailRes = await sendVerifyEmailHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.SendVerifyEmailArgs {
-                Email = args.Email,
-                VerificationLink = verificationLink
-            });
-            if(!sendEmailRes.Succeeded)
+            if (!args.IsGuest)
             {
-                return AppResult<SubmitWaitlistResult>.CreateFailed(
-                    new ApplicationException("An error occured when sending email verification link"), "An error occured when sending email verification link");
+                var sendEmailRes = await sendVerifyEmailHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.SendVerifyEmailArgs
+                {
+                    Email = args.Email,
+                    VerificationLink = verificationLink
+                });
+                if (!sendEmailRes.Succeeded)
+                {
+                    return AppResult<SubmitWaitlistResult>.CreateFailed(
+                        new ApplicationException("An error occured when sending email verification link"), "An error occured when sending email verification link");
+                }
             }
 
             return AppResult<SubmitWaitlistResult>.CreateSucceeded(new SubmitWaitlistResult {

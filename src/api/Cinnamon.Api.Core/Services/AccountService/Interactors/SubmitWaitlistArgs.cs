@@ -6,4 +6,5 @@ public class SubmitWaitlistArgs : IInteractor
 {
     public string Email {get; set;}
     public string ValidationRoute {get; set;}
+    public bool IsGuest { get; set; } = false;
 }

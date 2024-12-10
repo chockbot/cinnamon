@@ -30,6 +30,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.NotificationDriver.Handler.IOteApprovedNotificationHandler, Modules.NotificationDriver.EmailNotification.OteApprovedNotificationHandler>();
         services.AddTransient<Modules.NotificationDriver.Handler.IOteDeclinedNotificationHandler, Modules.NotificationDriver.EmailNotification.OteDeclinedNotificationHandler>();
         services.AddTransient<Modules.NotificationDriver.Handler.IMailchimpServices, Modules.NotificationDriver.MailChimp.MailchimpServices>();
+        services.AddTransient<Modules.NotificationDriver.Handler.ISendEmailOTPHandler, Modules.NotificationDriver.EmailNotification.SendEmailOTPHandler>();
 
         // data access modules
         services.AddTransient<Modules.DataAccess.Handlers.ICustomerData, Modules.DataAccess.Customer.CustomerData>();
@@ -76,6 +77,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IOteRemindersData, Modules.DataAccess.OteReminders.OteRemindersData>();
         services.AddTransient<Modules.DataAccess.Handlers.IProviderCustomQuestionData, Modules.DataAccess.ProviderCustomQuestion.ProviderCustomQuestionData>();
         services.AddTransient<Modules.DataAccess.Handlers.ISeatPlanData, Modules.DataAccess.SeatPlan.SeatPlanData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IGuestOTPData, Modules.DataAccess.GuestOTP.GuestOTPData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
@@ -127,6 +129,10 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IExtraLoginHandler, Services.AccountService.ExtraLoginHandler>();
         services.AddTransient<Services.AccountService.Handlers.IChangeEmailHandler, Services.AccountService.ChangeEmailHandler>();
         services.AddTransient<Services.AccountService.Handlers.IDeleteWaitlistHandler, Services.AccountService.DeleteWaitlistHandler>();
+        services.AddTransient<Services.AccountService.Handlers.ISendOTPHandler, Services.AccountService.SendOTPHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IGetUserOTPHandler, Services.AccountService.GetUserOTPHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IVerifyOTPHandler, Services.AccountService.VerifyOTPHandler>();
+        services.AddTransient<Services.AccountService.Handlers.ICreateGuestCustomerHandler, Services.AccountService.CreateGuestCustomerHandler>();
 
         // activity services
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();

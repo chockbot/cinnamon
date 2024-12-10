@@ -437,12 +437,11 @@ public class AccountApiHandler : IAccountApiHandler
         }
     }
 
-    public async Task<AppResult<GetCustomerByEmailResult>> GetCustomerByEmail(string email, string token)
+    public async Task<AppResult<GetCustomerByEmailResult>> GetCustomerByEmail(string email)
     {
         try
         {
             var result = await flurlClient
-                .WithOAuthBearerToken(token)
                 .Request($"Account/GetCustomerByEmail/{email}")
                 .GetJsonAsync<GetCustomerByEmailResult>();
 
@@ -885,6 +884,90 @@ public class AccountApiHandler : IAccountApiHandler
         catch (Exception ex)
         {
             return AppResult<DeleteWaitlistResult>.CreateFailed(ex, "An error occurred when calling DELETE waitlist api");
+        }
+    }
+
+    public async Task<AppResult<SendOTPResult>> SendOTP(SendOTPArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Account/SendOTP")
+                .PostJsonAsync(args)
+                .ReceiveJson<SendOTPResult>();
+
+            return AppResult<SendOTPResult>.CreateSucceeded(result, "Successfully posting otp api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<SendOTPResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<SendOTPResult>.CreateFailed(ex, "An error occured when posting otp api");
+        }
+    }
+
+    public async Task<AppResult<GetUserOTPResult>> GetUserOTP(GetUserOTPArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Account/GetOTPs")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetUserOTPResult>();
+
+            return AppResult<GetUserOTPResult>.CreateSucceeded(result, "Successfully getting user otp api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetUserOTPResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetUserOTPResult>.CreateFailed(ex, "An error occured when getting user otp api");
+        }
+    }
+
+    public async Task<AppResult<VerifyEmailResult>> VerifyEmail(VerifyEmailArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Account/VerifyEmail")
+                .PostJsonAsync(args)
+                .ReceiveJson<VerifyEmailResult>();
+
+            return AppResult<VerifyEmailResult>.CreateSucceeded(result, "Successfully posting verify email api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<VerifyEmailResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<VerifyEmailResult>.CreateFailed(ex, "An error occured when posting verify email api");
+        }
+    }
+
+    public async Task<AppResult<CreateGuestCustomerResult>> CreateGuestCustomer(CreateGuestCustomerArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Account/CreateGuestCustomer")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateGuestCustomerResult>();
+
+            return AppResult<CreateGuestCustomerResult>.CreateSucceeded(result, "Successfully created guest customer");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<CreateGuestCustomerResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateGuestCustomerResult>.CreateFailed(ex, "An error occurred when creating guest customer");
         }
     }
 }

@@ -143,6 +143,8 @@ public class DataStore : IDataStore
 
     public ISeatPlanTemplate SeatPlanTemplate => new SeatPlanTemplateEntity(applicationContext);
 
+    public IGuestOTP GuestOTP => new GuestOTPEntity(applicationContext);
+
 
     public async Task EnsureMigrate()
     {

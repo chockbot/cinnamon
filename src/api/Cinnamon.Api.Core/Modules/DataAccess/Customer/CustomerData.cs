@@ -286,4 +286,28 @@ public class CustomerData : ICustomerData
             return AppResult<ChangeEmailAddressResult>.CreateFailed(ex, "An error occured when changing the email address");
         }
     }
+
+    public async Task<AppResult<CreateCustomerResult>> CreateGuestCustomer(CreateGuestCustomerArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Customer/CreateGuestCustomer")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateCustomerResult>();
+
+            return AppResult<CreateCustomerResult>.CreateSucceeded(result, "Successfully created guest customer");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<CreateCustomerResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateCustomerResult>.CreateFailed(
+                ex, 
+                "An error occurred when creating guest customer"
+            );
+        }
+    }
 }

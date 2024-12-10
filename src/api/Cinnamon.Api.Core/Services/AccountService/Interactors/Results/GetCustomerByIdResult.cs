@@ -18,4 +18,5 @@ public class GetCustomerByIdResult
     public DateTime DateJoined { get; set; }
     public string? ConnectionId { get; set; }
     public string Handler {get; set;}
+    public bool IsGuest { get; set; }
 }

@@ -26,4 +26,5 @@ public class CreateCustomerWithPasswordArgs
     [Required]
     public string Handler {get; set;}
     public bool HasAcceptedTerms { get; set; }
+    public bool IsGuest { get; set; } = false;
 }

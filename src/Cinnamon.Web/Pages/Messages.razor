@@ -55,10 +55,10 @@
             <div class="modal-body">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                     <div class="input-group border rounded-pill p-1">
-                        <div id="add-members-input" contenteditable="true" role="textbox" spellcheck="true" tabindex="0" style="" data-lexical-editor="true" data-text="Search Members">
-                        </div>
                         <div class="input-group-append border-0">
                             <button id="button-addon3" type="button" class="btn btn-link text-success" style="border-radius:50%"><i class="fa fa-search"></i></button>
+                        </div>
+                        <div id="add-members-input" contenteditable="true" role="textbox" spellcheck="true" tabindex="0" style="" data-lexical-editor="true" data-text="Search Members">
                         </div>
                     </div>
                 </div>
@@ -116,97 +116,104 @@
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
-    <div class="sidebar-messages left-sidebar messages-section d-xl-block d-lg-block d-md-block d-sm-block @messagesSectionDisplayStyle">
-        <div class="message-title-section">
-            <div class="row">
-                <div class="col-lg-6 col-md-6 col-sm-6 col-6">
-                    <label class="message-title">
-                        Messages
-                    </label>
-                </div>
-                <div class="col-lg-6 col-md-6 col-sm-6 col-6 add-message-section">
-                    @if (chatRooms.Count > 0 && chatMateChatType == ChatType.GroupChat && currentUserChatMemberType == ChatMemberType.ActivityProvider)
-                    {
-                        <img src="images/messages/add-message.svg" id="img-add-member" @onclick="(() => GetFormerChatMembersByChatRoomId(selectedChatRoomId))" />
-                    }
-                </div>
-            </div>
-        </div>
-        <div class="search-section">
-            @if (chatRooms.Count > 0)
-            {
+    @if(chatRooms.Count == 0)
+    {
+
+    } 
+    else 
+    {
+        <div class="sidebar-messages left-sidebar messages-section d-xl-block d-lg-block  @messagesSectionDisplayStyle">
+            <div class="message-title-section">
                 <div class="row">
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                        <div class="input-group border rounded-pill p-1">
-                            <div id="chatroom-search-input" contenteditable="true" role="textbox" spellcheck="true" tabindex="0" style="" data-lexical-editor="true" data-text="Search">
-                            </div>
-                            <div class="input-group-append border-0">
-                                <button id="button-addon3" type="button" class="btn btn-link text-success" style="border-radius:50%"><i class="fa fa-search"></i></button>
-                            </div>
-                        </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-6">
+                        <label class="message-title">
+                            Messages
+                        </label>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-6 add-message-section">
+                        @if (chatRooms.Count > 0 && chatMateChatType == ChatType.GroupChat && currentUserChatMemberType == ChatMemberType.ActivityProvider)
+                        {
+                            <img src="images/messages/add-message.svg" id="img-add-member" @onclick="(() => GetFormerChatMembersByChatRoomId(selectedChatRoomId))" />
+                        }
                     </div>
                 </div>
-            }
-        </div>
-        <div class="chatroom-section">
-            @if (chatRooms.Count > 0)
-            {
-                foreach (var chatRoom in FilteredChatRooms)
+            </div>
+            <div class="search-section">
+                @if (chatRooms.Count > 0)
                 {
-                    var fullName = $"{chatRoom.FromFirstName} {chatRoom.FromLastName}";
-                    <div class="row @GetNewMessageStyle(chatRoom.HasNewMessage, chatRoom.ChatRoomId) @GetActiveStyle(selectedChatRoomId == chatRoom.ChatRoomId) chatroom-list-item"
-     @onclick="(() => { ToggleClick(chatRoom.ChatRoomId); GetChatHistoryByChatRoomId(chatRoom.ChatRoomId, true, false); })">
-                        <input type="hidden" value="@chatRoom.DateCreated" id="date-created" />
+                    <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                            <div class="last-update-date">
-                                @chatRoom.DateCreated.ToString("hh:mm tt")
+                            <div class="input-group border p-1 search-bar">
+                                <div class="input-group-append border-0 search-icon">
+                                    <button id="button-addon3" type="button" class="btn btn-link text-success" style="border-radius:50%"><i class="fa fa-search"></i></button>
+                                </div>
+                                <div id="chatroom-search-input" contenteditable="true" role="textbox" spellcheck="true" tabindex="0" style="" data-lexical-editor="true" data-text="Search">
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-2 chatroom-profile-picture-section">
-                            @if (chatRoom.ChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
-                            {
-                                <img src="@chatRoom.FromProfilePath" class="chatroom-profile-picture" />
-                                @if (!string.IsNullOrEmpty(chatRoom.FromConnectionId))
-                                {
-                                    <span class="logged-in"></span>
-                                }
-                            }
-                            else
-                            {
-                                <img src="@chatRoom.FromProfilePath" class="chatroom-profile-picture" />
-                                @if (!string.IsNullOrEmpty(chatRoom.GroupName))
-                                {
-                                    <span class="logged-in"></span>
-                                }
-                            }
-                            
-                        </div>
-                        <div class="col-lg-10 col-md-10 col-sm-10 col-10 chatroom-name-section">
-                            <div class="chatroom-name text-capitalize">
-                                @if (chatRoom.ChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
-                                {
-                                    @fullName
-                                }
-                                else
-                                {
-                                    @chatRoom.ChatName
-                                }
-                            </div>
-                            <div class="last-message">
-                                @chatRoom.Message
-                            </div>
-                            @if (chatRoom.HasNewMessage)
-                            {
-                                <span class="has-new-message-badge">
-                                </span>
-                            }
                         </div>
                     </div>
                 }
-            }
+            </div>
+            <div class="chatroom-section">
+                @if (chatRooms.Count > 0)
+                {
+                    foreach (var chatRoom in FilteredChatRooms)
+                    {
+                        var fullName = $"{chatRoom.FromFirstName} {chatRoom.FromLastName}";
+                        <div class="row @GetNewMessageStyle(chatRoom.HasNewMessage, chatRoom.ChatRoomId) @GetActiveStyle(selectedChatRoomId == chatRoom.ChatRoomId) chatroom-list-item"
+         @onclick="(() => { ToggleClick(chatRoom.ChatRoomId); GetChatHistoryByChatRoomId(chatRoom.ChatRoomId, true, false); })">
+                            <input type="hidden" value="@chatRoom.DateCreated" id="date-created" />
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="last-update-date">
+                                    @chatRoom.DateCreated.ToString("hh:mm tt")
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 col-2 chatroom-profile-picture-section">
+                                @if (chatRoom.ChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
+                                {
+                                    <img src="@chatRoom.FromProfilePath" class="chatroom-profile-picture" />
+                                    @if (!string.IsNullOrEmpty(chatRoom.FromConnectionId))
+                                    {
+                                        <span class="logged-in"></span>
+                                    }
+                                }
+                                else
+                                {
+                                    <img src="@chatRoom.FromProfilePath" class="chatroom-profile-picture" />
+                                    @if (!string.IsNullOrEmpty(chatRoom.GroupName))
+                                    {
+                                        <span class="logged-in"></span>
+                                    }
+                                }
+
+                            </div>
+                            <div class="col-lg-10 col-md-10 col-sm-10 col-10 chatroom-name-section">
+                                <div class="chatroom-name text-capitalize">
+                                    @if (chatRoom.ChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
+                                    {
+                                        @fullName
+                                    }
+                                    else
+                                    {
+                                        @chatRoom.ChatName
+                                    }
+                                </div>
+                                <div class="last-message">
+                                    @chatRoom.Message
+                                </div>
+                                @if (chatRoom.HasNewMessage)
+                                {
+                                    <span class="has-new-message-badge">
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
         </div>
-    </div>
-    <div class="center-messages chat-section d-xl-block d-lg-block d-md-block d-sm-block @chatSectionDisplayStyle">
+    }
+    <div class="center-messages chat-section d-xl-block @chatSectionDisplayStyle">
         <div class="row" style="@SetPlaceholderStyle(isLoading)">
             <div class="chat-profile-section">
                 <div class="row">
@@ -283,6 +290,9 @@
                             <div class="d-flex">
                                 @if (chatMateChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
                                 {
+                                    <button type="button" class="border-0 bg-transparent back-button" @onclick="DisplayChatRooms">
+                                        <img src="images/messages/back-arrow.svg" class="back-to-chatroom" />
+                                    </button>
                                     <div class="chatmate-profile-picture-section me-3">
                                         <img src="@chatMateProfilePicture" class="chatmate-profile-picture" />
                                         @if (!string.IsNullOrEmpty(chatMateConnectionId))
@@ -308,6 +318,9 @@
                                 }
                                 else
                                 {
+                                    <button type="button" class="border-0 bg-transparent back-button" @onclick="DisplayChatRooms">
+                                        <img src="images/messages/back-arrow.svg" class="back-to-chatroom" />
+                                    </button>
                                     <div class="chatmate-profile-picture-section">
                                         <img src="@chatMateProfilePicture" class="chatmate-profile-picture me-3" />
                                         @if (!string.IsNullOrEmpty(chatMateGroupName))
@@ -348,7 +361,7 @@
                                         <img src="images/messages/personal-message.svg" class="personal-message-icon" @onclick="(() => CreatePrivateMessage(details))" />
                                     </span>
                                 }
-                                <img class="message-info" src="images/messages/chat-profile-info.svg" @onclick="(() => DisplayInfo(profileSectionDisplayStyle))" />
+                                <img class="message-info" src="images/messages/chat-profile-info.svg" @onclick="ToggleProfileSection" />
                             </div>
                             <div class="col-lg-12 d-block d-sm-none d-md-none d-lg-none d-xl-none" style="padding: 0px;">
                                 <table>
@@ -534,163 +547,177 @@
                     </div>
                 </div>
             }
-
-            <div class="send-message-section">
-                <table>
-                    <tr>
-                        <td class="attachment-section"><img src="images/messages/send-attachment.svg" /></td>
-                        <td class="input-section">
-                            <div class="input-group border p-1 rounded-pill-section">
-                                <div id="chat-message-input" contenteditable="true" role="textbox" spellcheck="true" tabindex="0" style="" data-lexical-editor="true" data-text="Aa">
-                                </div>
-                            </div>
-                    
-                        </td>
-                        <td class="send-section">
-                            <img id="send-message" src="images/messages/send-message.svg" />
-                        </td>
-                    </tr>
-                </table>
-            </div>
-    </div>
-    <div class="sidebar-messages profile-section messages-section d-xl-block d-lg-block d-md-block d-sm-block @profileSectionDisplayStyle">
-        <div class="row" style="@SetPlaceholderStyle(isLoading)">
-            <div class="row justify-content-center placeholder-glow">
-                <div class="col-lg-12 text-center">
-                    <span class="placeholder col-9 profile-section-picture"></span>
-                    <div class="divider"></div>
-                    <label class="profile-section-name">
-                        <span class="placeholder col-9"></span>
-                    </label>
-                    <div class="divider"></div>
-                    <span class="placeholder col-9"></span>
-                    <div class="divider"></div>
-                </div>
-                <div class="col-lg-12 profile-members-section placeholder-glow">
-                    <span class="placeholder col-1 chat-profile-picture"></span><span class="placeholder col-7"></span>
-                    <div class="divider"></div>
-                    <span class="placeholder col-1 chat-profile-picture"></span><span class="placeholder col-7"></span>
-                </div>
-            </div>
-        </div>
-        <div style="@SetMessagesStyle(isLoading)">
-            <div class="loading-overlay" id="loadingOverlay" style="@(isLoading ? "display: flex;" : "display: none;")">
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
-            @if (chatRooms.Count > 0)
+            @if(chatRooms.Count == 0)
             {
-                <div class="col-lg-12 d-block d-sm-none d-md-none d-lg-none d-xl-none">
-                    <div class="row">
-                        <div class="col-lg-12 profile-back-button-section">
-                            <button type="button" class="border-0 bg-transparent back-button" @onclick="DisplayConversations">
-                                <img src="images/messages/back-arrow.svg" class="back-to-conversation" />
-                            </button>
+            
+            }
+            else
+            {
+                <div class="send-message-section">
+                    <table>
+                        <tr>
+                            <td class="input-section">
+                                <div class="input-group border p-1 rounded-pill-section">
+                                    <div id="chat-message-input" contenteditable="true" role="textbox" spellcheck="true" tabindex="0" style="" data-lexical-editor="true" data-text="Aa">
+                                    </div>
+                                </div>
+                        
+                            </td>
+                            <td class="send-section">
+                                <img id="send-message" src="images/messages/send-message.svg" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            }
+            
+    </div>
+    @if(chatRooms.Count == 0)
+    {
+
+    }
+    else
+    {
+        <div class="sidebar-messages profile-section messages-section d-xl-block @profileSectionDisplayStyle">
+            <div class="row" style="@SetPlaceholderStyle(isLoading)">
+                <div class="row justify-content-center placeholder-glow">
+                    <div class="col-lg-12 text-center">
+                        <span class="placeholder col-9 profile-section-picture"></span>
+                        <div class="divider"></div>
+                        <label class="profile-section-name">
+                            <span class="placeholder col-9"></span>
+                        </label>
+                        <div class="divider"></div>
+                        <span class="placeholder col-9"></span>
+                        <div class="divider"></div>
+                    </div>
+                    <div class="col-lg-12 profile-members-section placeholder-glow">
+                        <span class="placeholder col-1 chat-profile-picture"></span><span class="placeholder col-7"></span>
+                        <div class="divider"></div>
+                        <span class="placeholder col-1 chat-profile-picture"></span><span class="placeholder col-7"></span>
+                    </div>
+                </div>
+            </div>
+            <div style="@SetMessagesStyle(isLoading)">
+                <div class="loading-overlay" id="loadingOverlay" style="@(isLoading ? "display: flex;" : "display: none;")">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                @if (chatRooms.Count > 0)
+                {
+                    <div class="col-lg-12 d-block d-sm-none d-md-block d-lg-block d-xl-none">
+                        <div class="row">
+                            <div class="col-lg-12 profile-back-button-section">
+                                <button type="button" class="border-0 bg-transparent back-button" @onclick="DisplayConversations">
+                                    <img src="images/messages/back-arrow.svg" class="back-to-conversation" />
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-lg-12 text-center">
-                        @if (chatMateChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
-                        {
-                            <img src="@chatMateProfilePicture" class="profile-section-picture" />
-                            <div class="divider"></div>
-                            <label class="profile-section-name">
-                                <span>@chatMateFullName</span>
-                            </label>
-                            <div class="divider"></div>
-                            <div class="d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                                <button id="btnViewProfile" type="button" class="btn border-0" @onclick="() => NavigateToProfile(false)">View Profile</button>
-                            </div>
-                            <div class="d-block d-sm-none d-md-none d-lg-none d-xl-none">
-                                <button id="btnViewProfile" type="button" class="btn border-0" @onclick="() => NavigateToProfile(true)">View Profile</button>
-                            </div>
-                            <div class="divider"></div>
-                        }
-                        else
-                        {
-                            <img src="@chatMateProfilePicture" class="profile-section-picture" />
-                            <div class="divider"></div>
-                            <label class="profile-section-name">
-                                <span>@chatMateChatName</span>
-                                @if (chatMateChatType == Framework.Enums.Enums.ChatType.GroupChat && currentUserChatMemberType == ChatMemberType.ActivityProvider)
-                                {
-                                    <Button class="p-1" Clicked="EditChatGroupName">
-                                        <img width="20" height="20" src="images/messages/small-edit-icon.svg" alt="icon" />
-                                    </Button>
-                                }
-                            </label>
-                            <div class="divider"></div>
-                            <div class="d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                                <button id="btnViewProfile" type="button" class="btn border-0" @onclick="() => NavigateToProfile(false)">View Profile</button>
-                            </div>
-                            <div class="d-block d-sm-none d-md-none d-lg-none d-xl-none">
-                                <button id="btnViewProfile" type="button" class="btn border-0" @onclick="() => NavigateToProfile(true)">View Profile</button>
-                            </div>
-                            <div class="divider"></div>
-                        }
-                    </div>
-                    <div class="col-lg-12 profile-members-section">
-                        <label class="attachment-name">
-                            Chat members
-                        </label>
-
-                        <div class="row align-items-center">
-                            @foreach (var item in chatMembers)
+                    <div class="row justify-content-center">
+                        <div class="col-lg-12 text-center">
+                            @if (chatMateChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
                             {
-                                <div class="col-lg-2 col-md-2 col-sm-2 col-2 chat-member-picture-section">
-                                    <img src="@item.FromProfilePath" class="chat-profile-picture" />
+                                <img src="@chatMateProfilePicture" class="profile-section-picture" />
+                                <div class="divider"></div>
+                                <label class="profile-section-name">
+                                    <span>@chatMateFullName</span>
+                                </label>
+                                <div class="divider"></div>
+                                <div class="d-xl-block d-lg-block d-md-block d-sm-block d-none">
+                                    <button id="btnViewProfile" type="button" class="btn border-0" @onclick="() => NavigateToProfile(false)">View Profile</button>
                                 </div>
-                                <div class="col-lg-6 col-md-6 col-sm-6 col-6 chat-member-name-section text-capitalize">
-                                    @item.FromFirstName @item.FromLastName
+                                <div class="d-block d-sm-none d-md-none d-lg-none d-xl-none">
+                                    <button id="btnViewProfile" type="button" class="btn border-0" @onclick="() => NavigateToProfile(true)">View Profile</button>
                                 </div>
-                                <div class="col-lg-4 col-md-4 col-sm-4 col-4 send-private-message-section">
-                                    @if (currentUserChatMemberType == ChatMemberType.Customer)
+                                <div class="divider"></div>
+                            }
+                            else
+                            {
+                                <img src="@chatMateProfilePicture" class="profile-section-picture" />
+                                <div class="divider"></div>
+                                <label class="profile-section-name">
+                                    <span>@chatMateChatName</span>
+                                    @if (chatMateChatType == Framework.Enums.Enums.ChatType.GroupChat && currentUserChatMemberType == ChatMemberType.ActivityProvider)
                                     {
-                                        @if (item.FromUserId != currentUserId && item.ChatMemberType == ChatMemberType.ActivityProvider)
-                                        {
-                                            <button type="button" @onclick="@(() => CreatePrivateMessage(item))" class="border-0 btn-send-private-message">
-                                                <img src="images/messages/chat-icon.svg" class="send-private-message-picture" />
-                                            </button>
-                                        }
+                                        <Button class="p-1" Clicked="EditChatGroupName">
+                                            <img width="20" height="20" src="images/messages/small-edit-icon.svg" alt="icon" />
+                                        </Button>
                                     }
-                                    else
-                                    {
-                                        @if (item.FromUserId != currentUserId && item.ChatMemberType == ChatMemberType.Customer)
+                                </label>
+                                <div class="divider"></div>
+                                <div class="d-xl-block d-lg-block d-md-block d-sm-block d-none">
+                                    <button id="btnViewProfile" type="button" class="btn border-0" @onclick="() => NavigateToProfile(false)">View Profile</button>
+                                </div>
+                                <div class="d-block d-sm-none d-md-none d-lg-none d-xl-none">
+                                    <button id="btnViewProfile" type="button" class="btn border-0" @onclick="() => NavigateToProfile(true)">View Profile</button>
+                                </div>
+                                <div class="divider"></div>
+                            }
+                        </div>
+                        <div class="col-lg-12 profile-members-section">
+                            <label class="attachment-name">
+                                Chat members
+                            </label>
+
+                            <div class="row align-items-center">
+                                @foreach (var item in chatMembers)
+                                {
+                                    <div class="col-lg-2 col-md-2 col-sm-2 col-2 chat-member-picture-section">
+                                        <img src="@item.FromProfilePath" class="chat-profile-picture" />
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6 col-6 chat-member-name-section text-capitalize">
+                                        @item.FromFirstName @item.FromLastName
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4 col-4 send-private-message-section">
+                                        @if (currentUserChatMemberType == ChatMemberType.Customer)
                                         {
-                                            <button type="button" @onclick="@(() => CreatePrivateMessage(item))" class="border-0 btn-send-private-message">
-                                                <img src="images/messages/chat-icon.svg" class="send-private-message-picture" />
-                                            </button>
+                                            @if (item.FromUserId != currentUserId && item.ChatMemberType == ChatMemberType.ActivityProvider)
+                                            {
+                                                <button type="button" @onclick="@(() => CreatePrivateMessage(item))" class="border-0 btn-send-private-message">
+                                                    <img src="images/messages/chat-icon.svg" class="send-private-message-picture" />
+                                                </button>
+                                            }
                                         }
+                                        else
+                                        {
+                                            @if (item.FromUserId != currentUserId && item.ChatMemberType == ChatMemberType.Customer)
+                                            {
+                                                <button type="button" @onclick="@(() => CreatePrivateMessage(item))" class="border-0 btn-send-private-message">
+                                                    <img src="images/messages/chat-icon.svg" class="send-private-message-picture" />
+                                                </button>
+                                            }
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-12 profile-attachment-section">
+                            <label class="attachment-name">
+                                Attachments
+                            </label>
+                           @* <button type="button" class="border-0 leave-button" @onclick="Stop">
+                                <span class="fa fa-arrow-circle-left"></span> Stop
+                            </button>*@
+                            @if (chatMateChatType == Framework.Enums.Enums.ChatType.GroupChat && currentUserChatMemberType == ChatMemberType.Customer)
+                            {
+                                <div class="col-lg-12 profile-settings-section">
+                                    @if (showLeaveGroup)
+                                    {
+                                        <button type="button" class="border-0 leave-button">
+                                            Leave Group <img src="images/messages/leave-group-icon.svg" class="send-private-message-picture" />
+                                        </button>
                                     }
                                 </div>
                             }
                         </div>
                     </div>
-                    <div class="col-lg-12 profile-attachment-section">
-                        <label class="attachment-name">
-                            Attachments
-                        </label>
-                       @* <button type="button" class="border-0 leave-button" @onclick="Stop">
-                            <span class="fa fa-arrow-circle-left"></span> Stop
-                        </button>*@
-                        @if (chatMateChatType == Framework.Enums.Enums.ChatType.GroupChat && currentUserChatMemberType == ChatMemberType.Customer)
-                        {
-                            <div class="col-lg-12 profile-settings-section">
-                                @if (showLeaveGroup)
-                                {
-                                    <button type="button" class="border-0 leave-button">
-                                        Leave Group <img src="images/messages/leave-group-icon.svg" class="send-private-message-picture" />
-                                    </button>
-                                }
-                            </div>
-                        }
-                    </div>
-                </div>
-            }
-        </div>
-    </div>
+                }
+            </div>
+        </div>    
+    }
+    
 
     <Modal @ref="modalEditChatGroupName">
         <ModalContent Centered class="border-radius-10">
@@ -751,6 +778,7 @@
     private string chatMateProfileLink = string.Empty;
     private string chatMateGroupName = string.Empty;
     private string chatMateChatName = string.Empty;
+    private string ProfileSectionDisplayStyle = "d-none";
     private bool chatMateHasTemporaryChatRoomId = false;
     private Framework.Enums.Enums.ChatType chatMateChatType;
     private Framework.Enums.Enums.ChatHistoryType chatHistoryType;
@@ -760,6 +788,8 @@
 
     private bool isLoadingIndicator = true;
     [Inject] HubConnection hubConnection { get; set; }
+
+    private string customChatSectionDisplayStyle = string.Empty;
     private string messagesSectionDisplayStyle = string.Empty;
     private string chatSectionDisplayStyle = string.Empty;
     private string profileSectionDisplayStyle = string.Empty;
@@ -1034,6 +1064,12 @@
         messageInput = string.Empty;
     }
 
+    private void ToggleProfileSection()
+    {
+        profileSectionDisplayStyle = profileSectionDisplayStyle == "d-none" ? "d-block" : "d-none";
+        chatSectionDisplayStyle = chatSectionDisplayStyle == "d-none" ? "d-block" : "d-none";
+    }
+
     private async Task GetChatRoomsByUserId()
     {
         var result = await chatApiHandler.GetChatRoomsByUserId(new Framework.ApiCommand.ApiCore.ChatRoom.Request.GetChatRoomsByUserIdArgs
@@ -1126,8 +1162,12 @@
                 currentUserFirstName    = args.FirstName;
                 currentUserLastName     = args.LastName;
                 currentUserProfilePath  = args.ProfileImg;
-
                 await GetChatRoomsByUserId();
+                if (args.IsGuest)
+                {
+                    NavigationManager.NavigateTo("page-not-found");
+                    return;
+                }
             }
         }
     }
@@ -1486,8 +1526,8 @@
 
     private string DisplayInfo(string isDisplayed)
     {
-        if (isDisplayed == "d-block") return "d-none";
-        return "d-block";
+        if (isDisplayed == "d-none") return "d-block";
+        return "d-none";
     }
 
     void LocationChanged(object sender, LocationChangedEventArgs e)

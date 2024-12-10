@@ -8,6 +8,8 @@ using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Waitlist;
 using Microsoft.AspNetCore.Authorization;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.FamilyMember;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.RequestRefund;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.OTP;
+using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -59,6 +61,10 @@ public class AccountController : ControllerBase
     private readonly IExtraLoginHandler extraLoginHandler;
     private readonly IChangeEmailHandler changeEmailHandler;
     private readonly IDeleteWaitlistHandler deleteWaitlistHandler;
+    private readonly ISendOTPHandler sendOTPHandler;
+    private readonly IGetUserOTPHandler getUserOTPHandler;
+    private readonly IVerifyOTPHandler verifyOTPHandler;
+    private readonly ICreateGuestCustomerHandler createGuestCustomerHandler;
 
     #endregion
 
@@ -80,7 +86,9 @@ public class AccountController : ControllerBase
         IGetAllCustomersHandler getAllCustomersHandler, IUpdateCustomerProfileHandler updateCustomerProfileHandler,
         IUpdateRequestRefundHandler updateRequestRefundHandler, IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler, 
         IUpdateConnectionIdHandler updateConnectionIdHandler, IVerifyUserNotificationHandler verifyUserNotificationHandler,
-        IBlockedAccountHandler blockedAccountHandler, IExtraLoginHandler extraLoginHandler, IChangeEmailHandler changeEmailHandler, IDeleteWaitlistHandler deleteWaitlistHandler)
+        IBlockedAccountHandler blockedAccountHandler, IExtraLoginHandler extraLoginHandler, IChangeEmailHandler changeEmailHandler, IDeleteWaitlistHandler deleteWaitlistHandler,
+        ISendOTPHandler sendOTPHandler, IGetUserOTPHandler getUserOTPHandler,IVerifyOTPHandler verifyOTPHandler,
+        ICreateGuestCustomerHandler createGuestCustomerHandler)
     {
         this.submitRegisterHandler            = submitRegisterHandler;
         this.submitWaitlistHandler            = submitWaitlistHandler;
@@ -122,6 +130,10 @@ public class AccountController : ControllerBase
         this.extraLoginHandler                = extraLoginHandler;
         this.changeEmailHandler               = changeEmailHandler;   
         this.deleteWaitlistHandler            = deleteWaitlistHandler;
+        this.sendOTPHandler                   = sendOTPHandler;
+        this.getUserOTPHandler                = getUserOTPHandler;
+        this.verifyOTPHandler                 = verifyOTPHandler;
+        this.createGuestCustomerHandler       = createGuestCustomerHandler;
     }
 
     #endregion
@@ -143,7 +155,8 @@ public class AccountController : ControllerBase
                 LastName = args.LastName,
                 Password = args.Password,
                 ProfilePath = args.ProfilePath,
-                HasAcceptedTerms = args.HasAcceptedTerms
+                HasAcceptedTerms = args.HasAcceptedTerms,
+                IsGuest = args.IsGuest
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -162,7 +175,7 @@ public class AccountController : ControllerBase
                     LastName = objResult.LastName,
                     ProfileImg = objResult.ProfileImg,
                     Id = objResult.Id,
-                    Handler = objResult.Handler
+                    Handler = objResult.Handler,
                 },
                 IsSuccess = true,
             });
@@ -231,7 +244,8 @@ public class AccountController : ControllerBase
         {
             var result = await submitWaitlistHandler.ExecuteAsync(new Services.AccountService.Interactors.SubmitWaitlistArgs{
                 Email = args.Email,
-                ValidationRoute = args.ValidationRoute
+                ValidationRoute = args.ValidationRoute,
+                IsGuest = args.IsGuest
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -383,25 +397,26 @@ public class AccountController : ControllerBase
 
             return new JsonResult(new GetProfileResult {
                 Result = new ProfileDTO {
-                    Email = profile.Email,
-                    FirstName = profile.FirstName,
-                    LastName = profile.LastName,
-                    IsMaker = profile.IsMaker,
-                    Id = profile.Id,
-                    About = profile.About,
-                    Birthdate = profile.Birthdate,
-                    PhoneNumber = profile.PhoneNumber,
-                    DateJoined = profile.DateJoined,
-                    IsVerified = profile.IsVerified,
+                    Email          = profile.Email,
+                    FirstName      = profile.FirstName,
+                    LastName       = profile.LastName,
+                    IsMaker        = profile.IsMaker,
+                    Id             = profile.Id,
+                    About          = profile.About,
+                    Birthdate      = profile.Birthdate,
+                    PhoneNumber    = profile.PhoneNumber,
+                    DateJoined     = profile.DateJoined,
+                    IsVerified     = profile.IsVerified,
                     IsVerifiedDate = profile.IsVerifiedDate,
-                    IsOfficial = profile.IsOfficial,
+                    IsOfficial     = profile.IsOfficial,
                     IsOfficialDate = profile.IsOfficialDate,
-                    IsOG = profile.IsOG,
-                    IsOGDate = profile.IsOGDate,
-                    ProfileImg = profile.ProfileImagePath,
-                    Handler = profile.Handler,
-                    TotalCredits = profile.TotalCredits,
-                    ConnectionId = profile.ConnectionId
+                    IsOG           = profile.IsOG,
+                    IsOGDate       = profile.IsOGDate,
+                    ProfileImg     = profile.ProfileImagePath,
+                    Handler        = profile.Handler,
+                    TotalCredits   = profile.TotalCredits,
+                    ConnectionId   = profile.ConnectionId,
+                    IsGuest        = profile.IsGuest
                 },
                 IsSuccess = true
             });
@@ -777,20 +792,22 @@ public class AccountController : ControllerBase
             {
                 Result = new CustomerDTO
                 {
-                    Id = objResult.Id,
-                    FirstName = objResult.FirstName,
-                    IsMaker = objResult.IsMaker,
-                    LastName = objResult.LastName,
-                    IsVerified = objResult.IsVerified,
-                    ProfileImg = objResult.ProfileImg,
-                    About = objResult.About,
-                    IsOG = objResult.IsOG,
-                    IsOfficial = objResult.IsOfficial,
-                    DateJoined = objResult.DateJoined,
-                    Email = objResult.Email,
-                    PhoneNumber = objResult.PhoneNumber,
+                    Id           = objResult.Id,
+                    FirstName    = objResult.FirstName,
+                    IsMaker      = objResult.IsMaker,
+                    LastName     = objResult.LastName,
+                    IsVerified   = objResult.IsVerified,
+                    ProfileImg   = objResult.ProfileImg,
+                    About        = objResult.About,
+                    IsOG         = objResult.IsOG,
+                    IsOfficial   = objResult.IsOfficial,
+                    DateJoined   = objResult.DateJoined,
+                    Email        = objResult.Email,
+                    PhoneNumber  = objResult.PhoneNumber,
                     ConnectionId = objResult.ConnectionId,
-                    Handler = objResult.Handler
+                    Handler      = objResult.Handler,
+                    IsGuest      = objResult.IsGuest,
+
                 },
                 IsSuccess = true,
             });
@@ -847,6 +864,7 @@ public class AccountController : ControllerBase
     [Route("GetCustomerByEmail/{email}")]
     [HttpGet]
     [ProducesResponseType(typeof(GetCustomerByEmailResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
     public async Task<IActionResult> GetCustomerByEmail(string email)
     {
         try
@@ -866,19 +884,20 @@ public class AccountController : ControllerBase
             {
                 Result = new CustomerDTO
                 {
-                    IsVerified = objResult.IsVerified,
-                    Id = objResult.Id,
-                    Email = objResult.Email,
-                    FirstName = objResult.FirstName,
-                    About = objResult.About,
-                    Birthdate = objResult.Birthdate,
-                    DateJoined = objResult.DateJoined,
+                    IsVerified    = objResult.IsVerified,
+                    Id            = objResult.Id,
+                    Email         = objResult.Email,
+                    FirstName     = objResult.FirstName,
+                    About         = objResult.About,
+                    Birthdate     = objResult.Birthdate,
+                    DateJoined    = objResult.DateJoined,
                     ExternalLogin = objResult.ExternalLogin,
-                    IsMaker = objResult.IsMaker,
-                    LastName = objResult.LastName,
-                    ProfileImg = objResult.ProfileImg,
-                    IsOfficial = objResult.IsOfficial,
-                    IsOG = objResult.IsOG,
+                    IsMaker       = objResult.IsMaker,
+                    LastName      = objResult.LastName,
+                    ProfileImg    = objResult.ProfileImg,
+                    IsOfficial    = objResult.IsOfficial,
+                    IsOG          = objResult.IsOG,
+                    IsGuest       = objResult.IsGuest,
                 },
                 IsSuccess = true,
             });
@@ -1604,6 +1623,158 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new DeleteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+
+    [Route("SendOTP")]
+    [HttpPost]
+    [ProducesResponseType(typeof(SendOTPResult), StatusCodes.Status201Created)]
+    [AllowAnonymous]
+    public async Task<IActionResult> SendOTP([FromBody] SendOTPArgs args)
+    {
+        try
+        {
+            var result = await sendOTPHandler.ExecuteAsync(new Services.AccountService.Interactors.SendOTPArgs
+            {
+                Email = args.Email,
+                OTPCode = args.OTPCode
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new SendOTPResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var objResult = result.Result;
+
+            return new JsonResult(new SendOTPResult
+            {
+                Result = new OtpDTO
+                {
+                    Email = objResult.Email,
+                    OTPcode = objResult.OTPCode
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new SendOTPResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetOTPs")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetUserOTPResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetOTPByEmail([FromQuery] GetUserOTPArgs args)
+    {
+        try
+        {
+            var result = await getUserOTPHandler.ExecuteAsync(new Services.AccountService.Interactors.GetUserOTPArgs
+            {
+                Email = args.Email
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetUserOTPResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new GetUserOTPResult
+            {
+                IsSuccess = true,
+                Result = result.Result.GuestOTPs.Select(e =>
+                {
+                    return new Framework.ApiCommand.ApiCore.DTO.OTP.OtpDTO
+                    {
+                        Email = e.Email,
+                        OtpCode = e.OTPCode,
+                        CreatedOn = e.CreatedOn
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetActivityImagesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("VerifyEmail")]
+    [HttpPost]
+    [ProducesResponseType(typeof(VerifyEmailResult), StatusCodes.Status201Created)]
+    [AllowAnonymous]
+    public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailArgs args)
+    {
+        try
+        {
+            var result = await verifyOTPHandler.ExecuteAsync(new Services.AccountService.Interactors.VerifyOTPArgs
+            {
+                Email = args.Email,
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new VerifyEmailResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var objResult = result.Result;
+
+            return new JsonResult(new VerifyEmailResult
+            {
+                Result = new OtpDTO
+                {
+                    Email = objResult.Email
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new VerifyEmailResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("CreateGuestCustomer")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateGuestCustomerResult), StatusCodes.Status201Created)]
+    [AllowAnonymous]
+    public async Task<IActionResult> CreateGuestCustomer([FromBody] CreateGuestCustomerArgs args)
+    {
+        try
+        {
+            var result = await createGuestCustomerHandler.ExecuteAsync(
+                new Services.AccountService.Interactors.CreateGuestCustomerArgs 
+                {
+                    FirstName = args.FirstName,
+                    LastName = args.LastName,
+                    Email = args.Email,
+                    Birthdate = args.Birthdate,
+                    PhoneNumber = args.PhoneNumber,
+                    About = args.About,
+                    ProfilePath = args.ProfilePath,
+                    Handler = args.Handler,
+                    HasAcceptedTerms = args.HasAcceptedTerms
+                });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new CreateGuestCustomerResult 
+                { 
+                    ErrorInfo = new ErrorInfo { Message = result.Message }
+                });
+            }
+
+            return new JsonResult(new CreateGuestCustomerResult 
+            {
+                Result = result.Result.SessionToken,
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateGuestCustomerResult 
+            { 
+                ErrorInfo = new ErrorInfo { Message = ex.Message }
+            });
         }
     }
 }
