@@ -263,8 +263,8 @@
             </div>
             }
             <!-- Mobile -->
-            <div class="mobile-button-search" >
-                <button type="button" class="search-button btn btn-link text-success mobile-search" @onclick="ToggleSearchBarVisibility">
+            <div class="mobile-button-search" @onclick="ToggleSearchBarVisibility">
+                <button type="button" class="search-button btn btn-link text-success mobile-search">
                     <img src="images/explore-page-images/search-icon-explore.svg" alt="search-icon" />
                 </button>
             </div>
@@ -685,7 +685,7 @@
         <div class="section-1">
             <div class="categories">
                 <div class="schedule-swiper">
-                    <div class="swiper-wrapper text-center" style="margin-bottom:56px;">
+                    <div class="swiper-wrapper text-center" style="">
                         <!-- DO NOT TOUCH ORIGINAL SWIPER -->
                         @if(!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
                         {
@@ -1032,7 +1032,7 @@
         </div>
         <!--Section 2-->
         <!-- Mobile View -->
-        <div class="section-2-lg row mobile-view-cards">
+        <div class="section-2-lg row mobile-view-cards mt-3">
             <div class="row" style="@SetPlaceholderStyle(showOverlayPopularActivities)">
                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
                     <div class="card card-placeholder-popular" aria-hidden="true">
