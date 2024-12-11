@@ -322,7 +322,8 @@
                     int currentIndex = i; // Create a local variable to capture the loop index
                     <input type="text" id="otp-@currentIndex" maxlength="1" class="otp-box form-control mx-1 text-center"
                        inputmode="numeric" pattern="[0-9]*"
-                       value="@Otp[currentIndex]" @onpaste="@(e => HandlePaste(currentIndex))" />
+                       @bind-value="Otp[currentIndex]"
+                       @onpaste="@(e => HandlePaste(currentIndex))" />
                 }
             </div>
             <div class="w-100 text-center">
