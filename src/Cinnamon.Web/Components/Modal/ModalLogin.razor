@@ -322,10 +322,7 @@
                     int currentIndex = i; // Create a local variable to capture the loop index
                     <input type="text" id="otp-@currentIndex" maxlength="1" class="otp-box form-control mx-1 text-center"
                        inputmode="numeric" pattern="[0-9]*"
-                       value="@Otp[currentIndex]" 
-                       @oninput="@(e => HandleInput(e.Value?.ToString(), currentIndex))"
-                       @onkeydown="@(e => HandleKeyDown(e, currentIndex))"
-                       @onpaste="@(e => HandlePaste(currentIndex))" />
+                       value="@Otp[currentIndex]" @onpaste="@(e => HandlePaste(currentIndex))" />
                 }
             </div>
             <div class="w-100 text-center">
@@ -382,6 +379,7 @@
         if (firstRender)
         {
             module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/FocusNext.js");
+            await module.InvokeVoidAsync("handleOtpInput");
         }
     }
 
@@ -886,21 +884,6 @@
         Model.IsRevealPassword = !Model.IsRevealPassword;
         StateHasChanged();
         return Task.CompletedTask;
-    }
-    private async Task HandleInput(string? value, int index)
-    {
-        if (module != null)
-        {
-            await module.InvokeVoidAsync("handleOtpInput", value, index, Otp, OtpLength);
-        }
-    }
-
-    private async Task HandleKeyDown(KeyboardEventArgs e, int index)
-    {
-        if (module != null && e.Key == "Backspace")
-        {
-            await module.InvokeVoidAsync("handleOtpBackspace", index, Otp);
-        }
     }
 
     private async Task HandlePaste(int startIndex)
