@@ -1,9 +1,29 @@
-﻿export function focusInput(id) {
-    const input = document.getElementById(id);
-    if (input) {
-        setTimeout(() => {
-            input.focus();
-        }, 100);
+﻿export function handleOtpInput(value, index, otpArray, otpLength) {
+    if (value && value.length > 0 && !isNaN(value[0])) { // Check if input exists and starts with a digit
+        otpArray[index] = value[0]; // Store the first character in OTP array
+
+        // Move focus to the next input if it exists
+        if (index + 1 < otpLength) {
+            const nextInputId = `otp-${index + 1}`;
+            const nextInput = document.getElementById(nextInputId);
+            if (nextInput) {
+                setTimeout(() => nextInput.focus(), 100);
+            }
+        }
+    }
+}
+
+export function handleOtpBackspace(index, otpArray) {
+    // Clear the current input
+    otpArray[index] = "";
+
+    // Move focus to the previous input if it exists
+    if (index > 0) {
+        const previousInputId = `otp-${index - 1}`;
+        const previousInput = document.getElementById(previousInputId);
+        if (previousInput) {
+            setTimeout(() => previousInput.focus(), 100);
+        }
     }
 }
 

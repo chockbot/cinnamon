@@ -887,31 +887,19 @@
         StateHasChanged();
         return Task.CompletedTask;
     }
-    private void HandleInput(string? value, int index)
+    private async Task HandleInput(string? value, int index)
     {
-        if (!string.IsNullOrEmpty(value) && char.IsDigit(value[0]))
+        if (module != null)
         {
-            Otp[index] = value[0].ToString();
-            // Move to the next input if it exists
-            if (index + 1 < OtpLength)
-            {
-                var nextInput = $"otp-{index + 1}";
-                module.InvokeVoidAsync("focusInput", nextInput);
-            }
+            await module.InvokeVoidAsync("handleOtpInput", value, index, Otp, OtpLength);
         }
     }
 
-    private void HandleKeyDown(KeyboardEventArgs e, int index)
+    private async Task HandleKeyDown(KeyboardEventArgs e, int index)
     {
-        if (e.Key == "Backspace")
+        if (module != null && e.Key == "Backspace")
         {
-            // Clear the current input and move to the previous box if it exists
-            Otp[index] = string.Empty;
-            if (index > 0)
-            {
-                var previousInput = $"otp-{index - 1}";
-                module.InvokeVoidAsync("focusInput", previousInput);
-            }
+            await module.InvokeVoidAsync("handleOtpBackspace", index, Otp);
         }
     }
 
