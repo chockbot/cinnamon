@@ -322,9 +322,7 @@
                     int currentIndex = i; // Create a local variable to capture the loop index
                     <input type="text" id="otp-@currentIndex" maxlength="1" class="otp-box form-control mx-1 text-center"
                        inputmode="numeric" pattern="[0-9]*"
-                       value="@Otp[currentIndex]" 
-                       @oninput="@(e => HandleInput(e.Value?.ToString(), currentIndex))"
-                       @onkeydown="@(e => HandleKeyDown(e, currentIndex))"
+                       @bind-value="Otp[currentIndex]"
                        @onpaste="@(e => HandlePaste(currentIndex))" />
                 }
             </div>
@@ -382,6 +380,7 @@
         if (firstRender)
         {
             module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/FocusNext.js");
+            await module.InvokeVoidAsync("handleOtpInput");
         }
     }
 
@@ -886,33 +885,6 @@
         Model.IsRevealPassword = !Model.IsRevealPassword;
         StateHasChanged();
         return Task.CompletedTask;
-    }
-    private void HandleInput(string? value, int index)
-    {
-        if (!string.IsNullOrEmpty(value) && char.IsDigit(value[0]))
-        {
-            Otp[index] = value[0].ToString();
-            // Move to the next input if it exists
-            if (index + 1 < OtpLength)
-            {
-                var nextInput = $"otp-{index + 1}";
-                module.InvokeVoidAsync("focusInput", nextInput);
-            }
-        }
-    }
-
-    private void HandleKeyDown(KeyboardEventArgs e, int index)
-    {
-        if (e.Key == "Backspace")
-        {
-            // Clear the current input and move to the previous box if it exists
-            Otp[index] = string.Empty;
-            if (index > 0)
-            {
-                var previousInput = $"otp-{index - 1}";
-                module.InvokeVoidAsync("focusInput", previousInput);
-            }
-        }
     }
 
     private async Task HandlePaste(int startIndex)
