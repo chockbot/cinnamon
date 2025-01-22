@@ -3031,7 +3031,7 @@
     public int RoundDownToNearestMultiple(int number)
     {
         int roundingFactor = IdentifyRoundingFactor(number);
-        return number < 10 ? number : (int)(Math.Floor((double)number / roundingFactor) * roundingFactor);
+        return number <= 1000 ? number : (int)(Math.Floor((double)number / roundingFactor) * roundingFactor);
     }
 
     public int IdentifyRoundingFactor(int number)
