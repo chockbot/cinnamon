@@ -50,7 +50,7 @@ public class SubmitVerifyEmailHandler : ISubmitVerifyEmailHandler
             if(!waitlist.IsVerified)
             {
                 // check token if the same
-                var decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(args.Token));
+                var decodedToken = args.Token;
                 if (decodedToken != waitlist.Token)
                 {
                     return AppResult<SubmitVerifyEmailResult>.CreateFailed(new ApplicationException("Invalid userid or token"), "Invalid userid or token");
